@@ -24,40 +24,27 @@ jobs:
           REPO_URL: ${{ secrets.REPO_URL }}
         run: |
           sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no "$SSH_USERNAME@$SSH_IP" "
-            sudo apt update && sudo apt install -y nginx &&
-            sudo systemctl enable nginx &&
-            sudo systemctl start nginx &&
-
-            if [ -d '/var/www/shopdesk-fe' ]; then
-              cd /var/www/shopdesk-fe && git pull origin main
+            # Clone or update the repository
+            if [ -d 'shopdesk-fe' ]; then
+              cd shopdesk-fe && git pull origin main
             else
-              sudo git clone $REPO_URL /var/www/shopdesk-fe
-              sudo chown -R $USER:$USER /var/www/shopdesk-fe
+              git clone $REPO_URL shopdesk-fe
             fi &&
 
+            # Install dependencies and build the app
             echo 'Building frontend...' &&
-            cd /var/www/shopdesk-fe &&
+            cd shopdesk-fe &&
             npm install &&
             npm run build &&
 
-            echo 'Configuring NGINX...' &&
-            sudo bash -c 'cat > /etc/nginx/sites-available/shopdesk-fe << EOF
-            server {
-              listen 7777;
-              server_name _;
+            # Start the app on a non-privileged port (e.g., 3000)
+            echo 'Starting application...' &&
+            nohup npm run dev > /dev/null 2>&1 &
 
-              location / {
-                proxy_pass http://localhost:3000;  # Forward to your app's port
-                proxy_set_header Host \$host;
-                proxy_set_header X-Real-IP \$remote_addr;
-                proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                proxy_set_header X-Forwarded-Proto \$scheme;
-              }
-            }
-            EOF' &&
+            # Configure a reverse proxy (e.g., using a user-space tool like 'serve' or 'http-server')
+            echo 'Starting reverse proxy on port 7777...' &&
+            npm install -g serve &&
+            nohup serve -l 7777 -s dist > /dev/null 2>&1 &
 
-            sudo ln -sf /etc/nginx/sites-available/shopdesk-fe /etc/nginx/sites-enabled/ &&
-            sudo nginx -t &&
-            sudo systemctl restart nginx &&
             echo 'Deployment completed. Your site is live on port 7777!'
           "
