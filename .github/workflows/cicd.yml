@@ -44,9 +44,9 @@ jobs:
             echo 'Installing serve locally...' &&
             npm install serve &&
 
-            # Start the reverse proxy on port 7777
-            echo 'Starting reverse proxy on port 7777...' &&
-            nohup ./node_modules/.bin/serve -l 7777 -s dist > /dev/null 2>&1 &
+            # Start the reverse proxy on port 8460
+            echo 'Starting reverse proxy on port 8460...' &&
+            nohup ./node_modules/.bin/serve -l 8460 -s dist > /dev/null 2>&1 &
 
-            echo 'Deployment completed. Your site is live on port 7777!'
+            echo 'Deployment completed. Your site is live on port 8460!'
           "
