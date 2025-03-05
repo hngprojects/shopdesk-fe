@@ -43,14 +43,15 @@ jobs:
             echo 'Configuring NGINX...' &&
             sudo bash -c 'cat > /etc/nginx/sites-available/shopdesk-fe << EOF
             server {
-              listen 80;
+              listen 7777;
               server_name _;
 
-              root /var/www/shopdesk-fe/dist;
-              index index.html;
-
               location / {
-                try_files \$uri /index.html;
+                proxy_pass http://localhost:3000;  # Forward to your app's port
+                proxy_set_header Host \$host;
+                proxy_set_header X-Real-IP \$remote_addr;
+                proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto \$scheme;
               }
             }
             EOF' &&
@@ -58,5 +59,5 @@ jobs:
             sudo ln -sf /etc/nginx/sites-available/shopdesk-fe /etc/nginx/sites-enabled/ &&
             sudo nginx -t &&
             sudo systemctl restart nginx &&
-            echo 'Deployment completed. Your site is live!'
+            echo 'Deployment completed. Your site is live on port 7777!'
           "
