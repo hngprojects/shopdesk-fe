@@ -34,7 +34,7 @@ jobs:
             # Install dependencies and build the app
             echo 'Building frontend...' &&
             npm install &&
-            npm run build &&
+            npm run dev &&
 
             # Start the app on a non-privileged port (e.g., 3000)
             echo 'Starting application...' &&
