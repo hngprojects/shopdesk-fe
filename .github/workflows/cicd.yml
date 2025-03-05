@@ -34,10 +34,7 @@ jobs:
             # Install dependencies and build the app
             echo 'Building frontend...' &&
             npm install &&
-
-            # Start the app on a non-privileged port (e.g., 3000)
-            echo 'Starting application...' &&
-            nohup npm run dev -- -p 3000 > /dev/null 2>&1 &
+            npm run dev
 
             # Install 'serve' locally (not globally)
             echo 'Installing serve locally...' &&
