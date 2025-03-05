@@ -16,7 +16,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y sshpass
 
-      - name: SSH into server and deploy app
+      - name: SSH into server and run commands
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
@@ -24,29 +24,16 @@ jobs:
           REPO_URL: ${{ secrets.REPO_URL }}
         run: |
           sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no "$SSH_USERNAME@$SSH_IP" "
-            # Clone or update the repository
             if [ -d 'shopdesk-fe' ]; then
-              cd shopdesk-fe && git pull origin main
+              cd shopdesk-fe &&
+              git reset --hard HEAD &&  # Discard local changes
+              git pull origin main
             else
-              git clone $REPO_URL shopdesk-fe && cd shopdesk-fe
+              git clone $REPO_URL &&
+              cd $(basename $REPO_URL .git)
             fi &&
-
-            # Install dependencies and build the app
-            echo 'Building frontend...' &&
-            npm install &&
-
-
-            # Start the app on a non-privileged port (e.g., 3000)
-            echo 'Starting application...' &&
-            nohup npm run dev -- -p 3001 > /dev/null 2>&1 &
-
-            # Install 'serve' locally (not globally)
-            echo 'Installing serve locally...' &&
-            npm install serve &&
-
-            # Start the reverse proxy on port 7777
-            echo 'Starting reverse proxy on port 7777...' &&
-            nohup ./node_modules/.bin/serve -l 7777 -s dist > /dev/null 2>&1 &
-
-            echo 'Deployment completed. Your site is live on port 7777!'
+            echo 'Installing dependencies...' &&
+            npm install &&  
+            echo 'Running command...' &&
+            npm run dev
           "
