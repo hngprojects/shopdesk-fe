@@ -28,12 +28,11 @@ jobs:
             if [ -d 'shopdesk-fe' ]; then
               cd shopdesk-fe && git pull origin main
             else
-              git clone $REPO_URL shopdesk-fe
+              git clone $REPO_URL shopdesk-fe && cd shopdesk-fe
             fi &&
 
             # Install dependencies and build the app
             echo 'Building frontend...' &&
-            cd shopdesk-fe &&
             npm install &&
             npm run build &&
 
@@ -41,10 +40,13 @@ jobs:
             echo 'Starting application...' &&
             nohup npm run dev > /dev/null 2>&1 &
 
-            # Configure a reverse proxy (e.g., using a user-space tool like 'serve' or 'http-server')
+            # Install 'serve' locally (not globally)
+            echo 'Installing serve locally...' &&
+            npm install serve &&
+
+            # Start the reverse proxy on port 7777
             echo 'Starting reverse proxy on port 7777...' &&
-            npm install -g serve &&
-            nohup serve -l 7777 -s dist > /dev/null 2>&1 &
+            nohup ./node_modules/.bin/serve -l 7777 -s dist > /dev/null 2>&1 &
 
             echo 'Deployment completed. Your site is live on port 7777!'
           "
