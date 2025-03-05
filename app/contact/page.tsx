@@ -5,7 +5,7 @@ const contact = () => {
     <div className="container mx-auto py-10 px-4" >
 
       <div className="text-center">
-        <h1 className="md:text-3xl text-4xl font-bold">
+        <h1 className="text-4xl font-bold">
           Get in <span className="text-green-500">touch</span> with us today
         </h1>
         <p className="text-gray-600 py-[2.5rem] max-w-2xl  mx-auto">
