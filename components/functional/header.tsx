@@ -77,7 +77,7 @@ const Header = () => {
           </button>
         </div>
 
-        <div className="flex items-center gap-2 min-[900px]:hidden">
+        <div className="flex items-center gap-2 min-[900px]:hidden ">
           <button 
           onClick={() => router.push("/sign-in")}
           className="btn-primary min-[900px]:hidden max-[500]:hidden max-[600px]:text-[14px]">
