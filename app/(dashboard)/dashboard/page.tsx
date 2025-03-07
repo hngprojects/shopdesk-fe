@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ChevronDown } from "lucide-react";
-
+import LogoutConfirmModal from '@/components/modals/LogoutConfirmModal'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,9 +19,17 @@ import {
 
 import Image from "next/image";
 import Logo from "@/components/functional/logo";
+import { useRouter } from "next/router";
 
 const Page = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false)
+  const router = useRouter()
+
+
+  const handleLogout = () => {
+    router.push("/")
+  }
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -29,6 +37,7 @@ const Page = () => {
   const [stockItems] = useState([]);
 
   return (
+    <>
     <main className="px-6 py-4 w-full">
       <div className="space-y-8 w-full">
         <div className="lg:border px-4 py-2 lg:shadow-md rounded-lg lg:flex items-center justify-between mx-auto">
@@ -49,7 +58,7 @@ const Page = () => {
                 Emeka & Sons <ChevronDown strokeWidth={1.5} color="white" />
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>Log out</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsLogoutModalOpen(true)}>Log out</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -175,6 +184,13 @@ const Page = () => {
         © {new Date().getFullYear()}, Powered by Timbu Business
       </p>
     </main>
+    <LogoutConfirmModal
+        open={isLogoutModalOpen}
+        onOpenChange={setIsLogoutModalOpen}
+        onLogout={handleLogout}
+        onCancel={() => setIsLogoutModalOpen(false)}
+        />
+    </>
   );
 };
 
