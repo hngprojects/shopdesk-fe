@@ -5,38 +5,64 @@
 @custom-variant dark (&:is(.dark *));
 
 @font-face {
-  font-family: 'Circular Std';
-  src: url('/fonts/circular-std-medium-500.ttf');
+  font-family: "Circular Std Light";
+  src: url("/fonts/CircularStd-Light.otf");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Circular Std Normal";
+  src: url("/fonts/CircularStd-Book.ttf");
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Circular Std Bold';
-  src: url('/fonts/CircularStd-Bold.ttf');
+  font-family: "Circular Std Medium";
+  src: url("/fonts/CircularStd-Medium.ttf");
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Circular Std Bold";
+  src: url("/fonts/CircularStd-Bold.ttf");
   font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: "Circular Std Black";
+  src: url("/fonts/CircularStd-Black.ttf");
+  font-weight: 800;
   font-style: normal;
 }
 
 @layer components {
   .btn-primary {
     padding: 12px 24px;
-    background-color: #1B1B1B;
+    background-color: #1b1b1b;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 500;
     color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
   }
 
-  .btn-outline{
+  .btn-primary:hover{
+    background: #3d3d3d;
+  }
+
+  .btn-outline {
     padding: 12px 24px;
-    color: #1B1B1B;
+    color: #1b1b1b;
     border-width: 1px;
-    border-color: #1B1B1B;
+    border-color: #1b1b1b;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 500;
     background-color: white;
+    cursor: pointer;
   }
 }
 
@@ -48,13 +74,23 @@ html {
 }
 
 body {
-  font-family: 'Circular Std';
+  font-family: "Circular Std Normal";
   width: 100%;
   max-width: 1440px;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 @theme {
-  --font-circular-bold: 'Circular Std Bold';
+  --font-circular-light: "Circular Std Light";
+  --font-circular-normal: "Circular Std Normal";
+  --font-circular-medium: "Circular Std Medium";
+  --font-circular-bold: "Circular Std Bold";
+  --font-circular-extrabold: "Circular Std Black";
 }
 
 @theme inline {
@@ -167,6 +203,86 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  --color-black-dorcas: #090F1C;
+  --color-black-100: #000000;
+  --color-black-700: #282828;
+  --color-black-4: rgba(0, 0, 0, 0.04); 
+  --color-black-110:#2A2A2A;
+  --color-black-120:#1B1B1B;
+  --color-black-30:#DEDEDE;
+  --color-black-50:#B8B8B8;
+  --color-black-40: #D0D0D0;
+  --color-black-80:#717171;
+  --color-tob-110: #2A2A2A;
+  --color-tob-100: #3A3A3A;
+  --color-tob-120: #1B1B1B;
+  --color-tob-40: #D0D0D0;
+  --color-tob-30:#DEDEDE;
+  --color-tob-80:#717171;
+  --color-tob-60: #A0A0A0;
+  --color-tob-10: #F1F1F1F1;
+  --color-success-10: #E5F5ED;
+  --color-success-20: #CCEBDB;
+  --color-success-90: #19A45B;
+  --color-success-80: #2CB67D;
+  --color-success-150: #001A00;
+  --color-success-100: #009A49;
+  --color-success-110: #00802F;
+  --color-success-120: #006716;
+  --color-success-50:#80CCA4;
+  --color-neutral-50: #DEE5ED;
+  --color-neutral-10: #F8FAFB;
+  --color-neutral-60: #C7D3E1;
+  --color-critical-20: #FEF2F1;
+  --color-primary-blue-10: #E5F4FF;
+  --color-warning-10: #FFF5EA;
+  --color-warning-500: #FF8800;
+  --color-white-100: #FFFFFF;
+  --color-grey-100:#888888;
+  --color-grey-80:#888888;
+  --color-grey-20:#F5F5F5;
+  --color-grey-30:#EDEDED;
+  --color-dark-100:#2A2A2A;
+  --color-blue-10:#E9EEF3;
+  --color-blue-gray-100:#F1F5F9;
+  --color-blue-gray-200:#E2E8F0;
+  --color-gray-100: #444444;
+  --color-gray-700:#061C3D;
+  --color-gray-900: #061C3D;
+  --color-gray-900: #101828;
+  --color-gray-00: #F8FAFB;
+  --color-gray-700: #42526B;
+  --color-gray-600: #52525B;
+  --color-gray-500: #71717A;
+  --color-gray-300: #D4D4D8;
+  --color-gray-200: #EAECF0;
+  --color-gray-50: #F9FAFB;
+  --color-orange-60: #FF8800;
+  --color-green-50: #19A45B;   
+  --color-white-100:#FFFFFF;
+  --color-base-white: #FFFFFF;
+  --color-2-100:#F1F1F1;
+  --color-5-100:#D0D0D0;
+  --color-9-100:#717171;
+  --color-10-100:#000000;
+  --color-12-100:#2A2A2A;
+  --color-13-100:#1B1B1B;
+  --color-grey-dark: #414141;
+  --color-mint-light: #E5F5ED;
+  --color-purple-bright: #9747FF;
+  --color-green-5: #009A49;
+  --color-green-100: #009A49;
+  --color-green-lime-10: #84BC2E;
+  --color-green-lime-100: #84BC2E;
+  --color-purple-vivid-10: #9747FF;
+  --color-purple-vivid-100: #9747FF;
+  --color-purple-deep-10: #A903DB;
+  --color-purple-deep-100: #A903DB;
+  --color-red-dark-10: #CD2140;
+  --color-red-dark-100: #CD2140;
+  --color-grey-soft-100: #FAFAFB;
+  --color-orange-warm-100: #FB9C2A;
+  
 }
 
 @layer base {

@@ -1,18 +1,18 @@
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
-import logo from "../../public/icons/logo.svg";
 import appStore from "../../public/icons/App Store.png";
 import playStore from "../../public/icons/Play Store.png";
 import twitter from "../../public/icons/twitter.svg";
 import facebook from "../../public/icons/facebook.svg";
 import instagram from "../../public/icons/instagram.svg";
 import github from "../../public/icons/github.svg";
+import Logo from "./logo";
 
 const Footer = () => {
   return (
     <footer className="px-[clamp(16px,_4vw,_120px)]">
-      <div className="w-full bg-[#E5F5ED] rounded-2xl flex flex-col items-center justify-center p-[clamp(16px,_4vw,_48px)]">
+      <div className="w-full bg-[#E5F5ED] rounded-2xl flex flex-col items-center justify-center p-[clamp(16px,_4vw,_48px)]" hidden>
         <p className="text-center text-[clamp(30px,_5vw,_48px)] font-circular-bold">
           Still thinking about it?
         </p>
@@ -43,10 +43,6 @@ const Footer = () => {
             <button className="btn-primary min-[650px]:self-stretch max-[650px]:h-15 max-[650px]:my-3">
               Subscribe Now
             </button>
-
-            <p className="min-[650px]:hidden max-[650px]:text-[#717171]">
-              © Copyright 2024, Powered by Timbu Business
-            </p>
           </div>
 
           <div className="flex gap-0.5 justify-self-center w-full max-w-[600px] text-[14px] mt-1 max-[650px]:hidden">
@@ -62,11 +58,10 @@ const Footer = () => {
       </div>
 
       <div className="mt-20">
-        <div className="flex justify-between max-[950px]:grid max-[950px]:grid-cols-4 max-[650px]:grid-cols-3 max-[500px]:flex max-[500px]:flex-col max-[500px]:items-center max-[500px]:text-center max-[950px]:gap-y-12 gap-x-4">
+        <div hidden className="add-this-back-flex hidden justify-between max-[950px]:grid max-[950px]:grid-cols-4 max-[650px]:grid-cols-3 max-[500px]:flex max-[500px]:flex-col max-[500px]:items-center max-[500px]:text-center max-[950px]:gap-y-12 gap-x-4">
           <div className="w-[248px] max-[950px]:col-span-2 ">
-            <div className="flex items-center mb-8 max-[500px]:justify-center">
-              <Image src={logo} alt="logo" />
-              <p className="text-2xl">ShopDesk</p>
+            <div className="mb-8">
+              <Logo />
             </div>
 
             <p className="text-base text-[#414141]">
@@ -147,9 +142,9 @@ const Footer = () => {
           </div>
         </div>
 
-        <hr className="border border-[#E2E8F0] my-12" />
+        <hr className="border border-[#E2E8F0]  mb-6 md:my-12" />
 
-        <div className="w-full mb-12 flex justify-center gap-4 mt-[70px] min-[500px]:hidden">
+        <div hidden className="w-full hidden mb-12 add-this-back-flex justify-center gap-4 mt-[70px] min-[500px]:hidden">
           <div className="size-7 flex items-center justify-center border border-[#D4D4D8] rounded-full">
             <Image src={twitter} alt="twitter" />
           </div>
@@ -164,10 +159,10 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="w-full flex items-center justify-between gap-4 text-[14px] text-[#71717A] mb-8 max-[900px]:justify-center">
+        <div className="w-full flex items-center gap-4 text-[14px] text-[#71717A] mb-8 justify-center">
           <p>© Copyright 2024, Powered by Timbu Business</p>
 
-          <ul className="flex gap-5 max-[900px]:hidden">
+          <ul className="add-this-back-flex gap-5 hidden max-[900px]:hidden">
             <li>
               <Link href="/cookies">Cookies</Link>
             </li>

@@ -1,48 +1,158 @@
-import React from 'react'
-import Image from 'next/image'
-import Link from 'next/link'
-import logo from '../../public/icons/logo.svg'
-import menu from '../../public/icons/menu.svg'
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import menu from "@/public/icons/menu.svg";
+import Logo from "./logo";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (
+        menuRef.current &&
+        menuBtnRef.current &&
+        event.target instanceof Node &&
+        !menuRef.current.contains(event.target) &&
+        !menuBtnRef.current.contains(event.target) // Prevent closing if clicking the button
+      ){
+        setIsOpen(false);
+      }
+    };
+  
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isOpen]);
+
   return (
-    <header className='py-4 flex items-center justify-between px-[clamp(16px,_4vw,_120px)]'>
-      <div className='flex items-center justify-center'>
-        <Image src={logo} alt='logo'/>
-        <p className='text-2xl'>ShopDesk</p>
+    <header className="bg-white px-[clamp(16px,_4vw,_120px)]">
+      <div className="py-4 flex items-center justify-between max-w-screen-xl">
+        <Logo />
+
+        <nav className="hidden add-this-back-flex gap-6 text-[16px] max-[850px]:hidden">
+          <Link href="/features" className="hover:text-green-500 transition">
+            Features
+          </Link>
+          <Link href="/pricing" className="hover:text-green-500 transition">
+            Pricing
+          </Link>
+          <Link href="/blog" className="hover:text-green-500 transition">
+            Blog
+          </Link>
+          <Link href="/faq" className="hover:text-green-500 transition">
+            FAQ
+          </Link>
+          <Link href="/contact" className="hover:text-green-500 transition">
+            Contact Us
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => router.push("/sign-in")}
+            className="btn-primary"
+          >
+            Sign In
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/sign-in")}
+            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition hidden"
+          >
+            Start for free
+          </button>
+        </div>
+
+        <div className="hidden  add-this-back-flex items-center gap-2 min-[900px]:hidden">
+          <button 
+          onClick={() => router.push("/sign-in")}
+          className="btn-primary min-[900px]:hidden max-[500]:hidden max-[600px]:text-[14px]">
+            Get Started
+          </button>
+
+          <button
+            type="button"
+            aria-label="Menu"
+            className="min-[850px]:hidden"
+            onClick={() => setIsOpen(!isOpen)}
+            ref={menuBtnRef}
+          >
+            <Image src={menu} alt="menu" width={28} height={28} />
+          </button>          
+        </div>
+
       </div>
 
-      <ul className='flex gap-6 text-[16px] max-[800px]:hidden'>
-        <li>
-          <Link href='/features'>Features</Link>
-        </li>
-        <li>
-          <Link href='/pricing'>Pricing</Link>
-        </li>
-        <li>
-          <Link href='/blog'>Blog</Link>
-        </li>
-        <li>
-          <Link href='/faq'>FAQ</Link>
-        </li>
-        <li>
-          <Link href='/contact'>Contact Us</Link>  
-        </li>
-      </ul>
+      {isOpen && (
+        <div ref={menuRef} className="absolute z-50 top-16 left-0 w-screen bg-white shadow-lg flex flex-col items-left py-6 overflow-hidden px-4 min-[850px]:hidden">
+          <Link
+            href="/features"
+            className="hover:text-green-500 transition py-5"
+            onClick={() => setIsOpen(false)}
+          >
+            Features
+          </Link>
+          <Link
+            href="/pricing"
+            className="hover:text-green-500 transition py-5"
+            onClick={() => setIsOpen(false)}
+          >
+            Pricing
+          </Link>
+          <Link
+            href="/blog"
+            className="hover:text-green-500 transition py-5"
+            onClick={() => setIsOpen(false)}
+          >
+            Blog
+          </Link>
+          <Link
+            href="/faq"
+            className="hover:text-green-500 transition py-5"
+            onClick={() => setIsOpen(false)}
+          >
+            FAQ
+          </Link>
+          <Link
+            href="/contact"
+            className="hover:text-green-500 transition py-5"
+            onClick={() => setIsOpen(false)}
+          >
+            Contact Us
+          </Link>
 
-      <div className='flex items-center justify-center gap-4'>
-        <button className='btn-outline max-[1000px]:hidden'>Sign In</button>
-        <button className='btn-primary max-[1000px]:hidden'>Start for free</button>
+          <hr className="my-4 bg-[#A0A0A0]" />
 
-        <button className='btn-primary min-[1000px]:hidden max-[500px]:hidden'>Get Started</button>
-
-        <button className='min-[800px]:hidden'>
-          <Image src={menu} alt='menu'/>
-        </button>
-      </div>
-
+          <button
+            className="btn-outline mb-2 hover:bg-gray-100 transition w-full"
+            onClick={() => setIsOpen(false)}
+          >
+            Sign In
+          </button>
+          <button
+            className="btn-primary hover:bg-gray-800 transition w-full"
+            onClick={() => setIsOpen(false)}
+          >
+            Start for free
+          </button>
+        </div>
+      )}
     </header>
-  )
-}
+  );
+};
 
-export default Header
+export default Header;

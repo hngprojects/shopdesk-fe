@@ -5,18 +5,15 @@ on:
 
 jobs:
   ssh-deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, shopdesk]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install SSHpass
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y sshpass
+      
 
-      - name: SSH into server and deploy app
+      - name: SSH into server and run commands
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
@@ -24,39 +21,21 @@ jobs:
           REPO_URL: ${{ secrets.REPO_URL }}
         run: |
           sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no "$SSH_USERNAME@$SSH_IP" "
-            sudo apt update && sudo apt install -y nginx &&
-            sudo systemctl enable nginx &&
-            sudo systemctl start nginx &&
-
-            if [ -d '/var/www/shopdesk-fe' ]; then
-              cd /var/www/shopdesk-fe && git pull origin main
+            if [ -d 'shopdesk-fe' ]; then
+              cd shopdesk-fe &&
+              # Kill any process running on port 7777
+              echo 'Killing any process running on port 7777...' &&
+              echo '$SSH_PASSWORD' | sudo -S fuser -k 7777/tcp || echo 'No process found on port 7777' &&
+              echo 'Pulling latest changes...' &&
+              git reset --hard HEAD &&  # Discard local changes
+              git pull origin main
             else
-              sudo git clone $REPO_URL /var/www/shopdesk-fe
-              sudo chown -R $USER:$USER /var/www/shopdesk-fe
+              git clone $REPO_URL &&
+              cd $(basename $REPO_URL .git)
             fi &&
-
-            echo 'Building frontend...' &&
-            cd /var/www/shopdesk-fe &&
-            npm install &&
-            npm run build &&
-
-            echo 'Configuring NGINX...' &&
-            sudo bash -c 'cat > /etc/nginx/sites-available/shopdesk-fe << EOF
-            server {
-              listen 80;
-              server_name _;
-
-              root /var/www/shopdesk-fe/dist;
-              index index.html;
-
-              location / {
-                try_files \$uri /index.html;
-              }
-            }
-            EOF' &&
-
-            sudo ln -sf /etc/nginx/sites-available/shopdesk-fe /etc/nginx/sites-enabled/ &&
-            sudo nginx -t &&
-            sudo systemctl restart nginx &&
-            echo 'Deployment completed. Your site is live!'
+            echo 'Installing dependencies...' &&
+            bun install &&
+            bun run build &&
+            bun start
           "
+            
