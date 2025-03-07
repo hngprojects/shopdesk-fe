@@ -19,7 +19,7 @@ import {
 
 import Image from "next/image";
 import Logo from "@/components/functional/logo";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [isOpen, setIsOpen] = useState(false);
