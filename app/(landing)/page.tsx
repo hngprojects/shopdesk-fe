@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 import Desktop from "@/public/icons/desktop-img.png";
 import Desktop2 from "@/public/icons/Desktop 2.png";
 import Mobile from "@/public/icons/mobile.png";
@@ -6,8 +6,16 @@ import Mobile2 from "@/public/icons/mobile2.png";
 import Check from "@/public/icons/check.png";
 import Play from "@/public/icons/play.png";
 import Desktopsm from "@/public/icons/desktopsm.png";
+import CarouselWrapper from "@/components/carouselWrapper";
+import star from "@/public/icons/star.png";
+import jerone from "@/public/icons/jerome bell.png";
+import kristine from "@/public/icons/kristin watson.png";
+import Annette from "@/public/icons/annette.png";
 
 export default function Home() {
+
+ 
+   
   interface FeatureCardProps {
     iconSrc: string;
     title: string;
@@ -335,8 +343,10 @@ export default function Home() {
                 ))}
               </div>
             </div>
+            <div></div>
           </div>
         </div>
+
       </section>
     );
   };
