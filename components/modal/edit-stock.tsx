@@ -48,12 +48,12 @@ const currencies = [
   },
 ];
 
-interface ShopDeskModalProps {
+interface EditItemModal {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function ShopDeskModal({ isOpen, onClose }: ShopDeskModalProps) {
+export default function EditItemModal({ isOpen, onClose }: EditItemModal) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCurrencyModalOpen, setCurrencyModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -148,11 +148,9 @@ useEffect(() => {
             </div>
             <div className="flex-grow h-full p-2">
               <h1 className="font-circular-medium text-[24px] text-left">
-                Add New Stock
+                Edit Stock
               </h1>
-              <p className="font-circular-normal text-[14px] text-[#717171] text-left hidden md:block">
-                Always know the items you have available.
-              </p>
+            
             </div>
             <div className=" flex-shrink-0">
               <button
@@ -180,6 +178,7 @@ useEffect(() => {
                 placeholder="Item Name"
                 onChange={(e) => setProductName(e.target.value)}
                 required
+                value={'soface recliners'}
               />
             </div>
             <div className="flex flex-col gap-[8px] flex-1">
@@ -213,7 +212,7 @@ useEffect(() => {
                       name="selling-price"
                       className="w-full h-full p-[12px] outline-none  placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal"
                       placeholder="Amount"
-                      value={sellingPrice}
+                      value={'$ 50'}
                       onChange={(e) => setSellingPrice(e.target.value)}
                       required
                     />
@@ -285,7 +284,7 @@ useEffect(() => {
                     inputMode="numeric"
                     className="w-full h-[48px] md:h-[62px] rounded-[9px] p-[12px] outline-none border border-[#DEDEDE] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB] focus:border-[#009A49] hover:ring-2 hover:ring-[#CCEBDB] transition-all placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal text-center"
                     placeholder="Quantity"
-                    value={quantity === 0 ? '' : quantity}
+                    value={40}
                     onChange={(e) => {
                       const value = e.target.value
 
@@ -338,9 +337,7 @@ useEffect(() => {
               }`}
               disabled={!isFormValid()}
             >
-              <span className="md:hidden">Save</span>
-
-              <span className="hidden md:inline">Add Stock</span>
+              Save
             </button>
           </div>
         </div>
