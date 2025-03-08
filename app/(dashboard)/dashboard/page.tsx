@@ -1,4 +1,15 @@
-'use client'
+"use client";
+import ShopDeskModal from "@/components/modal/add-item";
+import { useState } from "react";
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ChevronDown } from "lucide-react";
+import LogoutConfirmModal from '@/components/modals/LogoutConfirmModal'
 import ShopDeskModal from '@/components/modal/add-item'
 import { useEffect, useState } from 'react'
 import { ChevronDown, MoreVertical } from 'lucide-react'
@@ -10,8 +21,12 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
+
+import Image from "next/image";
+import Logo from "@/components/functional/logo";
+import { useRouter } from "next/navigation";
 import LogoutConfirmModal from '@/components/modal/logoutConfirmationModal'
 import Image from 'next/image'
 import Logo from '@/components/functional/logo'
@@ -42,6 +57,10 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
+  const handleLogout = () => {
+    router.push("/")
+  }
+  
   useEffect(() => {
     const token = sessionStorage.getItem('refresh_token')
     if (!token) {
@@ -84,12 +103,14 @@ const Page = () => {
     )
   }
 
-  return (
+  return(
+    <>
     <main className="px-6 py-4 w-full max-w-7xl mx-auto">
       <div className="space-y-8 w-full">
         <LogoutConfirmModal
           open={isLogoutModalOpen}
           onOpenChange={setIsLogoutModalOpen}
+          onLogout={handleLogout}
           onCancel={() => setIsLogoutModalOpen(false)}
         />     
         <DeleteItem
@@ -278,7 +299,7 @@ const Page = () => {
         © {new Date().getFullYear()}, Powered by Timbu Business
       </p>
     </main>
-  )
-}
-
+    </>
+  );
+};
 export default Page
