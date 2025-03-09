@@ -73,8 +73,8 @@ const Page = () => {
     price: number;
     quantity: number;
   }) => {
-    setSelectedItem(item); // Set the selected item
-    setOpenEdit(true); // Open the edit modal
+    setSelectedItem(item);
+    setOpenEdit(true);
   };
 
   const handleSaveEdit = (updatedItem: {
@@ -87,11 +87,10 @@ const Page = () => {
       prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
 
-    setOpenEdit(false); // Close the edit modal
+    setOpenEdit(false);
   };
 
   const handleAddClick = () => {
-    // setSelectedItem(item);
     setOpenAdd(true);
   };
 
@@ -102,18 +101,15 @@ const Page = () => {
     quantity: number;
   }) => {
     setSelectedItem(item);
-
     setIsDeleteModalOpen(true);
   };
 
   const closeEditModal = () => {
     setOpenEdit(false);
-    //setSelectedItem(null);
   };
 
   const closeAddModal = () => {
     setOpenAdd(false);
-    //setSelectedItem(null);
   };
 
   const handleDeleteItem = () => {
@@ -269,7 +265,7 @@ const Page = () => {
                 </div>
               </div>
             ) : (
-              <Table className="border-collapse  overflow-y-auto">
+              <Table className="border-collapse overflow-y-auto">
                 <TableHeader>
                   <TableRow className="h-[50px]">
                     <TableHead className="px-4 py-2 w-2/7 text-left border-b border-r">
@@ -291,8 +287,25 @@ const Page = () => {
                     length: Math.max(rowsPerPage, stockItems.length),
                   }).map((_, index) => {
                     const item = stockItems[index] || null;
+                    const isEmptyRow = !item; 
+                    const isMobile = window.innerWidth <= 640; 
+                    const isNextEmptyRow = isEmptyRow && index === stockItems.length;
+
                     return (
-                      <TableRow key={index} className="h-[50px]">
+                      <TableRow
+                        key={index}
+                        className="h-[50px]"
+                        onTouchEnd={() => {
+                          if (isMobile && isNextEmptyRow) {
+                            handleAddClick();
+                          }
+                        }}
+                        onClick={() => {
+                          if (!isMobile && isNextEmptyRow) {
+                            handleAddClick();
+                          }
+                        }}
+                      >
                         <TableCell className="px-4 py-3 text-left border-r">
                           {item ? item.name : ""}
                         </TableCell>
@@ -329,8 +342,7 @@ const Page = () => {
                     );
                   })}
                 </TableBody>
-              </Table>
-            )}
+              </Table>)}
           </div>
         </div>
       </div>
