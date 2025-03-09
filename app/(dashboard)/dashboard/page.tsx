@@ -91,7 +91,6 @@ const Page = () => {
   };
 
   const handleAddClick = () => {
-    // setSelectedItem(item);
     setOpenAdd(true);
   };
 
@@ -102,18 +101,15 @@ const Page = () => {
     quantity: number;
   }) => {
     setSelectedItem(item);
-
     setIsDeleteModalOpen(true);
   };
 
   const closeEditModal = () => {
     setOpenEdit(false);
-    //setSelectedItem(null);
   };
 
   const closeAddModal = () => {
     setOpenAdd(false);
-    //setSelectedItem(null);
   };
 
   const handleDeleteItem = () => {
@@ -178,8 +174,9 @@ const Page = () => {
           <div className="w-full flex justify-between max-[640px]:flex-col-reverse">
             <div className="flex items-center justify-center gap-2 border border-b-white py-2 rounded-tr-lg rounded-tl-lg w-44 max-[640px]:w-full font-semibold px-9 shadow-inner">
               Stock
+              {/* Ensure the path to the icon is correct */}
               <Image
-                src="/icons/ui-box.svg"
+                src="/icons/ui-box.svg" // Update this path if necessary
                 alt=""
                 width={20}
                 height={20}
@@ -225,8 +222,9 @@ const Page = () => {
                   <span className="w-full h-px bg-[#DEDEDE] block"></span>
                   <div className="relative h-[80vh] w-full">
                     <div className="absolute space-y-4 right-0 left-0 top-28 w-56 mx-auto text-center">
+                      {/* Ensure the path to the icon is correct */}
                       <Image
-                        src="/icons/empty-note-pad.svg"
+                        src="/icons/empty-note-pad.svg" // Update this path if necessary
                         alt=""
                         width={56}
                         height={56}
@@ -257,8 +255,9 @@ const Page = () => {
                   <p className="text-gray-400 text-sm flex items-center gap-1 justify-center text-center">
                     You have <span className="text-black">0</span> stock
                     (Displaying <span className="text-black">6</span>{" "}
+                    {/* Ensure the path to the icon is correct */}
                     <Image
-                      src="/icons/ArrowDropDown.svg"
+                      src="/icons/ArrowDropDown.svg" // Update this path if necessary
                       alt=""
                       width={12}
                       height={12}
@@ -269,7 +268,7 @@ const Page = () => {
                 </div>
               </div>
             ) : (
-              <Table className="border-collapse  overflow-y-auto">
+              <Table className="border-collapse overflow-y-auto">
                 <TableHeader>
                   <TableRow className="h-[50px]">
                     <TableHead className="px-4 py-2 w-2/7 text-left border-b border-r">
@@ -291,46 +290,62 @@ const Page = () => {
                     length: Math.max(rowsPerPage, stockItems.length),
                   }).map((_, index) => {
                     const item = stockItems[index] || null;
-                    return (
-                      <TableRow key={index} className="h-[50px]">
-                        <TableCell className="px-4 py-3 text-left border-r">
-                          {item ? item.name : ""}
-                        </TableCell>
-                        <TableCell className="px-4 py-3 text-center border-r">
-                          {item ? `$${item.price}` : ""}
-                        </TableCell>
-                        <TableCell className="px-4 py-3 text-center border-r hidden sm:table-cell">
-                          {item ? item.quantity : ""}
-                        </TableCell>
-                        <TableCell className="px-4 py-3 text-center hidden sm:table-cell">
-                          {item ? (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger>
-                                <MoreVertical className="cursor-pointer" />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent>
-                                <DropdownMenuItem
-                                  onClick={() => handleEditClick(item)}
-                                >
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleDeleteClick(item)}
-                                >
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          ) : (
-                            ""
-                          )}
-                        </TableCell>
-                      </TableRow>
+                    const isEmptyRow = !item; // Check if the row is empty
+                    const isMobile = window.innerWidth <= 640; // Check if the screen width is mobile (640px or less)
+
+                    // Find the index of the last item in the stockItems array
+                    const lastItemIndex = stockItems.length - 1;
+
+                    // Check if this is the next empty row after the last item
+                    const isNextEmptyRowAfterLastItem = isEmptyRow && index === lastItemIndex + 1;
+
+                    return (<TableRow
+                      key={index}
+                      className="h-[50px]"
+                      onTouchEnd={() => {
+                        // Only trigger on mobile and if it's the next empty row after the last item
+                        if (isMobile && isNextEmptyRowAfterLastItem) {
+                          handleAddClick();
+                        }
+                      }}
+                    >
+                      <TableCell className="px-4 py-3 text-left border-r">
+                        {item ? item.name : ""}
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-center border-r">
+                        {item ? `$${item.price}` : ""}
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-center border-r hidden sm:table-cell">
+                        {item ? item.quantity : ""}
+                      </TableCell>
+                      <TableCell className="px-4 py-3 text-center hidden sm:table-cell">
+                        {item ? (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger>
+                              <MoreVertical className="cursor-pointer" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem
+                                onClick={() => handleEditClick(item)}
+                              >
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleDeleteClick(item)}
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        ) : (
+                          ""
+                        )}
+                      </TableCell>
+                    </TableRow>
                     );
                   })}
                 </TableBody>
-              </Table>
-            )}
+              </Table>)}
           </div>
         </div>
       </div>
