@@ -73,8 +73,8 @@ const Page = () => {
     price: number;
     quantity: number;
   }) => {
-    setSelectedItem(item); // Set the selected item
-    setOpenEdit(true); // Open the edit modal
+    setSelectedItem(item); 
+    setOpenEdit(true); 
   };
 
   const handleSaveEdit = (updatedItem: {
@@ -87,7 +87,7 @@ const Page = () => {
       prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
 
-    setOpenEdit(false); // Close the edit modal
+    setOpenEdit(false); 
   };
 
   const handleAddClick = () => {
@@ -174,9 +174,8 @@ const Page = () => {
           <div className="w-full flex justify-between max-[640px]:flex-col-reverse">
             <div className="flex items-center justify-center gap-2 border border-b-white py-2 rounded-tr-lg rounded-tl-lg w-44 max-[640px]:w-full font-semibold px-9 shadow-inner">
               Stock
-              {/* Ensure the path to the icon is correct */}
               <Image
-                src="/icons/ui-box.svg" // Update this path if necessary
+                src="/icons/ui-box.svg" 
                 alt=""
                 width={20}
                 height={20}
@@ -222,9 +221,8 @@ const Page = () => {
                   <span className="w-full h-px bg-[#DEDEDE] block"></span>
                   <div className="relative h-[80vh] w-full">
                     <div className="absolute space-y-4 right-0 left-0 top-28 w-56 mx-auto text-center">
-                      {/* Ensure the path to the icon is correct */}
                       <Image
-                        src="/icons/empty-note-pad.svg" // Update this path if necessary
+                        src="/icons/empty-note-pad.svg" 
                         alt=""
                         width={56}
                         height={56}
@@ -255,9 +253,8 @@ const Page = () => {
                   <p className="text-gray-400 text-sm flex items-center gap-1 justify-center text-center">
                     You have <span className="text-black">0</span> stock
                     (Displaying <span className="text-black">6</span>{" "}
-                    {/* Ensure the path to the icon is correct */}
                     <Image
-                      src="/icons/ArrowDropDown.svg" // Update this path if necessary
+                      src="/icons/ArrowDropDown.svg" 
                       alt=""
                       width={12}
                       height={12}
@@ -290,20 +287,18 @@ const Page = () => {
                     length: Math.max(rowsPerPage, stockItems.length),
                   }).map((_, index) => {
                     const item = stockItems[index] || null;
-                    const isEmptyRow = !item; // Check if the row is empty
-                    const isMobile = window.innerWidth <= 640; // Check if the screen width is mobile (640px or less)
-
-                    // Find the index of the last item in the stockItems array
+                    const isEmptyRow = !item; 
+                    const isMobile = window.innerWidth <= 640; 
+                   
                     const lastItemIndex = stockItems.length - 1;
 
-                    // Check if this is the next empty row after the last item
                     const isNextEmptyRowAfterLastItem = isEmptyRow && index === lastItemIndex + 1;
 
                     return (<TableRow
                       key={index}
                       className="h-[50px]"
                       onTouchEnd={() => {
-                        // Only trigger on mobile and if it's the next empty row after the last item
+                        
                         if (isMobile && isNextEmptyRowAfterLastItem) {
                           handleAddClick();
                         }
