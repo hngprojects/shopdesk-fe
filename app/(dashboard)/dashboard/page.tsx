@@ -73,8 +73,8 @@ const Page = () => {
     price: number;
     quantity: number;
   }) => {
-    setSelectedItem(item); 
-    setOpenEdit(true); 
+    setSelectedItem(item);
+    setOpenEdit(true);
   };
 
   const handleSaveEdit = (updatedItem: {
@@ -87,7 +87,7 @@ const Page = () => {
       prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
 
-    setOpenEdit(false); 
+    setOpenEdit(false);
   };
 
   const handleAddClick = () => {
@@ -175,7 +175,7 @@ const Page = () => {
             <div className="flex items-center justify-center gap-2 border border-b-white py-2 rounded-tr-lg rounded-tl-lg w-44 max-[640px]:w-full font-semibold px-9 shadow-inner">
               Stock
               <Image
-                src="/icons/ui-box.svg" 
+                src="/icons/ui-box.svg"
                 alt=""
                 width={20}
                 height={20}
@@ -222,7 +222,7 @@ const Page = () => {
                   <div className="relative h-[80vh] w-full">
                     <div className="absolute space-y-4 right-0 left-0 top-28 w-56 mx-auto text-center">
                       <Image
-                        src="/icons/empty-note-pad.svg" 
+                        src="/icons/empty-note-pad.svg"
                         alt=""
                         width={56}
                         height={56}
@@ -254,7 +254,7 @@ const Page = () => {
                     You have <span className="text-black">0</span> stock
                     (Displaying <span className="text-black">6</span>{" "}
                     <Image
-                      src="/icons/ArrowDropDown.svg" 
+                      src="/icons/ArrowDropDown.svg"
                       alt=""
                       width={12}
                       height={12}
@@ -289,54 +289,56 @@ const Page = () => {
                     const item = stockItems[index] || null;
                     const isEmptyRow = !item; 
                     const isMobile = window.innerWidth <= 640; 
-                   
-                    const lastItemIndex = stockItems.length - 1;
+                    const isNextEmptyRow = isEmptyRow && index === stockItems.length;
 
-                    const isNextEmptyRowAfterLastItem = isEmptyRow && index === lastItemIndex + 1;
-
-                    return (<TableRow
-                      key={index}
-                      className="h-[50px]"
-                      onTouchEnd={() => {
-                        
-                        if (isMobile && isNextEmptyRowAfterLastItem) {
-                          handleAddClick();
-                        }
-                      }}
-                    >
-                      <TableCell className="px-4 py-3 text-left border-r">
-                        {item ? item.name : ""}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-center border-r">
-                        {item ? `$${item.price}` : ""}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-center border-r hidden sm:table-cell">
-                        {item ? item.quantity : ""}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-center hidden sm:table-cell">
-                        {item ? (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger>
-                              <MoreVertical className="cursor-pointer" />
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem
-                                onClick={() => handleEditClick(item)}
-                              >
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleDeleteClick(item)}
-                              >
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        ) : (
-                          ""
-                        )}
-                      </TableCell>
-                    </TableRow>
+                    return (
+                      <TableRow
+                        key={index}
+                        className="h-[50px]"
+                        onTouchEnd={() => {
+                          if (isMobile && isNextEmptyRow) {
+                            handleAddClick();
+                          }
+                        }}
+                        onClick={() => {
+                          if (!isMobile && isNextEmptyRow) {
+                            handleAddClick();
+                          }
+                        }}
+                      >
+                        <TableCell className="px-4 py-3 text-left border-r">
+                          {item ? item.name : ""}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-center border-r">
+                          {item ? `$${item.price}` : ""}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-center border-r hidden sm:table-cell">
+                          {item ? item.quantity : ""}
+                        </TableCell>
+                        <TableCell className="px-4 py-3 text-center hidden sm:table-cell">
+                          {item ? (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger>
+                                <MoreVertical className="cursor-pointer" />
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem
+                                  onClick={() => handleEditClick(item)}
+                                >
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleDeleteClick(item)}
+                                >
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          ) : (
+                            ""
+                          )}
+                        </TableCell>
+                      </TableRow>
                     );
                   })}
                 </TableBody>
