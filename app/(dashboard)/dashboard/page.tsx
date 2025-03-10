@@ -1,6 +1,5 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { ChevronDown, MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EditItemModal from "@/components/modal/edit-stock";
@@ -25,42 +24,30 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import useTableAreaHeight from "./hooks/useTableAreaHeight";
-import { deleteStock, GetStock } from "@/services/stock";
+import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
 
 const Page = () => {
   type StockItem = {
-    id: string;
+    id: number;
     name: string;
-    buying_price: number;
+    price: number;
     quantity: number;
-    currency_code: string;
-    buying_date?: string;
-    product_id?: string;
-    status?: string;
-    user_id?: string;
-    date_created?: string;
-    original_quantity?: number;
-    supplier?: null | any;
-    timeslots?: any[];
+    sku: string; 
   };
 
   const { tableAreaRef, tableAreaHeight } = useTableAreaHeight();
   const rowsPerPage = Math.round(tableAreaHeight / 55) - 3;
 
-  const [isOpen, setIsOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
-
-  const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
-  const [user, setUser] = useState<any>(null);
-  const openModal = () => setIsOpen(true);
-  const closeModal = () => setIsOpen(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
+  const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
-
   const [isLoading, setIsLoading] = useState(true);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -68,28 +55,31 @@ const Page = () => {
     if (!token) {
       router.replace("/sign-in");
     } else {
-      setIsLoading(true);
-      GetStock()
-        .then((data) => {
-          setStockItems(data.items);
-          setIsLoading(false);
-        })
-        .catch((error) => {
-          console.error("Error fetching stock:", error);
-          setIsLoading(false);
-        });
+      setIsLoading(false);
     }
   }, [router]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 640);
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const handleEditClick = (item: StockItem) => {
-    setSelectedItem(item); // Set the selected item
-    setOpenEdit(true); // Open the edit modal
+    setSelectedItem(item);
+    setOpenEdit(true);
   };
 
   const handleSaveEdit = (updatedItem: StockItem) => {
     setStockItems((prev) =>
       prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
-
     setOpenEdit(false);
   };
 
@@ -102,32 +92,71 @@ const Page = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const closeEditModal = () => {
-    setOpenEdit(false);
-    setSelectedItem(null); // Clear the selected item
+  const handleDeleteItem = () => {
+    setIsDeleteModalOpen(false);
+    setStockItems((prev) =>
+      prev.filter((item) => item.id !== selectedItem?.id)
+    );
+    setSelectedItem(null);
   };
 
-  const closeAddModal = () => {
-    setOpenAdd(false);
-    setSelectedItem(null); // Clear the selected item
-  };
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "ITEM NAME",
+        cell: (info: any) => info.getValue(),
+      },
+      {
+        accessorKey: "sku",
+        header: "SKU",
+        cell: (info: any) => info.getValue(),
+      },
+      {
+        accessorKey: "price",
+        header: "PRICE",
+        cell: (info: any) => `$${info.getValue()}`,
+      },
+      ...(isMobile
+        ? []
+        : [
+            {
+              accessorKey: "quantity",
+              header: "QUANTITY",
+              cell: (info: any) => info.getValue(),
+            },
+            {
+              id: "actions",
+              header: "ACTION",
+              cell: (info: any) => {
+                const item = info.row.original;
+                return (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <MoreVertical className="cursor-pointer" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => handleEditClick(item)}>
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDeleteClick(item)}>
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                );
+              },
+            },
+          ]),
+    ],
+    [isMobile]
+  );
 
-  // const handleDeleteItem = () => {
-  //   setIsDeleteModalOpen(false);
-  //   setStockItems((prev) =>
-  //     prev.filter((item) => item.id !== selectedItem?.id)
-  //   );
-  // };
-
-  const handleDeleteItem = async (itemId: string) => {
-    try {
-      await deleteStock(itemId);
-      setIsDeleteModalOpen(false);
-      setStockItems((prev) => prev.filter((item) => item.id !== itemId));
-    } catch (error) {
-      console.error("Error deleting stock:", error);
-    }
-  };
+  const table = useReactTable({
+    data: stockItems,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
 
   if (isLoading) {
     return (
@@ -138,20 +167,18 @@ const Page = () => {
   }
 
   return (
-    <main className="px-6 py-4 w-full max-w-7xl mx-auto flex flex-col main-h-svh ">
-      <div ref={tableAreaRef} className="space-y-8 w-full h-full ">
+    <main className="px-6 py-4 w-full max-w-7xl mx-auto flex flex-col min-h-screen">
+      <div ref={tableAreaRef} className="flex-grow">
         <LogoutConfirmModal
           open={isLogoutModalOpen}
           onOpenChange={setIsLogoutModalOpen}
           onCancel={() => setIsLogoutModalOpen(false)}
         />
-
         <DeleteItem
           open={isDeleteModalOpen}
           onOpenChange={setIsDeleteModalOpen}
           onCancel={() => setIsDeleteModalOpen(false)}
           onDelete={handleDeleteItem}
-          selectedItem={selectedItem || undefined}
         />
         <div className="lg:border px-4 py-2 lg:shadow-md rounded-lg lg:flex items-center justify-between mx-auto">
           <div className="flex items-center gap-6">
@@ -182,7 +209,7 @@ const Page = () => {
           </div>
         </div>
 
-        <div className="space-y-0 w-full ">
+        <div className="space-y-0 w-full">
           <div className="w-full flex justify-between max-[640px]:flex-col-reverse">
             <div className="flex items-center justify-center gap-2 border border-b-white py-2 rounded-tr-lg rounded-tl-lg w-44 max-[640px]:w-full font-semibold px-9 shadow-inner">
               Stock
@@ -196,24 +223,12 @@ const Page = () => {
             </div>
 
             {stockItems.length > 0 && (
-              <div className="z-50">
-                <button
-                  onClick={openModal}
-                  className="btn-primary max-[400px]:text-sm mb-2 max-[640px]:mb-4 text-nowrap self-end"
-                >
-                  + Add New Stock
-                </button>
-
-                <AddItemModal
-                  isOpen={isOpen}
-                  onClose={closeModal}
-                  onSave={(newItem) => {
-                    setStockItems((prev) => [newItem, ...prev]); // Inserts new items at the top
-
-                    closeModal();
-                  }}
-                />
-              </div>
+              <button
+                onClick={handleAddClick}
+                className="btn-primary max-[400px]:text-sm mb-2 max-[640px]:mb-4 text-nowrap self-end"
+              >
+                + Add New Stock
+              </button>
             )}
           </div>
           <div className="border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1">
@@ -222,7 +237,7 @@ const Page = () => {
                 <div className="w-full overflow-x-auto">
                   <ul className="flex items-center justify-between w-full rounded-tr-lg">
                     <li className="w-2/3 lg:w-1/2 border-r-2 border-[#DEDEDE] text-left py-4 hover:cursor-pointer pl-4">
-                      <span className="font-semibold text-black text-sm ">
+                      <span className="font-semibold text-black text-sm">
                         ITEM NAME
                       </span>
                     </li>
@@ -236,7 +251,7 @@ const Page = () => {
                         QUANTITY
                       </span>
                     </li>
-                    <li className="w-1/3 lg:w-1/6  border-[#DEDEDE] text-center py-4 hidden lg:flex justify-center hover:cursor-pointer rounded-tr-lg">
+                    <li className="w-1/3 lg:w-1/6 border-[#DEDEDE] text-center py-4 hidden lg:flex justify-center hover:cursor-pointer rounded-tr-lg">
                       <span className="font-semibold text-black text-sm">
                         ACTION
                       </span>
@@ -256,139 +271,90 @@ const Page = () => {
                         You have 0 items in stock
                       </p>
                       <button
-                        type="button"
-                        onClick={openModal}
+                        onClick={handleAddClick}
                         className="btn-outline hover:cursor-pointer"
                       >
                         + Add New Stock
                       </button>
-                      <AddItemModal
-                        isOpen={isOpen}
-                        onClose={closeModal}
-                        onSave={(newItem) => {
-                          setStockItems((prev) => [newItem, ...prev]);
-                          closeModal();
-                        }}
-                      />
                     </div>
                   </div>
+                </div>
+                <div className="bg-[#DEE5ED] p-2 absolute bottom-0 w-full lg:hidden">
+                  <p className="text-gray-400 text-sm flex items-center gap-1 justify-center text-center">
+                    You have <span className="text-black">0</span> stock
+                    (Displaying <span className="text-black">6</span>{" "}
+                    <Image
+                      src="/icons/ArrowDropDown.svg"
+                      alt=""
+                      width={12}
+                      height={12}
+                      className="w-3 h-3"
+                    />{" "}
+                    per page)
+                  </p>
                 </div>
               </div>
             ) : (
               <Table className="border-collapse overflow-y-auto">
                 <TableHeader>
-                  <TableRow className="h-[50px]">
-                    <TableHead className="px-4 py-2 w-2/7 text-left border-b border-r">
-                      ITEM NAME
-                    </TableHead>
-                    <TableHead className="px-4 py-2 w-1/7 text-center border-b border-r">
-                      PRICE
-                    </TableHead>
-                    <TableHead className="px-4 py-2 w-1/7 text-center border-b border-r hidden sm:table-cell">
-                      QUANTITY
-                    </TableHead>
-                    <TableHead className="px-4 py-2 w-1/7 text-center border-b hidden sm:table-cell">
-                      ACTION
-                    </TableHead>
-                  </TableRow>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id} className="h-[50px]">
+                      {headerGroup.headers.map((header) => (
+                        <TableHead
+                          key={header.id}
+                          className="px-4 py-2 text-left border-b border-r"
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
                 </TableHeader>
                 <TableBody>
-                  {Array.from({
-                    length: Math.max(rowsPerPage, stockItems.length),
-                  }).map((_, index) => {
-                    const item = stockItems[index] || null;
-                    const isEmptyRow = !item;
-                    const isMobile = window.innerWidth <= 640;
-                    const isNextEmptyRow = isEmptyRow && index === stockItems.length;
-
-                    return (
-                      <TableRow
-                        key={index}
-                        className="h-[50px]"
-                        onTouchEnd={() => {
-                          if (isMobile && isNextEmptyRow) {
-                            handleAddClick();
-                          }
-                        }}
-                        onClick={() => {
-                          if (!isMobile && isNextEmptyRow) {
-                            handleAddClick();
-                          }
-                        }}
-                      >
-                        <TableCell className="px-4 py-3 text-left border-r">
-                          {item ? item.name : ""}
-                        </TableCell>
-                        <TableCell className="px-4 py-3 text-center border-r">
-                          {item
-                            ? `${item.currency_code
-                            } ${item.buying_price?.toLocaleString()}`
-                            : ""}
-                        </TableCell>
-                        <TableCell className="px-4 py-3 text-center border-r hidden sm:table-cell">
-                          {item ? item.quantity : ""}
-                        </TableCell>
-                        <TableCell className="px-4 py-3 text-center hidden sm:table-cell">
-                          {item ? (
-                            <DropdownMenu>
-                              <DropdownMenuTrigger>
-                                <MoreVertical className="cursor-pointer" />
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent>
-                                <DropdownMenuItem
-                                  onClick={() => handleEditClick(item)}
-                                >
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleDeleteClick(item)}
-                                >
-                                  Delete
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          ) : (
-                            ""
+                  {table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id} className="h-[50px]">
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="px-4 py-3 text-left border-r"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
                           )}
                         </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                      ))}
+                    </TableRow>
+                  ))}
                 </TableBody>
-              </Table>)}
+              </Table>
+            )}
           </div>
         </div>
       </div>
 
       <EditItemModal
         isOpen={openEdit}
-        onClose={closeEditModal}
-        item={selectedItem!}
+        onClose={() => setOpenEdit(false)}
+        item={selectedItem ?? null}
         onSave={handleSaveEdit}
       />
 
-      <div className="flex flex-col gap-2 mt-4">
-        <div hidden className="bg-[#DEE5ED] p-2 w-full lg:hidden">
-          <p className="text-gray-400 text-sm flex items-center gap-1 justify-center text-center">
-            You have <span className="text-black">{stockItems.length}</span>{" "}
-            stock (Displaying{" "}
-            <span className="text-black">
-              {Math.max(rowsPerPage, stockItems.length)}
-            </span>{" "}
-            <Image
-              src="/icons/ArrowDropDown.svg"
-              alt=""
-              width={12}
-              height={12}
-              className="w-3 h-3"
-            />{" "}
-            per page)
-          </p>
-        </div>
-        <p className="text-center mt-4">
-          © {new Date().getFullYear()}, Powered by Timbu Business
-        </p>
-      </div>
+      <AddItemModal
+        isOpen={openAdd}
+        onClose={() => setOpenAdd(false)}
+        onSave={(newItem) => {
+          setStockItems((prev) => [...prev, newItem]);
+          setOpenAdd(false);
+        }}
+      />
+
+      <p className="text-center mt-4">
+        © {new Date().getFullYear()}, Powered by Timbu Business
+      </p>
     </main>
   );
 };
