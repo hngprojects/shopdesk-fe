@@ -8,56 +8,24 @@ import {
   FaPlus,
   FaTimes,
 } from "react-icons/fa";
-
-const currencies = [
-  {
-    name: "Nigerian Naira",
-    code: "NGN",
-    symbol: "₦",
-    flag: "/modal-images/nigeria-flag.svg",
-  },
-  {
-    name: "Egyptian Pound",
-    code: "EGP",
-    symbol: "ج.م",
-    flag: "/modal-images/egypt-flag.svg",
-  },
-  {
-    name: "Ethiopian Birr",
-    code: "ETB",
-    symbol: "Br",
-    flag: "/modal-images/ethiopia-flag.svg",
-  },
-  {
-    name: "Ghanaian Cedi",
-    code: "GHS",
-    symbol: "₵",
-    flag: "/modal-images/ghana-flag.svg",
-  },
-  {
-    name: "Indian Rupee",
-    code: "INR",
-    symbol: "₹",
-    flag: "/modal-images/india-flag.svg",
-  },
-  {
-    name: "Kenyan Shilling",
-    code: "KES",
-    symbol: "KSh",
-    flag: "/modal-images/kenya-flag.svg",
-  },
-];
+import { currencies } from "./add-item";
 
 interface EditItemModal {
   isOpen: boolean;
   onClose: () => void;
-  item: { id: number; name: string; price: number; quantity: number };
-
-  onSave: (item: {
-    id: number;
+  item: {
+    id: string;
     name: string;
-    price: number;
+    buying_price: number;
     quantity: number;
+    currency_code: string;
+  };
+  onSave: (item: {
+    id: string;
+    name: string;
+    buying_price: number;
+    quantity: number;
+    currency_code: string;
   }) => void;
 }
 
@@ -76,23 +44,23 @@ export default function EditItemModal({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [productName, setProductName] = useState(item.name);
-
-  const [sellingPrice, setSellingPrice] = useState(item.price.toString());
-
+  const [buyingPrice, setBuyingPrice] = useState(item.buying_price?.toString());
   const [quantity, setQuantity] = useState(item.quantity);
   const [selectedSellingCurrency, setSelectedSellingCurrency] = useState(
-    currencies[0]
+    currencies.find((currency) => currency.code === item.currency_code) ||
+      currencies[0]
   );
-  //this is a validation for testing display of errors
+
+  // Validation for testing display of errors
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
     if (!productName.trim())
       newErrors.productName = "Product Name is required.";
 
-    if (!sellingPrice) newErrors.sellingPrice = "Selling Price is required.";
-    else if (isNaN(Number(sellingPrice)))
-      newErrors.sellingPrice = "Selling Price must be a number.";
+    if (!buyingPrice) newErrors.buyingPrice = "Buying Price is required.";
+    else if (isNaN(Number(buyingPrice)))
+      newErrors.buyingPrice = "Buying Price must be a number.";
 
     if (quantity === 0) newErrors.quantity = "Quantity must be greater than 0.";
 
@@ -109,26 +77,24 @@ export default function EditItemModal({
   );
 
   const isFormValid = () => {
-    return productName && sellingPrice && quantity > 0;
+    return productName && buyingPrice && quantity > 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
       onSave({
-        id: item.id, // Use the existing item ID
-
+        id: item.id,
         name: productName,
-
-        price: parseFloat(sellingPrice),
-
+        buying_price: parseFloat(buyingPrice),
         quantity: quantity,
+        currency_code: selectedSellingCurrency.code,
       });
 
       onClose();
-      //submit logic
     }
   };
+
   const toggleCurrencyModal = () => {
     setCurrencyModalOpen((prev) => !prev);
   };
@@ -137,7 +103,8 @@ export default function EditItemModal({
     setSelectedSellingCurrency(currency);
     setCurrencyModalOpen(false);
   };
-  //close modal when outside of div is clicked
+
+  // Close modal when outside of div is clicked
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -153,11 +120,12 @@ export default function EditItemModal({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-[#24242433] bg-opacity-20 flex items-center justify-center p-4">
-      <div className="bg-white  rounded-lg shadow-lg w-full max-w-[720px] flex flex-col gap-[28px]">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-[720px] flex flex-col gap-[28px]">
         <div className="p-6 gap-5 flex flex-col">
           <div className="flex gap-2.5">
             <div className="flex p-2 ">
@@ -167,12 +135,10 @@ export default function EditItemModal({
                     srcSet="/modal-images/icon.svg"
                     media="(max-width: 639px)"
                   />
-
                   <source
                     srcSet="/modal-images/ui-box.svg"
                     media="(min-width: 640px)"
                   />
-
                   <Image
                     src="/modal-images/ui-box-large.svg"
                     alt="add stock image"
@@ -188,7 +154,7 @@ export default function EditItemModal({
                 Edit Stock
               </h1>
             </div>
-            <div className=" flex-shrink-0">
+            <div className="flex-shrink-0">
               <button
                 type="button"
                 aria-label="Close"
@@ -214,7 +180,7 @@ export default function EditItemModal({
                 placeholder="Item Name"
                 onChange={(e) => setProductName(e.target.value)}
                 required
-                value={productName}
+                value={productName ?? ""}
               />
               {errors.productName && (
                 <p className="text-[#FF1925] text-sm font-circular-normal">
@@ -224,7 +190,7 @@ export default function EditItemModal({
             </div>
             <div className="flex flex-col gap-[8px] flex-1">
               <label className="font-circular-normal text-[14px] text-[#717171] text-left">
-                Selling Price <span className="text-[#FF1925]">*</span>
+                Buying Price <span className="text-[#FF1925]">*</span>
               </label>
               <div
                 ref={sellingPriceDivRef}
@@ -247,14 +213,14 @@ export default function EditItemModal({
                   <FaChevronDown className="w-[10px] h-[10px] text-[#888888]" />
                 </div>
                 <div className="h-8 border border-gray self-center"></div>
-                <div>
+                <div className="w-full">
                   <input
-                    type="text"
-                    name="selling-price"
-                    className="w-full h-full p-[12px] outline-none  placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal"
+                    type="number"
+                    name="buying-price"
+                    className="w-full h-full p-3 outline-none placeholder:text-[#B8B8B8] text-[#2A2A2A] text-base font-circular-normal"
                     placeholder="Amount"
-                    value={sellingPrice}
-                    onChange={(e) => setSellingPrice(e.target.value)}
+                    value={buyingPrice ?? ""}
+                    onChange={(e) => setBuyingPrice(e.target.value)}
                     required
                   />
                 </div>
@@ -262,7 +228,7 @@ export default function EditItemModal({
                 {isCurrencyModalOpen && (
                   <div
                     ref={dropdownRef}
-                    className="absolute top-[calc(100%-10px)] right-3 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
+                    className="absolute top-full left-0 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
                   >
                     <div className="relative w-full p-4">
                       <input
@@ -301,9 +267,9 @@ export default function EditItemModal({
                   </div>
                 )}
               </div>
-              {errors.sellingPrice && (
+              {errors.buyingPrice && (
                 <p className="text-[#FF1925] text-sm font-circular-normal">
-                  {errors.sellingPrice}
+                  {errors.buyingPrice}
                 </p>
               )}
             </div>
@@ -314,6 +280,7 @@ export default function EditItemModal({
               <div className="flex items-center gap-[8px]">
                 <button
                   type="button"
+                  aria-label="Decrease Quantity"
                   className="h-[48px] md:h-[62px] w-[48px] md:w-[62px] flex items-center justify-center border border-[#1B1B1B] rounded-[9px] cursor-pointer hover:bg-[#D0D0D0]"
                   onClick={decrement}
                 >
@@ -322,7 +289,7 @@ export default function EditItemModal({
 
                 <div className="flex-grow relative">
                   <input
-                    type="text"
+                    type="number"
                     inputMode="numeric"
                     className="w-full h-[48px] md:h-[62px] rounded-[9px] p-[12px] outline-none border border-[#DEDEDE] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB] focus:border-[#009A49] hover:ring-2 hover:ring-[#CCEBDB] transition-all placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal text-center"
                     placeholder="Quantity"
@@ -345,6 +312,8 @@ export default function EditItemModal({
                 </div>
 
                 <button
+                  type="button"
+                  aria-label="Increase Quantity"
                   className="h-[48px] md:h-[62px] w-[48px] md:w-[62px] flex items-center justify-center border border-[#1B1B1B] rounded-[9px] cursor-pointer hover:bg-[#D0D0D0]"
                   onClick={increment}
                 >
@@ -369,8 +338,6 @@ export default function EditItemModal({
                 </button>
 
                 <button
-                  //submit button (should be inside form ,will change after design changes)
-
                   type="submit"
                   className={`w-full md:w-auto px-[24px] py-[12px] rounded-[12px] border ${
                     isFormValid()

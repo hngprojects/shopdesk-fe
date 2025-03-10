@@ -1,6 +1,6 @@
 "use client";
-import ShopDeskModal from "@/components/modal/add-item";
-import { useEffect, useState, useRef } from "react";
+
+import { useEffect, useState } from "react";
 import { ChevronDown, MoreVertical } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EditItemModal from "@/components/modal/edit-stock";
@@ -25,13 +25,23 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import useTableAreaHeight from "./hooks/useTableAreaHeight";
+import { deleteStock, GetStock } from "@/services/stock";
 
 const Page = () => {
   type StockItem = {
-    id: number;
+    id: string;
     name: string;
-    price: number;
+    buying_price: number;
     quantity: number;
+    currency_code: string;
+    buying_date?: string;
+    product_id?: string;
+    status?: string;
+    user_id?: string;
+    date_created?: string;
+    original_quantity?: number;
+    supplier?: null | any;
+    timeslots?: any[];
   };
 
   const { tableAreaRef, tableAreaHeight } = useTableAreaHeight();
@@ -41,12 +51,7 @@ const Page = () => {
   const [openEdit, setOpenEdit] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
 
-  const [selectedItem, setSelectedItem] = useState<{
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-  } | null>(null);
+  const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
   const [user, setUser] = useState<any>(null);
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
@@ -63,26 +68,25 @@ const Page = () => {
     if (!token) {
       router.replace("/sign-in");
     } else {
-      setIsLoading(false);
+      setIsLoading(true);
+      GetStock()
+        .then((data) => {
+          setStockItems(data.items);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching stock:", error);
+          setIsLoading(false);
+        });
     }
   }, [router]);
 
-  const handleEditClick = (item: {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-  }) => {
-    setSelectedItem(item);
-    setOpenEdit(true);
+onst handleEditClick = (item: StockItem) => {
+    setSelectedItem(item); // Set the selected item
+    setOpenEdit(true); // Open the edit modal
   };
 
-  const handleSaveEdit = (updatedItem: {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-  }) => {
+  const handleSaveEdit = (updatedItem: StockItem) => {
     setStockItems((prev) =>
       prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
@@ -94,29 +98,37 @@ const Page = () => {
     setOpenAdd(true);
   };
 
-  const handleDeleteClick = (item: {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-  }) => {
+  const handleDeleteClick = (item: StockItem) => {
     setSelectedItem(item);
     setIsDeleteModalOpen(true);
   };
 
   const closeEditModal = () => {
     setOpenEdit(false);
+    setSelectedItem(null); // Clear the selected item
   };
 
   const closeAddModal = () => {
     setOpenAdd(false);
+    setSelectedItem(null); // Clear the selected item
   };
 
-  const handleDeleteItem = () => {
-    setIsDeleteModalOpen(false);
-    setStockItems((prev) =>
-      prev.filter((item) => item.id !== selectedItem?.id)
-    );
+
+  // const handleDeleteItem = () => {
+  //   setIsDeleteModalOpen(false);
+  //   setStockItems((prev) =>
+  //     prev.filter((item) => item.id !== selectedItem?.id)
+  //   );
+  // };
+
+  const handleDeleteItem = async (itemId: string) => {
+    try {
+      await deleteStock(itemId);
+      setIsDeleteModalOpen(false);
+      setStockItems((prev) => prev.filter((item) => item.id !== itemId));
+    } catch (error) {
+      console.error("Error deleting stock:", error);
+    }
   };
 
   if (isLoading) {
@@ -135,11 +147,13 @@ const Page = () => {
           onOpenChange={setIsLogoutModalOpen}
           onCancel={() => setIsLogoutModalOpen(false)}
         />
+
         <DeleteItem
           open={isDeleteModalOpen}
           onOpenChange={setIsDeleteModalOpen}
           onCancel={() => setIsDeleteModalOpen(false)}
           onDelete={handleDeleteItem}
+          selectedItem={selectedItem || undefined}
         />
         <div className="lg:border px-4 py-2 lg:shadow-md rounded-lg lg:flex items-center justify-between mx-auto">
           <div className="flex items-center gap-6">
@@ -184,12 +198,24 @@ const Page = () => {
             </div>
 
             {stockItems.length > 0 && (
-              <button
-                onClick={handleAddClick}
-                className="btn-primary max-[400px]:text-sm mb-2 max-[640px]:mb-4 text-nowrap self-end"
-              >
-                + Add New Stock
-              </button>
+              <div className="z-50">
+                <button
+                  onClick={openModal}
+                  className="btn-primary max-[400px]:text-sm mb-2 max-[640px]:mb-4 text-nowrap self-end"
+                >
+                  + Add New Stock
+                </button>
+
+                <AddItemModal
+                  isOpen={isOpen}
+                  onClose={closeModal}
+                  onSave={(newItem) => {
+                    setStockItems((prev) => [newItem, ...prev]); // Inserts new items at the top
+
+                    closeModal();
+                  }}
+                />
+              </div>
             )}
           </div>
           <div className="border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1">
@@ -232,36 +258,22 @@ const Page = () => {
                         You have 0 items in stock
                       </p>
                       <button
+                        type="button"
                         onClick={openModal}
                         className="btn-outline hover:cursor-pointer"
                       >
                         + Add New Stock
                       </button>
-                      <ShopDeskModal
+                      <AddItemModal
                         isOpen={isOpen}
                         onClose={closeModal}
                         onSave={(newItem) => {
-                          setStockItems((prev) => [...prev, newItem]);
-
+                          setStockItems((prev) => [newItem, ...prev]);
                           closeModal();
                         }}
                       />
                     </div>
                   </div>
-                </div>
-                <div className="bg-[#DEE5ED] p-2 absolute bottom-0 w-full lg:hidden">
-                  <p className="text-gray-400 text-sm flex items-center gap-1 justify-center text-center">
-                    You have <span className="text-black">0</span> stock
-                    (Displaying <span className="text-black">6</span>{" "}
-                    <Image
-                      src="/icons/ArrowDropDown.svg"
-                      alt=""
-                      width={12}
-                      height={12}
-                      className="w-3 h-3"
-                    />{" "}
-                    per page)
-                  </p>
                 </div>
               </div>
             ) : (
@@ -310,7 +322,11 @@ const Page = () => {
                           {item ? item.name : ""}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-center border-r">
-                          {item ? `$${item.price}` : ""}
+                          {item
+                            ? `${
+                                item.currency_code
+                              } ${item.buying_price?.toLocaleString()}`
+                            : ""}
                         </TableCell>
                         <TableCell className="px-4 py-3 text-center border-r hidden sm:table-cell">
                           {item ? item.quantity : ""}
@@ -354,19 +370,28 @@ const Page = () => {
         onSave={handleSaveEdit}
       />
 
-      <AddItemModal
-        isOpen={openAdd}
-        onClose={closeAddModal}
-        onSave={(newItem) => {
-          setStockItems((prev) => [...prev, newItem]);
-
-          closeModal();
-        }}
-      />
-
-      <p className="text-center mt-4">
-        © {new Date().getFullYear()}, Powered by Timbu Business
-      </p>
+      <div className="flex flex-col gap-2 mt-4">
+        <div hidden className="bg-[#DEE5ED] p-2 w-full lg:hidden">
+          <p className="text-gray-400 text-sm flex items-center gap-1 justify-center text-center">
+            You have <span className="text-black">{stockItems.length}</span>{" "}
+            stock (Displaying{" "}
+            <span className="text-black">
+              {Math.max(rowsPerPage, stockItems.length)}
+            </span>{" "}
+            <Image
+              src="/icons/ArrowDropDown.svg"
+              alt=""
+              width={12}
+              height={12}
+              className="w-3 h-3"
+            />{" "}
+            per page)
+          </p>
+        </div>
+        <p className="text-center mt-4">
+          © {new Date().getFullYear()}, Powered by Timbu Business
+        </p>
+      </div>
     </main>
   );
 };

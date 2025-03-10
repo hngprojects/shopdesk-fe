@@ -1,4 +1,3 @@
-"use client";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import {
@@ -8,8 +7,9 @@ import {
   FaPlus,
   FaTimes,
 } from "react-icons/fa";
+import { AddStock } from "@/services/stock"; // Import the AddStock function
 
-const currencies = [
+export const currencies = [
   {
     name: "Nigerian Naira",
     code: "NGN",
@@ -48,26 +48,28 @@ const currencies = [
   },
 ];
 
-interface ShopDeskModalProps {
+interface AddStockModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (item: {
-    id: number;
+    id: string; // Changed from number to string
     name: string;
-    price: number;
+    buying_price: number; // Changed from price to buying_price
     quantity: number;
+    currency_code: string; // Added currency_code
   }) => void;
 }
 
-export default function ShopDeskModal({
+export default function AddStockModal({
   isOpen,
   onClose,
   onSave,
-}: ShopDeskModalProps) {
+}: AddStockModalProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isCurrencyModalOpen, setCurrencyModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const sellingPriceDivRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [productName, setProductName] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
@@ -75,7 +77,7 @@ export default function ShopDeskModal({
   const [selectedSellingCurrency, setSelectedSellingCurrency] = useState(
     currencies[0]
   );
-  //this is a validation for testing display of errors
+
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -104,19 +106,49 @@ export default function ShopDeskModal({
     return productName && sellingPrice && quantity > 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      //submit logic
+
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+
+    try {
+      const newStock = await AddStock(
+        productName,
+        parseFloat(sellingPrice),
+        quantity,
+        "79dc8c9167fe48e39ee3088bff7f9d3f", // Hardcoded product_id
+        selectedSellingCurrency.code,
+        "160db8736a9d47989381e01a987e4413", // Hardcoded organization_id
+        new Date().toISOString(),
+        selectedSellingCurrency
+      );
+
+      // Call the onSave callback with the new stock item
       onSave({
-        id: Date.now(),
-        name: productName,
-        price: parseFloat(sellingPrice),
-        quantity: quantity,
+        id: newStock.id,
+        name: newStock.name,
+        buying_price: newStock.buying_price,
+        quantity: newStock.quantity,
+        currency_code: newStock.currency_code,
       });
-      onClose();
+
+      // Reset the form fields
+      setProductName("");
+      setSellingPrice("");
+      setQuantity(0);
+      setSelectedSellingCurrency(currencies[0]);
+
+      onClose(); // Close the modal
+    } catch (error) {
+      console.error("Error adding stock:", error);
+      alert("Failed to add stock. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
+
   const toggleCurrencyModal = () => {
     setCurrencyModalOpen((prev) => !prev);
   };
@@ -125,7 +157,7 @@ export default function ShopDeskModal({
     setSelectedSellingCurrency(currency);
     setCurrencyModalOpen(false);
   };
-  //close modal when outside of div is clicked
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -141,34 +173,23 @@ export default function ShopDeskModal({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-[#24242433] bg-opacity-20 flex items-center justify-center p-4">
-      <div className="bg-white  rounded-lg shadow-lg w-full max-w-[720px] flex flex-col gap-[28px]">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-[720px] flex flex-col gap-[28px]">
         <div className="p-6 gap-5 flex flex-col">
-          <div className="flex gap-2.5">
+          <div className="flex gap-2.5 items-center sm:items-start">
             <div className="flex p-2 ">
               <div className="bg-[#CCEBDB] p-4 rounded-lg flex items-center justify-center">
-                <picture>
-                  <source
-                    srcSet="/modal-images/icon.svg"
-                    media="(max-width: 639px)"
-                  />
-
-                  <source
-                    srcSet="/modal-images/ui-box.svg"
-                    media="(min-width: 640px)"
-                  />
-
-                  <Image
-                    src="/modal-images/ui-box-large.svg"
-                    alt="add stock image"
-                    className="w-5 h-5 sm:w-6 sm:h-6"
-                    width={24}
-                    height={24}
-                  />
-                </picture>
+                <Image
+                  src="/modal-images/ui-box.svg"
+                  alt="add stock image"
+                  className="size-5 sm:size-6"
+                  width={24}
+                  height={24}
+                />
               </div>
             </div>
             <div className="flex-grow h-full p-2">
@@ -179,7 +200,7 @@ export default function ShopDeskModal({
                 Always know the items you have available.
               </p>
             </div>
-            <div className=" flex-shrink-0">
+            <div className="hidden sm:block flex-shrink-0">
               <button
                 type="button"
                 aria-label="Close"
@@ -232,11 +253,11 @@ export default function ShopDeskModal({
                   <FaChevronDown className="w-[10px] h-[10px] text-[#888888]" />
                 </div>
                 <div className="h-8 border border-gray self-center"></div>
-                <div>
+                <div className="w-full">
                   <input
-                    type="text"
+                    type="number"
                     name="selling-price"
-                    className="w-full h-full p-[12px] outline-none  placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal"
+                    className="w-full h-full p-3 outline-none placeholder:text-[#B8B8B8] text-[#2A2A2A] text-base font-circular-normal"
                     placeholder="Amount"
                     value={sellingPrice}
                     onChange={(e) => setSellingPrice(e.target.value)}
@@ -247,7 +268,7 @@ export default function ShopDeskModal({
                 {isCurrencyModalOpen && (
                   <div
                     ref={dropdownRef}
-                    className="absolute top-[calc(100%-10px)] right-3 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
+                    className="absolute top-full left-0 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
                   >
                     <div className="relative w-full p-4">
                       <input
@@ -287,9 +308,10 @@ export default function ShopDeskModal({
                 )}
               </div>
               {errors.sellingPrice && (
-                  <p className="text-[#FF1925] text-sm font-circular-normal">
-                    {errors.sellingPrice}
-                  </p>)}
+                <p className="text-[#FF1925] text-sm font-circular-normal">
+                  {errors.sellingPrice}
+                </p>
+              )}
             </div>
             <div className="flex flex-col gap-[8px]">
               <label className="font-circular-normal text-[14px] text-[#1B1B1B] text-left">
@@ -297,6 +319,8 @@ export default function ShopDeskModal({
               </label>
               <div className="flex items-center gap-[8px]">
                 <button
+                  type="button"
+                  aria-label="Decrease Quantity"
                   className="h-[48px] md:h-[62px] w-[48px] md:w-[62px] flex items-center justify-center border border-[#1B1B1B] rounded-[9px] cursor-pointer hover:bg-[#D0D0D0]"
                   onClick={decrement}
                 >
@@ -305,7 +329,7 @@ export default function ShopDeskModal({
 
                 <div className="flex-grow relative">
                   <input
-                    type="text"
+                    type="number"
                     inputMode="numeric"
                     className="w-full h-[48px] md:h-[62px] rounded-[9px] p-[12px] outline-none border border-[#DEDEDE] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB] focus:border-[#009A49] hover:ring-2 hover:ring-[#CCEBDB] transition-all placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal text-center"
                     placeholder="Quantity"
@@ -328,8 +352,10 @@ export default function ShopDeskModal({
                 </div>
 
                 <button
+                  type="button"
+                  aria-label="Increase Quantity"
                   className="h-[48px] md:h-[62px] w-[48px] md:w-[62px] flex items-center justify-center border border-[#1B1B1B] rounded-[9px] cursor-pointer hover:bg-[#D0D0D0]"
-                  onClick={increment} type="button"
+                  onClick={increment}
                 >
                   <FaPlus className="w-4 h-4 md:w-5 md:h-5" />
                 </button>
@@ -340,31 +366,33 @@ export default function ShopDeskModal({
                 </p>
               )}
             </div>
-                <div className="md:bg-[#F6F8FA] md:border md:border-[#DEE5ED] rounded-bl-[12px] rounded-br-[12px] w-full p-4">
-          <div className="flex flex-col-reverse md:flex-row justify-end gap-4 w-full">
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full md:w-auto bg-white border md:border-[#1B1B1B] border-[#E50000] md:text-black text-[#FF000D] px-[24px] py-[12px] rounded-[12px] hover:bg-[#D0D0D0]"
-            >
-              Cancel
-            </button>
-            <button
-              //submit button (should be inside form ,will change after design changes)
-              type="submit"
-              className={`w-full md:w-auto px-[24px] py-[12px] rounded-[12px] border ${
-                isFormValid()
-                  ? "bg-black text-white border-black"
-                  : "bg-[#D0D0D0] text-[#F1F1F1] border-[#B8B8B8]"
-              }`}
-              disabled={!isFormValid()}
-            >
-              <span className="md:hidden">Save</span>
 
-              <span className="hidden md:inline">Add Stock</span>
-            </button>
-          </div>
-        </div>
+            <div className="md:bg-[#F6F8FA] md:border md:border-[#DEE5ED] rounded-bl-[12px] rounded-br-[12px] w-full p-4">
+              <div className="flex flex-col-reverse md:flex-row justify-end gap-4 w-full">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="w-full md:w-auto bg-white border md:border-[#1B1B1B] border-[#E50000] md:text-black text-[#FF000D] px-[24px] py-[12px] rounded-[12px] hover:bg-[#D0D0D0]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={`w-full md:w-auto px-[24px] py-[12px] rounded-[12px] border ${
+                    isFormValid()
+                      ? "bg-black text-white border-black"
+                      : "bg-[#D0D0D0] text-[#F1F1F1] border-[#B8B8B8]"
+                  }`}
+                  disabled={!isFormValid() || isLoading}
+                >
+                  <span className="md:hidden">Save</span>
+
+                  <span className="hidden md:inline">
+                    {isLoading ? "Adding..." : "Add Stock"}
+                  </span>
+                </button>
+              </div>
+            </div>
           </form>
         </div>
       </div>
