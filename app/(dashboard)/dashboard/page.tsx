@@ -45,6 +45,7 @@ export type StockItem = {
   buying_price: number;
   quantity: number;
   currency_code: string;
+  sku: string;
   buying_date?: string;
   product_id?: string;
   status?: string;
@@ -86,7 +87,10 @@ const Page = () => {
       setIsLoading(true);
       GetStock()
         .then((data) => {
-          setStockItems(data.items);
+          setStockItems(data.items.map((item: any) => ({
+            ...item,
+            sku: item.sku || "N/A", 
+          })));
           setIsLoading(false);
         })
         .catch((error) => {
@@ -202,6 +206,31 @@ const Page = () => {
                 />
               ) : (
                 <span className="block truncate">{row.original.name}</span>
+              )}
+            </div>
+          );
+        },
+      },
+      {
+        accessorKey: "sku",
+        header: "SKU",
+        cell: ({ row }) => {
+          const isEditingThisRow = editedItem?.id === row.original.id;
+          const isTransitioning = isEditingTransition === row.original.id;
+  
+          return (
+            <div className="inline-block w-full max-w-[200px] overflow-hidden">
+              {isTransitioning ? (
+                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+              ) : isEditingThisRow ? (
+                <input
+                  value={editedItem?.sku || ""}
+                  onChange={(e) => handleInputChange("sku", e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
+                  className="w-full max-w-[200px] min-w-0 border rounded px-2 py-1 text-left box-border"
+                />
+              ) : (
+                <span className="block truncate">{row.original.sku}</span>
               )}
             </div>
           );
