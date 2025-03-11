@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
-import { ChevronDown, MoreVertical } from "lucide-react";
+
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { ChevronDown, SaveAll, Loader2, Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EditItemModal from "@/components/modal/edit-stock";
 import AddItemModal from "@/components/modal/add-item";
@@ -24,52 +25,76 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import useTableAreaHeight from "./hooks/useTableAreaHeight";
-import { useReactTable, getCoreRowModel, flexRender } from "@tanstack/react-table";
+import { deleteStock, GetStock } from "@/services/stock";
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable,
+  flexRender,
+} from "@tanstack/react-table";
+
+declare module "@tanstack/react-table" {
+  interface ColumnMeta<TData, TValue> {
+    className?: string;
+  }
+}
+
+export type StockItem = {
+  id: string;
+  name: string;
+  buying_price: number;
+  quantity: number;
+  currency_code: string;
+  buying_date?: string;
+  product_id?: string;
+  status?: string;
+  user_id?: string;
+  date_created?: string;
+  original_quantity?: number;
+  supplier?: null | any;
+  timeslots?: any[];
+};
 
 const Page = () => {
-  type StockItem = {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-    sku: string; 
-  };
-
   const { tableAreaRef, tableAreaHeight } = useTableAreaHeight();
   const rowsPerPage = Math.round(tableAreaHeight / 55) - 3;
 
+  const [isOpen, setIsOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
+  const [user, setUser] = useState<any>(null);
+  const openModal = () => setIsOpen(true);
+  const closeModal = () => setIsOpen(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
   const router = useRouter();
+  const [editedItem, setEditedItem] = useState<StockItem | null>(null);
+  const [isEditingTransition, setIsEditingTransition] = useState<string | null>(null);
+  const [activeField, setActiveField] = useState<keyof StockItem | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const priceInputRef = useRef<HTMLInputElement>(null);
+  const quantityInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const token = sessionStorage.getItem("refresh_token");
     if (!token) {
       router.replace("/sign-in");
     } else {
-      setIsLoading(false);
+      setIsLoading(true);
+      GetStock()
+        .then((data) => {
+          setStockItems(data.items);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error fetching stock:", error);
+          setIsLoading(false);
+        });
     }
   }, [router]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 640);
-    };
-
-    handleResize();
-
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const handleEditClick = (item: StockItem) => {
     setSelectedItem(item);
@@ -83,77 +108,209 @@ const Page = () => {
     setOpenEdit(false);
   };
 
-  const handleAddClick = () => {
-    setOpenAdd(true);
-  };
-
   const handleDeleteClick = (item: StockItem) => {
     setSelectedItem(item);
     setIsDeleteModalOpen(true);
   };
 
-  const handleDeleteItem = () => {
-    setIsDeleteModalOpen(false);
-    setStockItems((prev) =>
-      prev.filter((item) => item.id !== selectedItem?.id)
-    );
+  const closeEditModal = () => {
+    setOpenEdit(false);
     setSelectedItem(null);
   };
 
-  const columns = useMemo(
+  const closeAddModal = () => {
+    setOpenAdd(false);
+    setSelectedItem(null);
+  };
+
+  const handleDeleteItem = async (itemId: string) => {
+    try {
+      await deleteStock(itemId);
+      setIsDeleteModalOpen(false);
+      setStockItems((prev) => prev.filter((item) => item.id !== itemId));
+    } catch (error) {
+      console.error("Error deleting stock:", error);
+    }
+  };
+
+  const handleInlineEdit = useCallback((item: StockItem, field: keyof StockItem = "name") => {
+    setIsEditingTransition(item.id);
+    setEditedItem({ ...item });
+    setActiveField(field); 
+    setTimeout(() => setIsEditingTransition(null), 0); 
+  }, []);
+
+  const handleInputChange = useCallback(
+    (field: keyof StockItem, value: string) => {
+      if (editedItem) {
+        setEditedItem((prev) => ({
+          ...prev!,
+          [field]: field === "quantity" || field === "buying_price" ? Number(value) : value,
+        }));
+      }
+    },
+    [editedItem]
+  );
+
+  const handleSaveInline = useCallback(() => {
+    if (editedItem) {
+      setStockItems((prev) =>
+        prev.map((item) => (item.id === editedItem.id ? editedItem : item))
+      );
+      setEditedItem(null);
+    }
+  }, [editedItem]);
+
+  useEffect(() => {
+    if (editedItem && activeField) {
+      switch (activeField) {
+        case "name":
+          nameInputRef.current?.focus();
+          break;
+        case "buying_price":
+          priceInputRef.current?.focus();
+          break;
+        case "quantity":
+          quantityInputRef.current?.focus();
+          break;
+      }
+    }
+  }, [editedItem, activeField]);
+
+  const columns: ColumnDef<StockItem>[] = useMemo(
     () => [
       {
         accessorKey: "name",
         header: "ITEM NAME",
-        cell: (info: any) => info.getValue(),
+        size: 200,
+        maxSize: 200,
+        cell: ({ row }) => {
+          const isEditingThisRow = editedItem?.id === row.original.id;
+          const isTransitioning = isEditingTransition === row.original.id;
+
+          return (
+            <div className="inline-block w-full max-w-[200px] overflow-hidden">
+              {isTransitioning ? (
+                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+              ) : isEditingThisRow ? (
+                <input
+                  ref={nameInputRef}
+                  value={editedItem?.name || ""}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
+                  className="w-full max-w-[200px] min-w-0 border rounded px-2 py-1 text-left box-border"
+                />
+              ) : (
+                <span className="block truncate">{row.original.name}</span>
+              )}
+            </div>
+          );
+        },
       },
       {
-        accessorKey: "sku",
-        header: "SKU",
-        cell: (info: any) => info.getValue(),
-      },
-      {
-        accessorKey: "price",
+        accessorKey: "buying_price",
         header: "PRICE",
-        cell: (info: any) => `$${info.getValue()}`,
+        cell: ({ row }) => {
+          const isEditingThisRow = editedItem?.id === row.original.id;
+          const isTransitioning = isEditingTransition === row.original.id;
+
+          return (
+            <div
+              className="inline-block w-[calc(100%-2rem)] max-w-[100px]"
+              onClick={() => !isEditingThisRow && handleInlineEdit(row.original, "buying_price")}
+            >
+              {isTransitioning ? (
+                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+              ) : isEditingThisRow ? (
+                <input
+                  ref={priceInputRef}
+                  type="number"
+                  value={editedItem?.buying_price ?? ""}
+                  onChange={(e) => handleInputChange("buying_price", e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
+                  className="w-full border rounded px-2 py-1 text-center"
+                />
+              ) : (
+                `${row.original.currency_code} ${row.original.buying_price?.toLocaleString()}`
+              )}
+            </div>
+          );
+        },
       },
-      ...(isMobile
-        ? []
-        : [
-            {
-              accessorKey: "quantity",
-              header: "QUANTITY",
-              cell: (info: any) => info.getValue(),
-            },
-            {
-              id: "actions",
-              header: "ACTION",
-              cell: (info: any) => {
-                const item = info.row.original;
-                return (
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <MoreVertical className="cursor-pointer" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => handleEditClick(item)}>
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDeleteClick(item)}>
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                );
-              },
-            },
-          ]),
+      {
+        accessorKey: "quantity",
+        header: "QUANTITY",
+        cell: ({ row }) => {
+          const isEditingThisRow = editedItem?.id === row.original.id;
+          const isTransitioning = isEditingTransition === row.original.id;
+
+          return (
+            <div
+              className="inline-block w-[calc(100%-2rem)] max-w-[60px]"
+              onClick={() => !isEditingThisRow && handleInlineEdit(row.original, "quantity")}
+            >
+              {isTransitioning ? (
+                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+              ) : isEditingThisRow ? (
+                <input
+                  ref={quantityInputRef}
+                  type="number"
+                  value={editedItem?.quantity ?? ""}
+                  onChange={(e) => handleInputChange("quantity", e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
+                  className="w-full border rounded px-2 py-1 text-center"
+                />
+              ) : (
+                row.original.quantity
+              )}
+            </div>
+          );
+        },
+        meta: { className: "hidden sm:table-cell" },
+      },
+      {
+        id: "actions",
+        header: "ACTION",
+        cell: ({ row }) => {
+          const item = row.original;
+          const isEditingThisRow = editedItem?.id === item.id;
+          const isTransitioning = isEditingTransition === row.original.id;
+          return (
+            <div className="inline-block w-[calc(100%-2rem)] max-w-[60px]">
+              {isTransitioning ? (
+                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+              ) : isEditingThisRow ? (
+                <div className="flex justify-center items-center gap-2">
+                  <SaveAll
+                    className="cursor-pointer text-[#19A45B] w-[24px] h-[24px]"
+                    onClick={handleSaveInline}
+                  />
+                </div>
+              ) : (
+                <div className="flex justify-center items-center gap-2">
+                  <div className="flex items-center border-r border-[#DEDEDE] pr-2">
+                    <Edit
+                      className="cursor-pointer text-[#19A45B] w-[20px] h-[20px] hover:text-[#137e41]"
+                      onClick={() => handleInlineEdit(item)}
+                    />
+                  </div>
+                  <Trash2
+                    className="cursor-pointer text-red-500 w-[20px] h-[20px] hover:text-red-700"
+                    onClick={() => handleDeleteClick(item)}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        },
+        meta: { className: "hidden sm:table-cell" },
+      },
     ],
-    [isMobile]
+    [editedItem, isEditingTransition, handleInlineEdit, handleSaveInline]
   );
 
   const table = useReactTable({
-    data: stockItems,
+    data: stockItems.slice(0, rowsPerPage),
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -167,8 +324,8 @@ const Page = () => {
   }
 
   return (
-    <main className="px-6 py-4 w-full max-w-7xl mx-auto flex flex-col min-h-screen">
-      <div ref={tableAreaRef} className="flex-grow">
+    <main className="px-6 py-4 w-full max-w-7xl mx-auto flex flex-col min-h-svh">
+      <div ref={tableAreaRef} className="space-y-8 w-full h-full">
         <LogoutConfirmModal
           open={isLogoutModalOpen}
           onOpenChange={setIsLogoutModalOpen}
@@ -179,6 +336,7 @@ const Page = () => {
           onOpenChange={setIsDeleteModalOpen}
           onCancel={() => setIsDeleteModalOpen(false)}
           onDelete={handleDeleteItem}
+          selectedItem={selectedItem || undefined}
         />
         <div className="lg:border px-4 py-2 lg:shadow-md rounded-lg lg:flex items-center justify-between mx-auto">
           <div className="flex items-center gap-6">
@@ -221,14 +379,23 @@ const Page = () => {
                 className="w-5 h-5"
               />
             </div>
-
             {stockItems.length > 0 && (
-              <button
-                onClick={handleAddClick}
-                className="btn-primary max-[400px]:text-sm mb-2 max-[640px]:mb-4 text-nowrap self-end"
-              >
-                + Add New Stock
-              </button>
+              <div className="z-50">
+                <button
+                  onClick={openModal}
+                  className="btn-primary max-[400px]:text-sm mb-2 max-[640px]:mb-4 text-nowrap self-end"
+                >
+                  + Add New Stock
+                </button>
+                <AddItemModal
+                  isOpen={isOpen}
+                  onClose={closeModal}
+                  onSave={(newItem) => {
+                    setStockItems((prev) => [newItem, ...prev]);
+                    closeModal();
+                  }}
+                />
+              </div>
             )}
           </div>
           <div className="border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1">
@@ -271,38 +438,33 @@ const Page = () => {
                         You have 0 items in stock
                       </p>
                       <button
-                        onClick={handleAddClick}
+                        type="button"
+                        onClick={openModal}
                         className="btn-outline hover:cursor-pointer"
                       >
                         + Add New Stock
                       </button>
+                      <AddItemModal
+                        isOpen={isOpen}
+                        onClose={closeModal}
+                        onSave={(newItem) => {
+                          setStockItems((prev) => [newItem, ...prev]);
+                          closeModal();
+                        }}
+                      />
                     </div>
                   </div>
                 </div>
-                <div className="bg-[#DEE5ED] p-2 absolute bottom-0 w-full lg:hidden">
-                  <p className="text-gray-400 text-sm flex items-center gap-1 justify-center text-center">
-                    You have <span className="text-black">0</span> stock
-                    (Displaying <span className="text-black">6</span>{" "}
-                    <Image
-                      src="/icons/ArrowDropDown.svg"
-                      alt=""
-                      width={12}
-                      height={12}
-                      className="w-3 h-3"
-                    />{" "}
-                    per page)
-                  </p>
-                </div>
               </div>
             ) : (
-              <Table className="border-collapse overflow-y-auto">
+              <Table className="border-collapse overflow-y-auto table-fixed">
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow key={headerGroup.id} className="h-[50px]">
                       {headerGroup.headers.map((header) => (
                         <TableHead
                           key={header.id}
-                          className="px-4 py-2 text-left border-b border-r"
+                          className={`px-4 py-2 text-center border-b border-r ${header.column.id === "name" ? "text-left w-[200px]" : ""} ${header.column.columnDef.meta?.className || ""}`}
                         >
                           {flexRender(
                             header.column.columnDef.header,
@@ -319,7 +481,7 @@ const Page = () => {
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
-                          className="px-4 py-3 text-left border-r"
+                          className={`px-4 py-3 text-center border-r ${cell.column.id === "name" ? "text-left w-[200px] overflow-hidden" : ""} ${cell.column.columnDef.meta?.className || ""}`}
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
@@ -338,23 +500,31 @@ const Page = () => {
 
       <EditItemModal
         isOpen={openEdit}
-        onClose={() => setOpenEdit(false)}
-        item={selectedItem ?? null}
+        onClose={closeEditModal}
+        item={selectedItem!}
         onSave={handleSaveEdit}
       />
 
-      <AddItemModal
-        isOpen={openAdd}
-        onClose={() => setOpenAdd(false)}
-        onSave={(newItem) => {
-          setStockItems((prev) => [...prev, newItem]);
-          setOpenAdd(false);
-        }}
-      />
-
-      <p className="text-center mt-4">
-        © {new Date().getFullYear()}, Powered by Timbu Business
-      </p>
+      <div className="flex flex-col gap-2 mt-4">
+        <div hidden className="bg-[#DEE5ED] p-2 w-full lg:hidden">
+          <p className="text-gray-400 text-sm flex items-center gap-1 justify-center text-center">
+            You have <span className="text-black">{stockItems.length}</span>{" "}
+            stock (Displaying{" "}
+            <span className="text-black">{rowsPerPage}</span>{" "}
+            <Image
+              src="/icons/ArrowDropDown.svg"
+              alt=""
+              width={12}
+              height={12}
+              className="w-3 h-3"
+            />{" "}
+            per page)
+          </p>
+        </div>
+        <p className="text-center mt-4">
+          © {new Date().getFullYear()}, Powered by Timbu Business
+        </p>
+      </div>
     </main>
   );
 };
