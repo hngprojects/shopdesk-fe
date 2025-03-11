@@ -5,16 +5,11 @@ on:
 
 jobs:
   ssh-deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, shopdesk]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Install SSHpass
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y sshpass
 
       - name: SSH into server and run commands
         env:
@@ -26,14 +21,21 @@ jobs:
           sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no "$SSH_USERNAME@$SSH_IP" "
             if [ -d 'shopdesk-fe' ]; then
               cd shopdesk-fe &&
-              git reset --hard HEAD &&  # Discard local changes
-              git pull origin main
+              echo 'Pulling latest changes...' &&
+              git reset --hard HEAD &&
+              git pull origin main || { echo 'Git pull failed'; git status; exit 1; } &&
+              pm2 delete shopdesk || true &&  # Gracefully handle missing process
+              bun install || { echo 'bun install failed'; exit 1; } &&
+              bun run build || { echo 'bun run build failed'; exit 1; } &&
+              pm2 start \"bun run start\" --name \"shopdesk\" --watch || { echo 'pm2 start failed'; exit 1; }
             else
-              git clone $REPO_URL &&
-              cd $(basename $REPO_URL .git)
-            fi &&
-            echo 'Installing dependencies...' &&
-            npm install &&  # Install dependencies
-            echo 'Running command...' &&
-            npm run dev
+              git clone $REPO_URL || { echo 'Git clone failed'; exit 1; } &&
+              cd $(basename $REPO_URL .git) &&
+              echo 'Running bun install.....' &&
+              bun install || { echo 'bun install failed'; exit 1; } &&
+              echo 'Running bun run build.....' &&
+              bun run build || { echo 'bun run build failed'; exit 1; } &&
+              echo 'Running bun start.....' &&
+              pm2 start \"bun run start\" --name \"shopdesk\" --watch --ignore-watch \"node_modules logs\"
+            fi
           "

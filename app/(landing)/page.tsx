@@ -1,26 +1,42 @@
+"use client";
 import Image from "next/image";
-import Desktop from "@/public/icons/desktop-img.png";
+import { useEffect } from "react";
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 import Desktop2 from "@/public/icons/Desktop 2.png";
-import Mobile from "@/public/icons/mobile.png";
-import Mobile2 from "@/public/icons/mobile2.png";
 import Check from "@/public/icons/check.png";
 import Play from "@/public/icons/play.png";
 import Desktopsm from "@/public/icons/desktopsm.png";
+import displayScreen from "@/public/home-images/displayscreen.svg";
+import displayScreenSm from "@/public/home-images/displayScreenSm.png";
+import displayScreen2 from "@/public/home-images/displayscreen2.svg";
+import patreon from "@/public/home-images/patreon.svg";
+import airbnb from "@/public/home-images/airbnb.svg";
+import fiberplane from "@/public/home-images/fiberplane.svg";
+import coinbase from "@/public/home-images/coinbase.svg";
+import griffin from "@/public/home-images/griffin.svg";
+import helpscout from "@/public/home-images/helpscout.svg";
+import plaid from "@/public/home-images/plaid.svg";
+import Testimonials from "@/components/functional/testimonials";
+import right from "@/public/icons/right.svg";
 
 export default function Home() {
+  // Initialize AOS on component mount
+  useEffect(() => {
+    AOS.init({
+      duration: 800,
+      easing: 'ease-out',
+      once: false, // Allow animations to replay
+      offset: 100,
+    });
+  }, []);
+
   interface FeatureCardProps {
     iconSrc: string;
     title: string;
     description: string;
     buttonText: string;
     bgColor: string;
-  }
-
-  interface Step {
-    number: string;
-    title: string;
-    description: string;
-    isActive: boolean;
   }
 
   const FeatureCard: React.FC<FeatureCardProps> = ({
@@ -31,169 +47,173 @@ export default function Home() {
     bgColor,
   }) => (
     <div
-      className={`rounded-[20px] w-[400px] h-[350px] flex flex-col gap-5 items-start p-4 ${bgColor}`}
+      className={`rounded-[20px] flex flex-1 min-w-[300px] max-w-[400px] flex-col justify-between gap-5 items-start p-4 ${bgColor}`}
+      data-aos="fade-up"
+      data-aos-delay="100"
+      data-aos-once="false" // Allow this element to re-animate
     >
       <img src={iconSrc} alt={title} className="w-8 h-8 mb-4 mt-2.5" />
       <h3 className="text-2xl leading-6 font-medium text-gray-900">{title}</h3>
-      <p className="text-gray-700 text-lg mt-2 leading-6">{description}</p>
-      <button className="mt-2 text-green-600 font-medium flex items-center md:text-base text-sm leading-6">
-        {buttonText} <span className="ml-1">→</span>
-      </button>
+      <p className="text-gray-700 text-lg leading-6">{description}</p>
+      <div className="flex items-center gap-2">
+        <button className="w-full text-green-600 cursor-pointer font-medium flex items-center text-left md:text-base text-sm ">
+          {buttonText}
+        </button>
+        <Image
+          src={right}
+          alt="Arrow Right"
+          className="w-3.5 h-3.5 cursor-pointer"
+        />
+      </div>
     </div>
   );
-
-  const companies = [
-    { name: "Patreon", logo: "PATREON" },
-    { name: "Airbnb", logo: "airbnb" },
-    { name: "Fiberplane", logo: "fiberplane" },
-    { name: "Coinbase", logo: "coinbase" },
-    { name: "Griffin", logo: "Griffin" },
-    { name: "HelpScout", logo: "HelpScout" },
-    { name: "Plaid", logo: "PLAID" },
-  ];
-
-  const steps: Step[] = [
-    {
-      number: "01",
-      title: "Easy Account Setup",
-      description:
-        "Create your Shopdesk account and easily add your products, pricing, and business details.",
-      isActive: false,
-    },
-    {
-      number: "02",
-      title: "Sales and Stock Management",
-      description:
-        "Process sales quickly while Shopdesk automatically updates your inventory in real time.",
-      isActive: true, // Active step
-    },
-    {
-      number: "03",
-      title: "Track and Analyze Reports",
-      description:
-        "Monitor sales, expenses, and stock levels with smart insights and custom reports.",
-      isActive: false,
-    },
-    {
-      number: "04",
-      title: "Grow Your Business",
-      description:
-        "Make data-driven decisions, prevent stock issues, and boost profits with seamless shop management.",
-      isActive: false,
-    },
-  ];
 
   const ShopDeskFeatures: React.FC = () => {
     const features = [
       {
         iconSrc: "/icons/stock.svg",
-        title: "Stock Management",
+        title: "Easy Stock Entry",
         description:
-          "Manage your inventory with confidence and precision. Our intuitive stock inventory solution helps you track, organize, and optimize your products all in real time.",
-        buttonText: "Streamline Your Inventory Now",
+          "Retailers can add and view stock items with unique SKU codes, ensuring accurate tracking. Soft-deleted SKUs cannot be reused, and all added items appear in the stock list.",
+        buttonText: "View Stock List",
         bgColor: "bg-blue-50",
       },
       {
-        iconSrc: "/icons/sales.svg",
-        title: "Sales Tracking",
+        iconSrc: "/icons/note.svg",
+        title: "Quick Stock Updates",
         description:
-          "ShopDesk automatically updates your inventory with every transaction and supports cash, card, and online payments for a seamless checkout experience.",
-        buttonText: "Get Real-Time Sales Insights",
+          "Retailers can update stock names, prices, and quantities while keeping SKU codes locked for accuracy. This feature simplifies inventory management, reducing errors and improving stock tracking.",
+        buttonText: "Manage Stock",
         bgColor: "bg-rose-50",
       },
       {
-        iconSrc: "/icons/custom.svg",
-        title: "Custom Reports",
+        iconSrc: "/icons/delete.svg",
+        title: "Smart Stock Control",
         description:
-          "Make smarter decisions with detailed sales and inventory reports. Track your revenue, identify best-selling products, and monitor profits—all in one dashboard.",
-        buttonText: "Get Instant Business Insights",
+          "Retailers can soft-delete stock items, removing them from the stock list without permanent deletion. Items are marked as Is deleted in the database for record-keeping and recovery.",
+        buttonText: "Remove Stock",
         bgColor: "bg-yellow-50",
       },
     ];
 
     return (
       <section>
-        <div className="relative">
-          <div className=" flex flex-col items-center gap-8 pt-10 pb-5 max-w-[867px] p-6 mx-auto">
-            <h1 className="text-4xl leading-14 font-bold md:text-6xl md:leading-16 md:-tracking-[3.5px] text-center">
-              <span className="text-green-500">Simplify</span> Inventory
-              Management for Your Business
-            </h1>
+        <div className=" flex flex-col items-center gap-6 pt-10 max-w-[1000px] mx-auto px-5 min-[600px]:px-10">
+          <h1 
+            className="text-[clamp(36px,_6vw,_60px)] max-w-[947px] leading-14 font-circular-bold md:leading-16 text-center"
+            data-aos="fade-down"
+            data-aos-once="false" // Allow this element to re-animate
+          >
+            <span className="text-[#19A45B]">Simplify</span> Inventory Management – No More Spreadsheets
+          </h1>
 
-            <p className="text-gray-600 text-base leading-6  md:text-3xl md:leading-9 font-medium text-center">
-              Start with a stunning homepage. Stay motivated without hurting
-              your pocket.
-            </p>
+          <p 
+            className="text-gray-600 text-base leading-6 md:text-3xl md:leading-9 font-circular-light text-center font-light min-[400px]:px-5"
+            data-aos="fade-up"
+            data-aos-delay="200"
+            data-aos-once="false" // Allow this element to re-animate
+          >
+          Managing your stock shouldn't be a hassle. With ShopDesk, you can securely track your inventory effortlessly all in one simple platform.
+          </p>
+        </div>
 
-            <button className="btn-primary">Start Your Free Trial</button>
+        <div className="w-full md:mt-[40px] mt-[20px] flex flex-col items-center">
+          <Image
+            src={displayScreen}
+            alt="Display screen"
+            className="w-[clamp(320px,_70vw,_850px)] max-w-[850px] hidden md:block"
+            data-aos="zoom-in"
+            data-aos-delay="300"
+            data-aos-once="false" // Allow this element to re-animate
+          />
+          <Image
+            src={displayScreenSm}
+            alt="Display screen"
+            className="w-[clamp(320px,_70vw,_850px)] max-w-[850px] md:hidden mb-6"
+            data-aos="zoom-in"
+            data-aos-delay="300"
+            data-aos-once="false" // Allow this element to re-animate
+          />
 
-            <figure className="max-w-[854px] mx-auto">
-              <div className="relative">
-                <Image
-                  src={Desktop}
-                  alt="Desktop dashboard"
-                  className="w-[283px] h-[232px] md:w-[857px] md:h-[500px]"
-                />
-                <Image
-                  src={Mobile}
-                  alt="Desktop dashboard"
-                  className="absolute top-[32px] -right-10 md:top-[70px] md:-right-24 w-[106px] h-[210px] md:w-[295px] md:h-[420px]"
-                />
-              </div>
-            </figure>
-
-            <div className="h-[117px] md:h-[115px] right-0 flex items-center flex-wrap left-0 absolute bottom-1 bg-green-500 md:bottom-5 p-6 px-[18px]">
-              <div className=" px-4">
-                <div className="flex flex-wrap justify-center items-center space-x-6 md:space-x-12">
-                  {companies.map((company) => (
-                    <div
-                      key={company.name}
-                      className="text-white  text-lg font-bold"
-                    >
-                      {company.logo}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+          <div 
+            className="bg-[#19A45B] w-full px-[clamp(18px,_3vw,_80px)] p-6 flex items-center gap-[clamp(16px,_3vw,_48px)] justify-center flex-wrap h-[101px]"
+            data-aos="fade-up"
+            data-aos-once="false" // Allow this element to re-animate
+          >
+            {[patreon, airbnb, fiberplane, coinbase, griffin, helpscout, plaid].map((logo, index) => (
+              <Image
+                key={index}
+                src={logo}
+                alt="Logo"
+                className="w-[clamp(70px,_11vw,_140px)] hidden"
+                data-aos="fade-up"
+                data-aos-delay={`${(index + 1) * 100}`}
+                data-aos-once="false" // Allow this element to re-animate
+              />
+            ))}
           </div>
         </div>
 
-        <div className="mx-auto max-w-[1198px] px-6">
-          <h2 className="text-center py-8 md:py-3 font-medium leading-6 text-green-500">
+        <div className="mx-auto max-w-[1198px] px-5 min-[600px]:px-10">
+          <h2 
+            className="text-center py-4 md:py-3 font-medium leading-6 text-[#009A49]"
+            data-aos="fade-up"
+            data-aos-once="false" // Allow this element to re-animate
+          >
             Key Features
           </h2>
 
-          <div className="max-w-[1198px] flex flex-col md:flex-row gap-8 items-center justify-between">
-            <div className="flex flex-col gap-8">
-              <span className="text-base leading-5 text-green-500 font-bold">
-                Stock Inventory
-              </span>
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div 
+              className="flex flex-col gap-8 min-w-[300px]"
+              data-aos="fade-right"
+              data-aos-once="false" // Allow this element to re-animate
+            >
+              <div className="gap-2">
+                <span className="text-sm leading-5 text-[#19A45B] mt-3 font-normal">
+                  Stock Inventory
+                </span>
 
-              <h1 className="md:text-[54px] text-4xl font-bold leading-16">
-                Inventory
-              </h1>
+                <h1 className="md:text-[54px] text-4xl font-bold leading-16">
+                  Inventory
+                </h1>
 
-              <p className="text-gray-600 text-base leading-[22px] max-w-[512px]">
-                Manage your inventory with confidence and precision. Our
-                intuitive stock inventory solution helps you track, organize,
-                and optimize your products all in real time.
-              </p>
+                <p className="text-gray-600 text-base font-light max-w-[512px]">
+                  Manage your inventory with confidence and precision. Our
+                  intuitive stock inventory solution helps you track, organize,
+                  and optimize your products all in real time.
+                </p>
+              </div>
 
-              <ul className="flex-col gap-6 text-base leading-6 hidden md:flex">
-                <li className="flex items-center gap-2">
+              <ul className="flex-col gap-6 leading-6 hidden md:flex">
+                <li 
+                  className="flex items-center gap-2 text-base"
+                  data-aos="fade-up"
+                  data-aos-delay="100"
+                  data-aos-once="false" // Allow this element to re-animate
+                >
                   <span>
                     <Image src={Check} height={24} width={24} alt="" />
                   </span>
-                  Automated Alerts
+                  Real-Time Stock Tracking
                 </li>
-                <li className="flex items-center gap-2">
+                <li 
+                  className="flex items-center gap-2 text-base"
+                  data-aos="fade-up"
+                  data-aos-delay="200"
+                  data-aos-once="false" // Allow this element to re-animate
+                >
                   <span>
                     <Image src={Check} height={24} width={24} alt="" />
                   </span>
-                  Comprehensive Reporting
+                  Effortless Organization
                 </li>
-                <li className="flex items-center gap-2">
+                <li 
+                  className="flex items-center gap-2 text-base"
+                  data-aos="fade-up"
+                  data-aos-delay="300"
+                  data-aos-once="false" // Allow this element to re-animate
+                >
                   <span>
                     <Image src={Play} height={24} width={24} alt="" />
                   </span>
@@ -202,140 +222,90 @@ export default function Home() {
               </ul>
             </div>
 
-            <figure className="max-w-[622px]">
-              <div className="w-full bg-[#FAFAFA] p-2 pt-5 pr-0 rounded-tl-[48px] hidden md:block">
-                <Image
-                  src={Desktop2}
-                  alt="Desktop"
-                  className="w-full md:w-[767px] md:h-[546px] overflow-hidden"
-                />
-              </div>
+            <div 
+              className="w-full max-w-[622px] bg-[#FAFAFA] p-2 pt-5 pr-0 hidden md:block"
+              data-aos="fade-left"
+              data-aos-once="false" // Allow this element to re-animate
+            >
+              <Image
+                src={Desktop2}
+                alt="Desktop"
+                className="flex-1 overflow-hidden"
+              />
+            </div>
 
-              <div className="w-full bg-[#FAFAFA] flex items-center p-1 rounded-3xl md:hidden">
+            <div className="w-full max-w-[450px] mt-4 flex flex-col items-center p-1 rounded-3xl md:hidden">
+              <div 
+                className="bg-[#FAFAFA] pt-1.5 px-1.5 pb-0 rounded-tl-3xl rounded-tr-3xl w-full"
+                data-aos="fade-up"
+                data-aos-once="false" // Allow this element to re-animate
+              >
                 <Image
                   src={Desktopsm}
                   alt="Desktop"
-                  className="overflow-hidden h-[201px] w-[343px]"
+                  className="overflow-hidden h-[201px]"
                 />
               </div>
-            </figure>
-          </div>
 
-          <ul className="flex flex-col gap-6 text-base leading-6 md:hidden pt-8">
-            <li className="flex items-center gap-2">
-              <span>
-                <Image src={Check} height={24} width={24} alt="" />
-              </span>
-              Automated Alerts
-            </li>
-            <li className="flex items-center gap-2">
-              <span>
-                <Image src={Check} height={24} width={24} alt="" />
-              </span>
-              Comprehensive Reporting
-            </li>
-            <li className="flex items-center gap-2">
-              <span>
-                <Image src={Play} height={24} width={24} alt="" />
-              </span>
-              Streamline Your Inventory Now
-            </li>
-          </ul>
+              <ul className="flex flex-col gap-6 text-base leading-6 md:hidden pt-8 self-start">
+                <li 
+                  className="flex items-center gap-2"
+                  data-aos="fade-up"
+                  data-aos-delay="100"
+                  data-aos-once="false" // Allow this element to re-animate
+                >
+                  <span>
+                    <Image src={Check} height={24} width={24} alt="" />
+                  </span>
+                  Automated Alerts
+                </li>
+                <li 
+                  className="flex items-center gap-2"
+                  data-aos="fade-up"
+                  data-aos-delay="200"
+                  data-aos-once="false" // Allow this element to re-animate
+                >
+                  <span>
+                    <Image src={Check} height={24} width={24} alt="" />
+                  </span>
+                  Comprehensive Reporting
+                </li>
+                <li 
+                  className="flex items-center gap-2"
+                  data-aos="fade-up"
+                  data-aos-delay="300"
+                  data-aos-once="false" // Allow this element to re-animate
+                >
+                  <span>
+                    <Image src={Play} height={24} width={24} alt="" />
+                  </span>
+                  Streamline Your Inventory Now
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
-        <div className="mx-auto max-w-[1197px] py-10 px-8">
-          <div className="flex flex-col md:flex-row items-center md:gap-4 gap-6 justify-between">
+        <div 
+          className="mx-auto max-w-[1198px] py-10 px-8"
+          data-aos="fade-up"
+          data-aos-once="false" // Allow this element to re-animate
+        >
+          <div className="flex items-stretch justify-center gap-4 flex-wrap">
             {features.map((feature, index) => (
-              <FeatureCard key={index} {...feature} />
+              <FeatureCard 
+                key={index} 
+                {...feature} 
+              />
             ))}
           </div>
         </div>
 
-        <div className="max-w-[1200px] mx-auto pb-10">
-          <h2 className="text-center py-3 font-medium leading-6 text-green-500">
-            How it works
-          </h2>
-
-          <div className="flex md:flex-row flex-col-reverse md:gap-[200px] gap-10 items-center px-4">
-            <figure className="flex items-center justify-center w-full md:w-auto">
-              <Image
-                src={Mobile2}
-                alt="Mobile view"
-                className="max-w-[308px]"
-              />
-            </figure>
-            <div className="flex justify-center w-full md:w-auto max-w-[692px]">
-              <div className="flex flex-col items-start gap-16 relative">
-                {/* Horizontal connecting line */}
-                <div
-                  className="absolute md:left-[105px] left-[71px] bg-gray-300"
-                  style={{
-                    width: "2px",
-                    height: "calc(100% - 110px)",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                  }}
-                ></div>
-                {steps.map((step, index) => (
-                  <div
-                    key={index}
-                    className="relative flex flex-col md:flex-row md:gap-[64px] gap-2"
-                  >
-                    <div className="flex items-start gap-4 md:gap-10">
-                      <div className="flex items-center gap-4 md:gap-10">
-                        <span className="text-sm md:text-base">Step</span>
-                        <div
-                          className={`w-12 h-12 md:w-16 md:h-16 flex items-center text-xl md:text-2xl justify-center rounded-full font-medium ${
-                            step.isActive
-                              ? "bg-black text-white"
-                              : "bg-gray-200 text-gray-500"
-                          } relative z-10`}
-                        >
-                          {step.number}
-                        </div>
-                      </div>
-
-                      {/* Mobile Content */}
-                      <div className="md:hidden">
-                        <h3
-                          className={`text-xl leading-9 font-medium ${
-                            step.isActive ? "text-black" : "text-gray-400"
-                          }`}
-                        >
-                          {step.title}
-                        </h3>
-                        <p
-                          className={`text-gray-500 text-base leading-7 mt-1 ${
-                            step.isActive ? "text-black" : "text-gray-400"
-                          }`}
-                        >
-                          {step.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Desktop Content */}
-                    <div className="hidden md:block md:mt-5">
-                      <h3
-                        className={`text-2xl leading-9 font-medium ${
-                          step.isActive ? "text-black" : "text-gray-400"
-                        }`}
-                      >
-                        {step.title}
-                      </h3>
-                      <p
-                        className={`text-gray-500 text-lg leading-7 ${
-                          step.isActive ? "text-black" : "text-gray-400"
-                        }`}
-                      >
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        <div 
+          data-aos="fade-up"
+          data-aos-once="false" // Allow this element to re-animate
+        >
+          <Testimonials />
         </div>
       </section>
     );

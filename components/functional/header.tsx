@@ -42,7 +42,7 @@ const Header = () => {
       <div className="py-4 flex items-center justify-between max-w-screen-xl">
         <Logo />
 
-        <nav className="flex gap-6 text-[16px] max-[850px]:hidden">
+        <nav className="hidden add-this-back-flex gap-6 text-[16px] max-[850px]:hidden">
           <Link href="/features" className="hover:text-green-500 transition">
             Features
           </Link>
@@ -60,24 +60,24 @@ const Header = () => {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-4 max-[900px]:hidden">
+        <div className="flex items-center gap-4">
           <button
             type="button"
             onClick={() => router.push("/sign-in")}
-            className="border border-black px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+            className="btn-primary"
           >
             Sign In
           </button>
           <button
             type="button"
             onClick={() => router.push("/sign-in")}
-            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
+            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition hidden"
           >
             Start for free
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="hidden  add-this-back-flex items-center gap-2 min-[900px]:hidden">
           <button 
           onClick={() => router.push("/sign-in")}
           className="btn-primary min-[900px]:hidden max-[500]:hidden max-[600px]:text-[14px]">
