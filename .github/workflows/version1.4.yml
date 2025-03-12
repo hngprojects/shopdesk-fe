@@ -22,8 +22,9 @@ jobs:
             if [ -d 'shopdesk-fe' ]; then
               cd shopdesk-fe &&
               echo 'Pulling latest changes...' &&
+              git checkout version1.4 &&
               git reset --hard HEAD &&
-              git pull origin main || { echo 'Git pull failed'; git status; exit 1; } &&
+              git pull origin version1.4 || { echo 'Git pull failed'; git status; exit 1; } &&
               pm2 delete shopdesk || true &&  # Gracefully handle missing process
               bun install || { echo 'bun install failed'; exit 1; } &&
               bun run build || { echo 'bun run build failed'; exit 1; } &&
@@ -31,6 +32,7 @@ jobs:
             else
               git clone $REPO_URL || { echo 'Git clone failed'; exit 1; } &&
               cd $(basename $REPO_URL .git) &&
+              git checkout version1.4 &&
               echo 'Running bun install.....' &&
               bun install || { echo 'bun install failed'; exit 1; } &&
               echo 'Running bun run build.....' &&
