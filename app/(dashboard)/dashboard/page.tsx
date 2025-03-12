@@ -139,12 +139,12 @@ const Page = () => {
   };
 
   const handleInlineEdit = useCallback((item: StockItem, field: keyof StockItem = "name") => {
-    setIsEditingTransition(item.id);
+    setIsEditingTransition(item.id); 
     setEditedItem({ ...item });
-    setActiveField(field); 
-    setTimeout(() => setIsEditingTransition(null), 0); 
+    setActiveField(field);
+    setIsEditingTransition(null); 
   }, []);
-
+  
   const handleInputChange = useCallback(
     (field: keyof StockItem, value: string) => {
       if (editedItem) {
@@ -152,6 +152,7 @@ const Page = () => {
           ...prev!,
           [field]: field === "quantity" || field === "buying_price" ? Number(value) : value,
         }));
+        setActiveField(field);
       }
     },
     [editedItem]
@@ -212,7 +213,7 @@ const Page = () => {
 
   useEffect(() => {
     if (editedItem && activeField) {
-      switch (activeField) {
+         switch (activeField) {
         case "name":
           nameInputRef.current?.focus();
           break;
