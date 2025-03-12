@@ -3,7 +3,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { ChevronDown, SaveAll, Loader2, Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import EditItemModal from "@/components/modal/edit-stock";
+// import EditItemModal from "@/components/modal/edit-stock";
 import AddItemModal from "@/components/modal/add-item";
 import DeleteItem from "@/components/modal/delete-item";
 import {
@@ -32,6 +32,7 @@ import {
   useReactTable,
   flexRender,
 } from "@tanstack/react-table";
+import { getAccessToken } from "@/app/utils/auth";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData, TValue> {
@@ -78,7 +79,7 @@ const Page = () => {
   const nameInputRef = useRef<HTMLInputElement>(null);
   const priceInputRef = useRef<HTMLInputElement>(null);
   const quantityInputRef = useRef<HTMLInputElement>(null);
-
+  const userToken = getAccessToken();
   useEffect(() => {
     const token = sessionStorage.getItem("refresh_token");
     if (!token) {
@@ -156,14 +157,58 @@ const Page = () => {
     [editedItem]
   );
 
-  const handleSaveInline = useCallback(() => {
-    if (editedItem) {
-      setStockItems((prev) =>
-        prev.map((item) => (item.id === editedItem.id ? editedItem : item))
+  // const handleSaveInline = useCallback(() => {
+  //   if (editedItem) {
+  //     setStockItems((prev) =>
+  //       prev.map((item) => (item.id === editedItem.id ? editedItem : item))
+  //     );
+  //     setEditedItem(null);
+  //   }
+  // }, [editedItem]);
+  const handleSaveInline = async () => {
+    if (!editedItem) return;
+  
+    try {
+      // Set transitioning state (show loading spinner)
+      setIsEditingTransition(editedItem.id);
+  
+      // Call the API to update the stock item
+      const response = await fetch("/api/stocks/edit", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`, // Ensure you have a valid token
+        },
+        body: JSON.stringify({
+          stock_id: editedItem.id,
+          name: editedItem.name,
+          buying_price: editedItem.buying_price,
+          quantity: editedItem.quantity,
+          currency_code: editedItem.currency_code,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to update stock item");
+      }
+  
+      // Update the local state with the edited item
+      setStockItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === editedItem.id ? { ...item, ...editedItem } : item
+        )
       );
+  
+      // Reset editing state
       setEditedItem(null);
+    } catch (error) {
+      console.error("Error saving changes:", error);
+      alert("Failed to save changes. Please try again.");
+    } finally {
+      setIsEditingTransition(null);
     }
-  }, [editedItem]);
+  };
+  
 
   useEffect(() => {
     if (editedItem && activeField) {
@@ -527,12 +572,12 @@ const Page = () => {
         </div>
       </div>
 
-      <EditItemModal
+      {/* <EditItemModal
         isOpen={openEdit}
         onClose={closeEditModal}
         item={selectedItem!}
         onSave={handleSaveEdit}
-      />
+      /> */}
 
       <div className="flex flex-col gap-2 mt-4">
         <div hidden className="bg-[#DEE5ED] p-2 w-full lg:hidden">
