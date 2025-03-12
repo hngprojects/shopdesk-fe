@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: version1.2 Pipeline
 
 on:
   workflow_dispatch
@@ -22,15 +22,20 @@ jobs:
             if [ -d 'shopdesk-fe' ]; then
               cd shopdesk-fe &&
               echo 'Pulling latest changes...' &&
+              git checkout version1.2 &&
               git reset --hard HEAD &&
-              git pull origin main || { echo 'Git pull failed'; git status; exit 1; } &&
+              git pull origin version1.2 || { echo 'Git pull failed'; git status; exit 1; } &&
               pm2 delete shopdesk || true &&  # Gracefully handle missing process
+              echo '$SSH_PASSWORD' | sudo -S fuser -k 7777/tcp || echo 'No process found on port 7777' &&
               bun install || { echo 'bun install failed'; exit 1; } &&
               bun run build || { echo 'bun run build failed'; exit 1; } &&
               pm2 start \"bun run start\" --name \"shopdesk\" --watch || { echo 'pm2 start failed'; exit 1; }
             else
               git clone $REPO_URL || { echo 'Git clone failed'; exit 1; } &&
               cd $(basename $REPO_URL .git) &&
+              git checkout version1.2 &&
+              pm2 delete shopdesk || true &&  # Gracefully handle missing process
+              echo '$SSH_PASSWORD' | sudo -S fuser -k 7777/tcp || echo 'No process found on port 7777' &&
               echo 'Running bun install.....' &&
               bun install || { echo 'bun install failed'; exit 1; } &&
               echo 'Running bun run build.....' &&
