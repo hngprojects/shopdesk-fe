@@ -77,7 +77,7 @@ export default function EditStockV3Modal({
 
   return (
     <div className="fixed inset-0 bg-[#24242433] bg-opacity-20 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-[720px] flex flex-col gap-[28px]">
+      <div className="bg-white rounded-lg shadow-lg w-full border border-[#A0A0A0] max-w-[564px] flex flex-col gap-[28px]">
         <div className="p-6 gap-5 flex flex-col">
           <div className="flex gap-2.5">
             <div className="flex p-2 ">
@@ -91,7 +91,7 @@ export default function EditStockV3Modal({
                 />
               </div>
             </div>
-            <div className="flex-grow h-full p-2">
+            <div className="flex-grow h-full py-2">
               <h1 className="font-circular-medium text-[24px] text-left">
                 Edit Your Stock
               </h1>

@@ -11,10 +11,10 @@ export default function EditSuccessModal({ isOpen, onClose }: SuccessModalProps)
 
   return (
     <div className="fixed inset-0 bg-[#24242433] bg-opacity-20 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-[350px] flex flex-col gap-4 p-6">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-[350px]  border border-[#A0A0A0] flex flex-col gap-4 p-6">
         <div className="flex justify-center">
           <Image
-            src="/modal-images/ui-check.svg"
+           src="/modal-images/ui-check.svg"
             alt="Success"
             width={64}
             height={64}

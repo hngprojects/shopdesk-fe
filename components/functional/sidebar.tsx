@@ -1,7 +1,6 @@
 import { StockItem } from "@/app/(dashboard)/dashboard/page";
 import { X } from "lucide-react";
 import React, { useState } from "react";
-import EditItemModal from "@/components/modal/edit-stock";
 import { Button } from "@/components/ui/button";
 import EditStockV3Modal from "../modal/modalv3/edit-stock";
 import EditPriceModal from "../modal/modalv3/edit-price";
