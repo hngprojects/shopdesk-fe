@@ -58,6 +58,7 @@ declare module "@tanstack/react-table" {
     original_quantity?: number;
     supplier?: null | any;
     timeslots?: any[];
+    discount_percentage?: number;
   };
 
 const Page = () => {
@@ -133,9 +134,17 @@ const Page = () => {
   };
 
   const handleSaveEdit = (updatedItem: StockItem) => {
+    console.log("Saving updated item:", updatedItem);
+    
+    // Update local state
     setStockItems((prev) =>
       prev.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
+
+    // If the sidebar is open and the selected item is being updated, update it too
+    if (selectedItem && selectedItem.id === updatedItem.id) {
+      setSelectedItem(updatedItem);
+    }
 
     setOpenEdit(false); 
   };
