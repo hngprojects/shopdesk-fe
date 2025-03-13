@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { sendLoginEmail } from "@/services/loginEmail";
 
 import Illustration from "@/public/auth/illustration.svg";
 import Cube from "@/public/auth/cube.svg";
@@ -27,7 +28,6 @@ export default function SignIn() {
 
     setTouched({ email: true, password: true });
 
-  
     if (!email.trim() || !password.trim()) {
       setError("Please fill in all required fields.");
       return;
@@ -37,16 +37,14 @@ export default function SignIn() {
 
     try {
       const data = await loginUser(email, password);
-      console.log({ email, password });
+      const { first_name, last_name } = data.data;
+      await sendLoginEmail(email, first_name, last_name);
 
       if (!data || data.error) {
         throw new Error(data?.message || "Invalid email or password.");
       }
-      sessionStorage.setItem("access_token", data.access_token);
-    sessionStorage.setItem("refresh_token", data.refresh_token);
 
-    
-    router.push("/dashboard");
+      router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
@@ -106,7 +104,7 @@ export default function SignIn() {
 
   return (
     <div className="flex flex-col h-dvh w-full bg-white md:bg-[url(/auth/bg-pattern.svg)] bg-contain bg-no-repeat bg-right px-8 md:px-16">
-      <motion.div 
+      <motion.div
         className="border-b border-[#F2F4F7] flex lg:hidden justify-center h-20"
         initial="hidden"
         animate="visible"
@@ -117,7 +115,7 @@ export default function SignIn() {
 
       <main className="size-full flex justify-center lg:justify-between items-center">
         {/* left */}
-        <motion.div 
+        <motion.div
           className="hidden lg:flex flex-col gap-8 justify-center items-center max-w-[278px]"
           initial="hidden"
           animate="visible"
@@ -125,13 +123,10 @@ export default function SignIn() {
         >
           <motion.div variants={itemVariants}>
             <div className="flex flex-col gap-2">
-              <motion.div
-                variants={logoVariants}
-                whileHover={{ rotate: 10 }}
-              >
+              <motion.div variants={logoVariants} whileHover={{ rotate: 10 }}>
                 <Image src={Cube} alt="cube" width={56} height={56} />
               </motion.div>
-              <motion.h1 
+              <motion.h1
                 className="md:text-4xl lg:text-5xl font-bold"
                 variants={itemVariants}
               >
@@ -139,7 +134,7 @@ export default function SignIn() {
               </motion.h1>
             </div>
 
-            <motion.p 
+            <motion.p
               className="text-[#1B1B1B] mt-2 text-2xl font-bold"
               variants={itemVariants}
             >
@@ -171,35 +166,35 @@ export default function SignIn() {
         </motion.div>
 
         {/* right */}
-        <motion.div 
+        <motion.div
           className="max-w-[588px] w-full"
           initial="hidden"
           animate="visible"
           variants={formVariants}
         >
-          <motion.div 
+          <motion.div
             className="w-full max-h-[658px] bg-gradient-to-r from-[#FFFFFF66] to-[#FFFFFF00] p-8 py-20 rounded-[40px] shadow-sm backdrop-blur-md"
             initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            animate={{ 
-              opacity: 1, 
+            animate={{
+              opacity: 1,
               backdropFilter: "blur(10px)",
-              boxShadow: "0 10px 25px rgba(0, 0, 0, 0.05)" 
+              boxShadow: "0 10px 25px rgba(0, 0, 0, 0.05)",
             }}
             transition={{ duration: 0.8 }}
           >
-            <motion.h2 
+            <motion.h2
               className="text-4xl md:text-5xl font-semibold text-center mb-6"
               variants={itemVariants}
             >
               Sign in
             </motion.h2>
 
-            <motion.form 
-              onSubmit={handleSubmit} 
+            <motion.form
+              onSubmit={handleSubmit}
               className="flex flex-col gap-6"
               variants={containerVariants}
             >
-              <motion.div 
+              <motion.div
                 className="flex flex-col gap-1.5"
                 variants={itemVariants}
               >
@@ -228,7 +223,7 @@ export default function SignIn() {
                   transition={{ type: "spring", stiffness: 400 }}
                 />
                 {touched.email && !email && (
-                  <motion.p 
+                  <motion.p
                     className="text-red-500 text-sm"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -240,7 +235,7 @@ export default function SignIn() {
               </motion.div>
 
               {/* Password Field */}
-              <motion.div 
+              <motion.div
                 className="flex flex-col gap-1.5"
                 variants={itemVariants}
               >
@@ -271,7 +266,7 @@ export default function SignIn() {
                   transition={{ type: "spring", stiffness: 400 }}
                 />
                 {touched.password && !password && (
-                  <motion.p 
+                  <motion.p
                     className="text-red-500 text-sm"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -284,7 +279,7 @@ export default function SignIn() {
 
               {/* Error Message */}
               {error && (
-                <motion.p 
+                <motion.p
                   className="text-red-600 text-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -303,10 +298,14 @@ export default function SignIn() {
                 whileTap="tap"
               >
                 {loading ? (
-                  <motion.span 
+                  <motion.span
                     className="size-5 border-2 border-white border-t-transparent rounded-full"
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                   ></motion.span>
                 ) : (
                   "Sign in"

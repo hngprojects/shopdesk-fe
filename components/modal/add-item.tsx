@@ -72,12 +72,14 @@ export default function AddStockModal({
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [productName, setProductName] = useState("");
+  const [skuCode, setSkuCode] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [selectedSellingCurrency, setSelectedSellingCurrency] = useState(
     currencies[0]
   );
 
+ 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -89,6 +91,10 @@ export default function AddStockModal({
       newErrors.sellingPrice = "Selling Price must be a number.";
 
     if (quantity === 0) newErrors.quantity = "Quantity must be greater than 0.";
+
+    if (skuCode.trim() && !/^[a-zA-Z0-9-]+$/.test(skuCode)) {
+      newErrors.skuCode = "SKU Code must be alphanumeric.";
+    }
 
     setErrors(newErrors);
 
@@ -114,6 +120,8 @@ export default function AddStockModal({
     setIsLoading(true);
 
     try {
+      // const finalSkuCode = skuCode.trim() || null;
+
       const newStock = await AddStock(
         productName,
         parseFloat(sellingPrice),
@@ -122,7 +130,8 @@ export default function AddStockModal({
         selectedSellingCurrency.code,
         "160db8736a9d47989381e01a987e4413", // Hardcoded organization_id
         new Date().toISOString(),
-        selectedSellingCurrency
+        selectedSellingCurrency,
+        // finalSkuCode
       );
 
       // Call the onSave callback with the new stock item
@@ -131,7 +140,7 @@ export default function AddStockModal({
         name: newStock.name,
         buying_price: newStock.buying_price,
         quantity: newStock.quantity,
-        currency_code: newStock.currency_code,
+        currency_code: newStock.currency_code
       });
 
       // Reset the form fields
@@ -139,6 +148,7 @@ export default function AddStockModal({
       setSellingPrice("");
       setQuantity(0);
       setSelectedSellingCurrency(currencies[0]);
+      setSkuCode("");
 
       onClose(); // Close the modal
     } catch (error) {
@@ -228,90 +238,121 @@ export default function AddStockModal({
                 required
               />
             </div>
-            <div className="flex flex-col gap-[8px] flex-1">
-              <label className="font-circular-normal text-[14px] text-[#717171] text-left">
-                Selling Price <span className="text-[#FF1925]">*</span>
-              </label>
-              <div
-                ref={sellingPriceDivRef}
-                className="flex border gap-[8px] rounded-[9px] m-1 relative h-[48px] md:h-[62px]"
-              >
-                <div
-                  className="p-2 flex gap-[8px] items-center cursor-pointer"
-                  onClick={toggleCurrencyModal}
-                >
-                  <Image
-                    src={selectedSellingCurrency.flag}
-                    alt={`${selectedSellingCurrency.name} Flag`}
-                    className="w-5 h-5 md:w-6 md:h-6"
-                    width={20}
-                    height={20}
-                  />
-                  <span className="text-[20px] text-center text-[#595959]">
-                    {selectedSellingCurrency.symbol}
-                  </span>
-                  <FaChevronDown className="w-[10px] h-[10px] text-[#888888]" />
-                </div>
-                <div className="h-8 border border-gray self-center"></div>
-                <div className="w-full">
-                  <input
-                    type="number"
-                    name="selling-price"
-                    className="w-full h-full p-3 outline-none placeholder:text-[#B8B8B8] text-[#2A2A2A] text-base font-circular-normal"
-                    placeholder="Amount"
-                    value={sellingPrice}
-                    onChange={(e) => setSellingPrice(e.target.value)}
-                    required
-                  />
-                </div>
-
-                {isCurrencyModalOpen && (
-                  <div
-                    ref={dropdownRef}
-                    className="absolute top-full left-0 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
-                  >
-                    <div className="relative w-full p-4">
-                      <input
-                        type="text"
-                        name="item-name"
-                        className="w-full rounded-[10px] p-2 pl-[48px] outline-none placeholder:text-[#B8B8B8] text-[16px] border bg-white"
-                        placeholder="Search"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        required
-                      />
-                      <FaSearch className="absolute left-[32px] top-1/2 transform -translate-y-1/2 text-[#B8B8B8] w-[20px] h-[20px]" />
-                    </div>
-
-                    <div className="h-[200px] overflow-y-auto custom-scrollbar px-[20px] py-3 ">
-                      {filteredCurrencies.map((currency) => (
-                        <div
-                          key={currency.code}
-                          className="flex items-center p-2 hover:bg-gray-100 w-full cursor-pointer"
-                          onClick={() => handleCurrencySelect(currency)}
-                        >
-                          <img
-                            src={currency.flag}
-                            alt={`${currency.name} Flag`}
-                            className="w-8 h-8 rounded-full object-cover mr-3"
-                          />
-                          <div>
-                            <p className="text-[14px] font-circular-normal">
-                              {currency.name} ({currency.code}){" "}
-                              <span className="ml-2">{currency.symbol}</span>
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+            <div className="flex  gap-5 flex-1 max-[640px]:flex-col">
+              <div className="flex flex-col gap-[12px] flex-1 relative group">
+              <div className="absolute left-0 bottom-[-30px] bg-[#2A2A2A] text-white text-[12px] py-1 px-3 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                SKU Code is auto-assigned for now.
+              </div>
+                <label className="font-circular-normal text-[14px] text-[#717171] text-left">
+                  SKU Code
+                </label>
+                <input
+                  type="text"
+                  name="sku-code"
+                  className="w-full h-[48px] md:h-[62px] rounded-[9px] p-4 outline-none border border-[#DEDEDE] placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal"
+                  placeholder="SKU Code"
+                  value={skuCode}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow only alphanumeric characters and hyphens
+                    if (/^[a-zA-Z0-9-]*$/.test(value)) {
+                      setSkuCode(value);
+                    }
+                  }}
+                  disabled
+                />
+                {errors.skuCode && (
+                  <p className="text-[#FF1925] text-sm font-circular-normal">
+                    {errors.skuCode}
+                  </p>
                 )}
               </div>
-              {errors.sellingPrice && (
-                <p className="text-[#FF1925] text-sm font-circular-normal">
-                  {errors.sellingPrice}
-                </p>
-              )}
+
+              <div className="flex flex-col gap-[8px] flex-1 ">
+                <label className="font-circular-normal text-[14px] text-[#717171] text-left">
+                  Selling Price <span className="text-[#FF1925]">*</span>
+                </label>
+                <div
+                  ref={sellingPriceDivRef}
+                  className="flex border gap-[8px] rounded-[9px] m-1 relative h-[48px] md:h-[62px]"
+                >
+                  <div
+                    className="p-2 flex gap-[8px] items-center cursor-pointer"
+                    onClick={toggleCurrencyModal}
+                  >
+                    <Image
+                      src={selectedSellingCurrency.flag}
+                      alt={`${selectedSellingCurrency.name} Flag`}
+                      className="w-5 h-5 md:w-6 md:h-6"
+                      width={20}
+                      height={20}
+                    />
+                    <span className="text-[20px] text-center text-[#595959]">
+                      {selectedSellingCurrency.symbol}
+                    </span>
+                    <FaChevronDown className="w-[10px] h-[10px] text-[#888888]" />
+                  </div>
+                  <div className="h-8 border border-gray self-center"></div>
+                  <div className="w-full">
+                    <input
+                      type="number"
+                      name="selling-price"
+                      className="w-full h-full p-3 outline-none placeholder:text-[#B8B8B8] text-[#2A2A2A] text-base font-circular-normal"
+                      placeholder="Amount"
+                      value={sellingPrice}
+                      onChange={(e) => setSellingPrice(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  {isCurrencyModalOpen && (
+                    <div
+                      ref={dropdownRef}
+                      className="absolute top-full left-0 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
+                    >
+                      <div className="relative w-full p-4">
+                        <input
+                          type="text"
+                          name="item-name"
+                          className="w-full rounded-[10px] p-2 pl-[48px] outline-none placeholder:text-[#B8B8B8] text-[16px] border bg-white"
+                          placeholder="Search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          required
+                        />
+                        <FaSearch className="absolute left-[32px] top-1/2 transform -translate-y-1/2 text-[#B8B8B8] w-[20px] h-[20px]" />
+                      </div>
+
+                      <div className="h-[200px] overflow-y-auto custom-scrollbar px-[20px] py-3 ">
+                        {filteredCurrencies.map((currency) => (
+                          <div
+                            key={currency.code}
+                            className="flex items-center p-2 hover:bg-gray-100 w-full cursor-pointer"
+                            onClick={() => handleCurrencySelect(currency)}
+                          >
+                            <img
+                              src={currency.flag}
+                              alt={`${currency.name} Flag`}
+                              className="w-8 h-8 rounded-full object-cover mr-3"
+                            />
+                            <div>
+                              <p className="text-[14px] font-circular-normal">
+                                {currency.name} ({currency.code}){" "}
+                                <span className="ml-2">{currency.symbol}</span>
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {errors.sellingPrice && (
+                  <p className="text-[#FF1925] text-sm font-circular-normal">
+                    {errors.sellingPrice}
+                  </p>
+                )}
+              </div>
             </div>
             <div className="flex flex-col gap-[8px]">
               <label className="font-circular-normal text-[14px] text-[#1B1B1B] text-left">

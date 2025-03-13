@@ -1,0 +1,46 @@
+name: main
+
+on:
+  workflow_dispatch
+
+jobs:
+  ssh-deploy:
+    runs-on: [self-hosted, shopdesk]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: SSH into server and run commands
+        env:
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          SSH_IP: ${{ secrets.SSH_IP }}
+          REPO_URL: ${{ secrets.REPO_URL }}
+        run: |
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no "$SSH_USERNAME@$SSH_IP" "
+            if [ -d 'shopdesk-fe' ]; then
+              cd shopdesk-fe &&
+              echo 'Pulling latest changes...' &&
+              git checkout main &&
+              git reset --hard HEAD &&
+              git pull origin main || { echo 'Git pull failed'; git status; exit 1; } &&
+              pm2 delete shopdesk || true &&  # Gracefully handle missing process
+              echo '$SSH_PASSWORD' | sudo -S fuser -k 7777/tcp || echo 'No process found on port 7777' &&
+              bun install || { echo 'bun install failed'; exit 1; } &&
+              bun run build || { echo 'bun run build failed'; exit 1; } &&
+              pm2 start \"bun run start\" --name \"shopdesk\" --watch || { echo 'pm2 start failed'; exit 1; }
+            else
+              git clone $REPO_URL || { echo 'Git clone failed'; exit 1; } &&
+              cd $(basename $REPO_URL .git) &&
+              git checkout main &&
+              pm2 delete shopdesk || true &&  # Gracefully handle missing process
+              echo '$SSH_PASSWORD' | sudo -S fuser -k 7777/tcp || echo 'No process found on port 7777' &&
+              echo 'Running bun install.....' &&
+              bun install || { echo 'bun install failed'; exit 1; } &&
+              echo 'Running bun run build.....' &&
+              bun run build || { echo 'bun run build failed'; exit 1; } &&
+              echo 'Running bun start.....' &&
+              pm2 start \"bun run start\" --name \"shopdesk\" --watch --ignore-watch \"node_modules logs\"
+            fi
+          "
