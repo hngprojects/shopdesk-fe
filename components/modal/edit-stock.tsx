@@ -9,6 +9,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { currencies } from "./add-item";
+import { editStock } from "@/services/stock";
 
 interface EditItemModal {
   isOpen: boolean;
@@ -42,6 +43,7 @@ export default function EditItemModal({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const sellingPriceDivRef = useRef<HTMLDivElement>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const [productName, setProductName] = useState(item.name);
   const [buyingPrice, setBuyingPrice] = useState(item.buying_price?.toString());
@@ -80,18 +82,34 @@ export default function EditItemModal({
     return productName && buyingPrice && quantity > 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      onSave({
-        id: item.id,
-        name: productName,
-        buying_price: parseFloat(buyingPrice),
-        quantity: quantity,
-        currency_code: selectedSellingCurrency.code,
-      });
 
-      onClose();
+    setIsLoading(true);
+
+    if (validateForm()) {
+      try {
+        await editStock(item.id, {
+          name: productName,
+          buying_price: parseFloat(buyingPrice),
+          quantity: quantity,
+          currency_code: selectedSellingCurrency.code,
+        });
+
+        onSave({
+          id: item.id,
+          name: productName,
+          buying_price: parseFloat(buyingPrice),
+          quantity: quantity,
+          currency_code: selectedSellingCurrency.code,
+        });
+
+        onClose();
+      } catch (error) {
+        console.error("Failed to update stock:", error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -346,7 +364,7 @@ export default function EditItemModal({
                   }`}
                   disabled={!isFormValid()}
                 >
-                  Save
+                  {isLoading ? "Saving..." : "Save"}
                 </button>
               </div>
             </div>
