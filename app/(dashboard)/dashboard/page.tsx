@@ -538,9 +538,9 @@ const table = useReactTable({
             </div>
             )}
           </div>
-          <div className="flex w-full overflow-hidden mx-auto">
-            <div className={`border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1 overflow-auto w-full transition-all duration-300 ease-in-out ${
-              isSidebarOpen ? "w-full max-w-[989px] mr-1" : "w-full"
+          <div className="flex w-full overflow-hidden mx-auto sm:gap-2 md:gap-3 lg:gap-4">
+            <div className={`border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1 overflow-auto transition-all duration-300 ease-in-out ${
+              isSidebarOpen ? "w-full max-w-[989px]" : "w-full"
             }`}>
             {(stockItems.length === 0 || (isSearching && filteredItems.length === 0)) ? (
                 <div className="relative">
@@ -684,7 +684,7 @@ const table = useReactTable({
               )}                                                                
             </div>
             {isSidebarOpen && (
-              <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} selectedItem={selectedItem} onSave={handleSaveEdit} />
+              <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} selectedItem={selectedItem} onSave={handleSaveEdit} onDelete={handleDeleteItem} />
             )}
           </div>
         </div>
