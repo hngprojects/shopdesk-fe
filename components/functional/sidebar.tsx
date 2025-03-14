@@ -7,7 +7,6 @@ import EditPriceModal from "../modal/modalV3/edit-price";
 import EditStockName from "../modal/modalV3/edit-name";
 import EditQuantityModal from "../modal/modalV3/edit-quantity";
 import EditSuccessModal from "../modal/modalV3/edit-success";
-/* import Image from "next/image"; */
 
 
 interface SidebarProps {
@@ -15,6 +14,7 @@ interface SidebarProps {
   onClose: () => void;
   selectedItem: StockItem | null;
   onSave: (updatedItem: StockItem) => void;
+  onDelete: (itemId: string) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave }) => {
@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
 
   return (
     <>
-      <div className="fixed inset-0 md:relative  w-full max-w-[344px] md:max-w-[356px] bg-white transition-transform duration-300 ease-in-out transform translate-x-0 flex flex-col flex-grow  items-start rounded-xl md:border md:border-[#DEE5ED] ml-4 mr-[15px] md:m-0">
+      <div className="fixed inset-0 w-full sm:max-w-[256px] sm:relative bg-white transition-transform duration-300 ease-in-out transform translate-x-0 flex flex-col flex-grow  items-start rounded-xl sm:border sm:border-[#DEE5ED] ml-4 mr-[15px] sm:m-0  overflow-y-auto md:max-w-[300px] lg:max-w-[356px]">
         <div className="hidden md:flex py-5.5 px-4 items-center justify-between border-b border-b-[#DEE5ED] w-full">
           <p className="font-circular-medium text-2xl leading-9">
             {selectedItem.name}
@@ -56,7 +56,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
         </div>
 
         {/* Mobile */}
-        <div className="flex items-center justify-between border-b border-b-[#DEE5ED] w-full md:hidden">
+        <div className="flex items-center justify-between border-b border-b-[#DEE5ED] w-full md:hidden pl-4 pr-10">
           <p className="font-circular-medium text-xl leading-9">
             Edit Stock
           </p>
@@ -66,7 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
         </div>
 
 
-        <div className="flex flex-col md:py-5 md:px-4 items-start gap-5 w-full">
+        <div className="flex flex-col md:py-5 md:px-4 items-center gap-5 w-full">
           {/* Product */}
           <div className="flex p-3 items-start gap-5 rounded-md w-full ">
             <div className="flex flex-col gap-1 w-2/3">
@@ -86,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
           </div>
 
           {/* Price */}
-          <div className="flex p-3 items-start gap-5 rounded-md md:border md:border-[#E9EEF3] md:bg-[#F8FAFB] w-full">
+          <div className="hidden md:flex p-3 items-start rounded-md md:border md:border-[#E9EEF3] md:bg-[#F8FAFB] w-full">
             <div className="flex flex-col gap-1 w-2/3">
               <p className="text-[#717171] text-base md:text-lg font-circular-normal leading-7" 
               >
@@ -105,7 +105,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
           </div>
 
           {/* SKU Code */}
-          <div className="flex flex-col items-start p-3 gap-5 rounded-md md:border md:border-[#E9EEF3] md:bg-[#F8FAFB] w-full">
+          <div className="flex flex-col items-start p-3 rounded-md md:border md:border-[#E9EEF3] md:bg-[#F8FAFB] w-full">
             <p className="font-circular-normal text-base md:text-lg text-[#717171] leading-7">
               SKU Code
             </p>
@@ -130,10 +130,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
             >
               Edit
             </p>
-          </div>
+          </div>    
         </div>
 
-        <div className="w-full h-full p-4 flex flex-col md:hidden gap-4 mt-11">
+
+        {/* Buttons */}
+        <div className="w-full h-full flex flex-col md:hidden gap-4 mt-11 max-w-[340px]">
           {/* Save Button */}
           <Button
             className="bg-[#D0D0D0] text-white text-base border border-[#B8B8B8] py-2 pr-6 pl-4"
