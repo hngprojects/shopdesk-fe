@@ -94,6 +94,15 @@ body {
   -ms-overflow-style: none;
 }
 
+.no-spinner::-webkit-outer-spin-button,
+  .no-spinner::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
+  }
+  .no-spinner {
+    -moz-appearance: textfield; /* Firefox */
+  }
+
 @theme {
   --font-circular-light: "Circular Std Light";
   --font-circular-normal: "Circular Std Normal";

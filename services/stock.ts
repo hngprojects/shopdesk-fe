@@ -149,3 +149,129 @@ export async function editStock(
     throw error;
   }
 }
+export async function editStockv3(
+  stockId: string,
+  stockData: {
+    name: string;
+    quantity: number;
+  
+  }
+): Promise<void> {
+  try {
+    const token = await getAccessToken();
+
+    const response = await fetch(`/api/stocks/edit`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        stock_id: stockId,
+        ...stockData,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update stock");
+    }
+  } catch (error) {
+    console.error("Error updating stock:", error);
+    throw error;
+  }
+}
+export async function editPrice(
+  stockId: string,
+  stockData: {
+    buying_price: number;
+    currency_code: string;
+  }
+): Promise<void> {
+  try {
+    const token = await getAccessToken();
+
+    const response = await fetch(`/api/stocks/edit`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        stock_id: stockId,
+        ...stockData,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update price");
+    }
+  } catch (error) {
+    console.error("Error updating price:", error);
+    throw error;
+  }
+}
+export async function editQuantity(
+  stockId: string,
+  stockData: {
+    quantity: number;
+  
+  }
+): Promise<void> {
+  try {
+    const token = await getAccessToken();
+
+    const response = await fetch(`/api/stocks/edit`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        stock_id: stockId,
+        ...stockData,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update stock");
+    }
+  } catch (error) {
+    console.error("Error updating stock:", error);
+    throw error;
+  }
+}
+
+export async function editName(
+  stockId: string,
+  stockData: {
+    name: string;
+  
+  }
+): Promise<void> {
+  try {
+    const token = await getAccessToken();
+
+    const response = await fetch(`/api/stocks/edit`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        stock_id: stockId,
+        ...stockData,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update stock");
+    }
+  } catch (error) {
+    console.error("Error updating stock:", error);
+    throw error;
+  }
+}

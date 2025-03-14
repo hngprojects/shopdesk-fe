@@ -125,7 +125,7 @@ const Page = () => {
         console.error("Error fetching stock:", error);
         setIsLoading(false);
       });
-  }, [router]);
+  }, [router, stockItems.length]);
 
   const handleEditClick = (item: StockItem) => {
     setSelectedItem(item); 
@@ -265,7 +265,10 @@ const Page = () => {
           const isTransitioning = isEditingTransition === row.original.id;
 
           return (
-            <div className="inline-block w-full overflow-hidden">
+            <div 
+              className="w-full h-full flex items-center overflow-hidden"
+              onClick={() => !isEditingThisRow && handleInlineEdit(row.original, "name")}
+            >
               {isTransitioning ? (
                 <Loader2 className="w-4 h-4 animate-spin mx-auto" />
               ) : isEditingThisRow ? (
@@ -274,10 +277,10 @@ const Page = () => {
                   value={editedItem?.name || ""}
                   onChange={(e) => handleInputChange("name", e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
-                  className="w-full min-w-0 border rounded px-2 py-1 text-left box-border"
+                  className="no-spinner w-full h-full min-w-0 border text-left box-border p-2 focus:outline-[#009A49]"
                 />
               ) : (
-                <span className="block text-balance">{row.original.name}</span>
+                <span className="block text-balance p-2">{row.original.name}</span>
               )}
             </div>
           );
@@ -312,7 +315,7 @@ const Page = () => {
 
           return (
             <div
-              className="inline-block w-full max-w-[100px]"
+              className="flex w-full h-full items-center justify-center"
               onClick={() => !isEditingThisRow && handleInlineEdit(row.original, "buying_price")}
             >
               {isTransitioning ? (
@@ -324,7 +327,7 @@ const Page = () => {
                   value={editedItem?.buying_price ?? ""}
                   onChange={(e) => handleInputChange("buying_price", e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
-                  className="w-full border rounded px-2 py-1 text-center"
+                  className="no-spinner w-full h-full border text-center focus:outline-[#009A49]"
                 />
               ) : (
                 <span className="block w-full overflow-x-clip">{`${row.original.currency_code} ${row.original.buying_price?.toLocaleString()}`}</span>
@@ -343,7 +346,7 @@ const Page = () => {
 
           return (
             <div
-              className="inline-block w-[calc(100%-2rem)] max-w-[60px]"
+              className="flex h-full w-full items-center justify-center"
               onClick={() => !isEditingThisRow && handleInlineEdit(row.original, "quantity")}
             >
               {isTransitioning ? (
@@ -355,7 +358,7 @@ const Page = () => {
                   value={editedItem?.quantity ?? ""}
                   onChange={(e) => handleInputChange("quantity", e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSaveInline()}
-                  className="w-full border rounded px-2 py-1 text-center"
+                  className="no-spinner w-full h-full border px-2 py-1 text-center focus:outline-[#009A49]"
                 />
               ) : (
                 row.original.quantity
@@ -611,7 +614,7 @@ const table = useReactTable({
                     </div>
                   </div>
                 </div>
-              ) : (
+                ) : (
               <>
                 <Table className="border-collapse border-b min-w-[590px] table-fixed">
                   <TableHeader>
@@ -620,7 +623,7 @@ const table = useReactTable({
                         {headerGroup.headers.map((header) => (
                           <TableHead
                             key={header.id}
-                            className={`text-[#090F1C] font-circular-medium px-4 py-2 text-center border-b border-r min-w-[100px] ${
+                            className={`text-[#090F1C] font-circular-medium text-center border-b border-r min-w-[100px] ${
                               header.column.id === "name" ? "text-left w-2/7 max-[750px]:w-1/7" : "w-1/7"
                             } ${header.column.columnDef.meta?.className || ""}`}
                           >
@@ -630,63 +633,56 @@ const table = useReactTable({
                       </TableRow>
                     ))}
                   </TableHeader>        
-                   <TableBody>
+                  <TableBody>
                     {Array.from({ length: rowsPerPage }).map((_, index) => {
                       const row = table.getRowModel().rows[index] || null; // Get row or null if not available
+                      return (
+                        <TableRow key={index} className="h-[50px] cursor-pointer" onClick={() => row && handleRowClick(row.original)}>
+                          {row
+                            ? row.getVisibleCells().map((cell) => (
+                                <TableCell
+                                  key={cell.id}
+                                  className={`p-0 py-0 align-middle h-[50px] text-center border-r ${
+                                    cell.column.id === "name" ? "text-left overflow-hidden" : ""
+                                  } ${cell.column.columnDef.meta?.className || ""}`}
+                                >
+                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </TableCell>
+                              ))
+                            : columns.map((column) => (
+                                <TableCell key={column.id} className="text-center border-r text-gray-400">
+                                  {""} {/* Placeholder for missing row */}
+                                </TableCell>
+                              ))}
+                        </TableRow>
+                      );
+                    })}
 
-      return (
-        <TableRow key={index} className="h-[50px] cursor-pointer" onClick={() => row && handleRowClick(row.original)}>
-          {row
-            ? row.getVisibleCells().map((cell) => (
-                <TableCell
-                  key={cell.id}
-                  className={`px-4 py-3 text-center border-r ${
-                    cell.column.id === "name" ? "text-left overflow-hidden" : ""
-                  } ${cell.column.columnDef.meta?.className || ""}`}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))
-            : columns.map((column) => (
-                <TableCell key={column.id} className="px-4 py-3 text-center border-r text-gray-400">
-                  {""} {/* Placeholder for missing row */}
-                </TableCell>
-              ))}
-        </TableRow>
-      );
-    })}
-    
-    {/* Pagination */}
-
-  </TableBody>
-              </Table>
-      <Table>
-  <TableBody>
-    <TableRow>
-      <TableCell colSpan={columns.length} className="py-4">
-        <PaginationFeature
-          totalItems={isSearching ? filteredItems.length : stockItems.length}
-          currentPage={currentPage}
-          itemsPerPage={rowsPerPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          onItemsPerPageChange={handleItemsPerPageChange}
-        />
-      </TableCell>
-    </TableRow>
-
-  </TableBody>
-        
-        </Table>       
-                
-                </>
-
-              )}                                                                
+                  </TableBody>
+                </Table>
+                <Table>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="">
+                        <PaginationFeature
+                          totalItems={isSearching ? filteredItems.length : stockItems.length}
+                          currentPage={currentPage}
+                          itemsPerPage={rowsPerPage}
+                          totalPages={totalPages}
+                          onPageChange={handlePageChange}
+                          onItemsPerPageChange={handleItemsPerPageChange}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  </TableBody>        
+                </Table>                     
+              </>
+            )}                                                                
             </div>
-            {isSidebarOpen && (
-              <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} selectedItem={selectedItem} onSave={handleSaveEdit} onDelete={handleDeleteItem} />
-            )}
-          </div>
+              {isSidebarOpen && (
+                <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} selectedItem={selectedItem} onSave={handleSaveEdit} />
+              )}
+            </div>
         </div>
       </div>
 
