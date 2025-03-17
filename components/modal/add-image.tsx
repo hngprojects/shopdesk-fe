@@ -50,148 +50,157 @@ export default function ImageUploader({
       src: URL.createObjectURL(file),
     }));
 
-    setImages((prevImages) => [...prevImages, ...newImages].slice(0, 3)); 
+    setImages((prevImages) => [...prevImages, ...newImages].slice(0, 3));
   };
 
   const removeImage = (imageId: string) => {
     setImages(images.filter((img) => img.id !== imageId));
   };
-  
 
   return (
     <>
-    <div className="lg:fixed lg:inset-0 lg:bg-black lg:opacity-50 z-40"></div>
+      {/* Overlay */}
+      <div className="fixed inset-0 bg-black opacity-50 z-40"></div>
 
-    <div className="lg:fixed lg:inset-0 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg max-w-3xl w-full p-4 md:p-6">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex gap-2 items-center">
-            <Image
-              src="/modal-images/image-icon.svg"
-              alt="image icon"
-              width={48}
-              height={48}
-              className="w-8 h-8 md:w-12 md:h-12"
-            />
-            <h2 className="text-sm md:text-xl font-circular-bold">Add Stock Images</h2>
-          </div>
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={onCancel}
-            className="p-[9px] border border-[#1B1B1B] rounded-[9px] cursor-pointer hover:bg-[#D0D0D0]"
-          >
-            <FaTimes />
-          </button>
-        </div>
+      {/* Modal Content */}
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        {/* Modal Container */}
+        <div className="bg-white w-full h-screen max-h-[900px] mx-auto sm:h-auto md:max-w-xl lg:max-w-3xl sm:rounded-lg overflow-auto flex flex-col justify-between">
+          <div className="flex flex-col justify-around w-full p-6 md:space-y-5 space-y-7 flex-2">
+            <div className="flex md:hidden my-4 mx-auto">
+              <img src="/modal-images/text_logo.svg" alt="shop desk logo" />
+            </div>
 
-        {/* Item Name */}
-        <div className="mb-4">
-          <p className="text-gray-600 mb-1">Item Name</p>
-          <h3 className="text-lg font-medium">{itemName}</h3>
-        </div>
-
-        {/* Image Upload Section - Empty State or Images Grid */}
-
-        <div className="w-full mb-6">
-          {images.length === 0 ? (
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full h-56 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50"
-            >
-              <div className="mb-2">
+            {/* Header */}
+            <div className="flex justify-between items-center border-b-[1px] border-[#DEE5ED] md:border-b-0">
+              <div className="flex gap-2 items-center">
                 <Image
-                  src="/icons/image-plus.svg"
-                  alt="Upload image"
+                  src="/modal-images/image-icon.svg"
+                  alt="image icon"
                   width={48}
                   height={48}
+                  className="w-12 h-12 hidden md:inline-flex"
                 />
+                <h2 className="text-xl font-medium hidden md:inline">Add Stock Images</h2>
+                <h2 className="text-xl font-medium md:hidden">Upload Image</h2>
               </div>
-              <p className="text-gray-500 mb-1">
-                Upload 1 - 3 images for this product
-              </p>
-              <p className="text-sm text-gray-400">
-                Supported formats: .jpg & .png
-              </p>
-              <input
-                type="file"
-                accept=".jpg,.jpeg,.png"
-                multiple
-                className="hidden"
-                ref={fileInputRef}
-                onChange={handleImageUpload}
-              />
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={onCancel}
+                className="p-2 text-gray-500 hover:text-gray-700 bg-[#E9EEF3] rounded-lg"
+              >
+                <FaTimes size={15} />
+              </button>
             </div>
-          ) : (
-            <div className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4">
-              <div className="grid grid-cols-3 gap-4">
-                {/* Display existing images */}
-                {images.map((image, index) => (
-                  <div
-                    key={image.id}
-                    className="relative border border-dashed border-gray-300 rounded-lg p-1 aspect-square"
-                  >
+
+            {/* Item Name */}
+            <div>
+              <p className="md:text-gray-600 space-y-4 md:text-lg text-base">Item Name</p>
+              <h3 className="md:text-2xl text-sm font-medium">{itemName}</h3>
+            </div>
+
+            {/* Image Upload Section */}
+            <div className="w-full">
+              <p className="md:hidden mb-2">Image <span className="text-[#FF1925]">*</span></p>
+              {images.length === 0 ? (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full h-56 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50"
+                >
+                  <div className="mb-2">
                     <Image
-                      src={image.src}
-                      alt={`Product image ${index + 1}`}
-                      layout="fill"
-                      objectFit="cover"
-                      className="rounded-lg"
-                    />
-                    <button
-                      onClick={() => removeImage(image.id)}
-                      className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-white text-red-500 rounded-full border border-red-500 hover:bg-[#FFCCCF] w-6 h-6 flex items-center justify-center shadow-md"
-                    >
-                      <FaTimes size={14} />
-                    </button>
-                  </div>
-                ))}
-
-                {/* Add more images button (if less than 3) */}
-                {images.length < 3 && (
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 aspect-square"
-                  >
-                    <span className="text-gray-400 text-4xl">
-                      <FaTimes size={12} />
-                    </span>
-
-                    <input
-                      type="file"
-                      accept=".jpg,.jpeg,.png"
-                      multiple
-                      className="hidden"
-                      ref={fileInputRef}
-                      onChange={handleImageUpload}
+                      src="/icons/plus_icon.svg"
+                      alt="Upload image"
+                      width={48}
+                      height={48}
                     />
                   </div>
-                )}
-              </div>
-              {/* Error Message */}
-              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                  <p className="text-gray-500 mb-1">
+                    Upload 1 - 3 images for this product
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    Supported formats: .jpg & .png
+                  </p>
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png"
+                    multiple
+                    className="hidden"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                  />
+                </div>
+              ) : (
+                <div className="w-full border-2 border-dashed border-gray-300 rounded-lg p-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    {/* Display existing images */}
+                    {images.map((image, index) => (
+                      <div
+                        key={image.id}
+                        className="relative border border-dashed border-gray-300 rounded-lg p-1 aspect-square"
+                      >
+                        <Image
+                          src={image.src}
+                          alt={`Product image ${index + 1}`}
+                          layout="fill"
+                          objectFit="cover"
+                          className="rounded-lg"
+                        />
+                        <button
+                          onClick={() => removeImage(image.id)}
+                          className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 bg-white text-red-500 rounded-full border border-red-500 hover:bg-[#FFCCCF] w-6 h-6 flex items-center justify-center shadow-md"
+                        >
+                          <FaTimes size={14} />
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* Add more images button (if less than 3) */}
+                    {images.length < 3 && (
+                      <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="border border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:bg-gray-50 aspect-square"
+                      >
+                        <span className="text-gray-400 text-4xl">
+                          <FaTimes size={12} />
+                        </span>
+
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.png"
+                          multiple
+                          className="hidden"
+                          ref={fileInputRef}
+                          onChange={handleImageUpload}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {/* Error Message */}
+                  {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Footer Buttons */}
-        <div className="flex flex-col md:flex-row md:justify-end gap-3 ">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 border border-[#1B1B1B] rounded-md text-[#2A2A2A] hover:text-white hover:bg-[#2A2A2A]"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => onSave(images)}
-            className="px-6 py-2 border border-[#1B1B1B] rounded-md text-[#2A2A2A] hover:text-white hover:bg-[#2A2A2A]"
-          >
-            Save
-          </button>
+          {/* Footer Buttons */}
+          <div className="flex flex-col justify-end md:flex-row gap-5 border-t border-[#DEE5ED] p-6 flex-1">
+            <button
+              onClick={onCancel}
+              className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => onSave(images)}
+              className="px-6 py-2 bg-[#1B1B1B] text-white rounded-md hover:bg-[#2A2A2A]"
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }
