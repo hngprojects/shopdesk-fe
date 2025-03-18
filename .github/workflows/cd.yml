@@ -1,20 +1,19 @@
 name: Continuous Deployment
-
 on:
   workflow_run:
     workflows: ["Continuous Integration"]
     types:
       - completed
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
   deploy:
     runs-on: [self-hosted, shopdesk]
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Deploy only if CI passed
-
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
+        
       - name: SSH into server and deploy
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -24,24 +23,43 @@ jobs:
           CURRENT_VERSION: "main"  # Change this if you want to deploy a specific version
           ROLLBACK_VERSION: "version1.3"  # Last stable version
         run: |
-          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no "$SSH_USERNAME@$SSH_IP" "
-            cd shopdesk-fe || { git clone $REPO_URL shopdesk-fe && cd shopdesk-fe; }
-            git checkout $CURRENT_VERSION
-            git pull origin $CURRENT_VERSION || { echo 'Git pull failed'; exit 1; }
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no "$SSH_USERNAME@$SSH_IP" << 'EOF'
+            set -e  # Stop execution on any error
             
-            pm2 delete shopdesk || true
-            echo '$SSH_PASSWORD' | sudo -S fuser -k 7777/tcp || echo 'No process found on port 7777'
+            echo "Connecting to server..."
             
-            if bun install && bun run build; then
-              pm2 start \"bun run start\" --name \"shopdesk\" --watch
-              pm2 save
-              echo 'Deployment successful'
-            else
-              echo 'Deployment failed! Rolling back...'
-              git checkout $ROLLBACK_VERSION
-              git pull origin $ROLLBACK_VERSION
-              bun install && bun run build
-              pm2 start \"bun run start\" --name \"shopdesk\" --watch
-              pm2 save
+            # Navigate to the project directory or clone if it doesn't exist
+            if [ ! -d "shopdesk-fe" ]; then
+              echo "Cloning repository..."
+              git clone "$REPO_URL" shopdesk-fe || { echo "Git clone failed"; exit 1; }
             fi
-          "
+            
+            cd shopdesk-fe
+            
+            echo "Fetching latest changes..."
+            git fetch --all
+            
+            echo "Checking out branch: $CURRENT_VERSION"
+            git checkout "$CURRENT_VERSION" || { echo "Branch checkout failed"; exit 1; }
+            git pull origin "$CURRENT_VERSION" || { echo "Git pull failed"; exit 1; }
+
+            echo "Stopping existing application..."
+            pm2 delete shopdesk || true  # Ignore error if process doesn’t exist
+            echo "$SSH_PASSWORD" | sudo -S fuser -k 7777/tcp || echo "No process found on port 7777"
+
+            echo "Installing dependencies..."
+            if bun install && bun run build; then
+              echo "Starting application..."
+              pm2 start "bun run start" --name "shopdesk" --watch --ignore-watch "node_modules logs"
+              pm2 save
+              echo "Deployment successful!"
+            else
+              echo "Deployment failed! Rolling back to $ROLLBACK_VERSION..."
+              git checkout "$ROLLBACK_VERSION" || { echo "Rollback failed"; exit 1; }
+              git pull origin "$ROLLBACK_VERSION"
+              bun install && bun run build
+              pm2 start "bun run start" --name "shopdesk" --watch --ignore-watch "node_modules logs"
+              pm2 save
+              echo "Rollback completed successfully."
+            fi
+          EOF
