@@ -40,23 +40,20 @@ export default function SignIn() {
     try {
       const data = await loginUser(email, password);
       const { first_name, last_name } = data.data;
-      await sendLoginEmail(email, first_name, last_name);
       const organization = await getOrganization();
-
       setOrganizationId(organization?.[0].id || "");
       setOrganizationName(organization?.[0].name || "");
+      sendLoginEmail(email, first_name, last_name);
 
       if (!data || data.error) {
         throw new Error(data?.message || "Invalid email or password.");
       }
-
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
-    } finally {
       setLoading(false);
     }
-  };
+    };
 
   // Animation variants
   const containerVariants = {

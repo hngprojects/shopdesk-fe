@@ -23,7 +23,7 @@ export function loginEmailBody(first_name: string, last_name: string) {
         <table cellspacing="0" cellpadding="0" border="0" align="center">
           <tr>
             <td>
-              <img src="https://i.postimg.cc/X7Skmq3Y/box-minimalistic-svgrepo-com-1.png" alt="ShopDesk Logo" width="40" height="40" style="display: block;">
+              <img src="https://res.cloudinary.com/ddep9f2pk/image/upload/v1742238454/box-minimalistic-svgrepo-com_1_tgib5v.png" alt="ShopDesk Logo" width="40" height="40" style="display: block;">
             </td>
             <td style="font-size: 32px; color: #1b1b1b; font-weight: 600; padding-left: 8px;">ShopDesk</td>
           </tr>
@@ -55,7 +55,7 @@ export function loginEmailBody(first_name: string, last_name: string) {
               <p style="color: #1b1b1b;">You can now access your dashboard to streamline your retail operations.</p>
 
               <!-- Image -->
-              <img src="https://i.postimg.cc/GmfgkwdM/Frame-2147226823.png" alt="Team illustration" width="100%" style="border-radius: 12px; margin: 30px 0;">
+              <img src="https://res.cloudinary.com/ddep9f2pk/image/upload/v1742238493/Frame_2147226823_kdivpe.png" alt="Team illustration" width="100%" style="border-radius: 12px; margin: 30px 0;">
 
               <!-- Features -->
               <h3 style="font-size: 24px; line-height: 36px; font-weight: 600; margin-bottom: 20px; color: #1b1b1b">
@@ -91,7 +91,7 @@ export function loginEmailBody(first_name: string, last_name: string) {
         <table cellspacing="0" cellpadding="0" border="0" align="center">
           <tr>
             <td>
-              <img src="https://i.postimg.cc/X7Skmq3Y/box-minimalistic-svgrepo-com-1.png" alt="ShopDesk Logo" width="28" height="28" style="display: block;">
+              <img src="https://res.cloudinary.com/ddep9f2pk/image/upload/v1742238454/box-minimalistic-svgrepo-com_1_tgib5v.png" alt="ShopDesk Logo" width="28" height="28" style="display: block;">
             </td>
             <td style="font-size: 24px; color: #1b1b1b; font-weight: 600; padding-left: 8px;">ShopDesk</td>
           </tr>
@@ -102,7 +102,7 @@ export function loginEmailBody(first_name: string, last_name: string) {
           <tr>
             <td style="margin-right: 20px;">
               <a href="https://twitter.com" style="margin-right: 20px;">
-                <img src="https://i.postimg.cc/h4702xkY/logo-twitter-2.png" alt="Twitter" width="24" height="24" style="border-radius: 50%; padding: 5px; background-color: #006716;">
+                <img src="https://res.cloudinary.com/ddep9f2pk/image/upload/v1742238455/logo-twitter_2_swo4n7.png" alt="Twitter" width="24" height="24" style="border-radius: 50%; padding: 5px; background-color: #006716;">
               </a>
             </td>
             <td style="margin-right: 20px;">
@@ -112,12 +112,12 @@ export function loginEmailBody(first_name: string, last_name: string) {
             </td>
             <td style="margin-right: 20px;">
               <a href="https://instagram.com" style="margin-right: 20px;">
-                <img src="https://i.postimg.cc/MHRbX20w/logo-instagram-1-1.png" alt="Instagram" width="24" height="24" style="border-radius: 50%; padding: 5px; background-color: #006716;">
+                <img src="https://res.cloudinary.com/ddep9f2pk/image/upload/v1742238454/logo-instagram_1_afltei.png" alt="Instagram" width="24" height="24" style="border-radius: 50%; padding: 5px; background-color: #006716;">
               </a>
             </td>
             <td style="margin-right: 20px;">
               <a href="https://github.com" style="margin-right: 20px;">
-                <img src="https://i.postimg.cc/fLVvn0JJ/logo-github-1-1.png" alt="GitHub" width="24" height="24" style="border-radius: 50%; padding: 5px; background-color: #006716;">
+                <img src="https://res.cloudinary.com/ddep9f2pk/image/upload/v1742238454/logo-github_1_lutnyl.png" alt="GitHub" width="24" height="24" style="border-radius: 50%; padding: 5px; background-color: #006716;">
               </a>
             </td>
           </tr>

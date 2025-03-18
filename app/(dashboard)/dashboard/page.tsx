@@ -40,7 +40,11 @@ import {
 } from "@tanstack/react-table";
 import { getAccessToken } from "@/app/api/token";
 import Sidebar from "@/components/functional/sidebar";
+
 import { Separator } from "@radix-ui/react-dropdown-menu";
+
+import SalesTab from "@/components/functional/salestab";
+
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData, TValue> {
@@ -103,6 +107,9 @@ const Page = () => {
   const { tableAreaRef, tableAreaHeight } = useTableAreaHeight();
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  //Active Tab
+  const [activeTab, setActiveTab] = useState("stock");
 
   const [isOpen, setIsOpen] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -186,54 +193,44 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    GetProduct()
-    .then((data) => {
-      setIsLoading(false);
-      setProductItems(data.items.map((item: any) => ({
-        ...item, 
-      })));
-        
-      })
-      .catch((error) => {
-        console.error("Error fetching stock:", error);
-      });
-  }, [router]);
-  
-  useEffect(() => {
-    if (productItems.length === 0) return; 
-    setIsLoading(true);
-  
-    const fetchStocks = async () => {
-      try {
-        const stockData = await Promise.all(
-          productItems.map((product) => GetStock(product.id))
-        );
-  
-        const formattedStockItems = stockData.flatMap((data) =>
-          data.items.map((stock: any) => {
-           
-            const matchingProduct = productItems.find(
-              (product) => product.id === stock.product_id
-            );
-  
-            return {
-              ...stock,
-              sku: matchingProduct?.unique_id,
-            };
-          })
-        );
-  
-        setStockItems(formattedStockItems);
-      } catch (error) {
-        console.error("Error fetching stock:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-  
-    fetchStocks();
-  }, [productItems.length]); 
+  let isMounted = true; // Prevents state updates if component unmounts
+  setIsLoading(true);
+
+  const fetchProductsAndStocks = async () => {
+    try {
+      // Fetch products
+      const productData: any = await GetProduct();
+      if (!isMounted) return; // Prevent state update if unmounted
+      setProductItems(productData.items);
+
+      // Fetch stock for each product
+      const stockData = await Promise.all(
+        productData.items.map((product: any) => GetStock(product.id))
+      );
+
+      if (!isMounted) return;
+      const formattedStockItems = stockData.flatMap((data, index) =>
+        data.items.map((stock: any) => ({
+          ...stock,
+          sku: productData.items[index]?.unique_id, 
+        }))
+      );
+
+      setStockItems(formattedStockItems);
+    } catch (error) {
+      console.error("Error fetching products or stocks:", error);
+    } finally {
+      if (isMounted) setIsLoading(false);
+    }
+  };
+
+  fetchProductsAndStocks();
+
+  return () => {
+    isMounted = false;
+  };
+}, [router]);
+
 
   const handleEditClick = (item: StockItem) => {
     setSelectedItem(item);
@@ -402,12 +399,17 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
                   className="no-spinner w-full h-full min-w-0 border text-left box-border p-2 focus:outline-[#009A49]"
                 />
               ) : (
+
                 <span className="block text-balance py-2 pl-4">{row.original.name}</span>
+
+                
+
               )}
             </div>
           );
         },
       },
+
       
       {
         accessorKey: "selling_price",
@@ -416,6 +418,7 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
            SELLING PRICE
           </span>
         ),
+
         cell: ({ row }) => {
           const isEditingThisRow = editedItem?.id === row.original.id;
           const isTransitioning = isEditingTransition === row.original.id;
@@ -648,7 +651,7 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
       //   meta: { className: "" },
       // },
     ],
-    [editedItem, isEditingTransition, handleInlineEdit, handleSaveInline]
+    [editedItem, isEditingTransition]
   );
   const paginatedData = isSearching
   ? filteredItems.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
@@ -727,16 +730,59 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
         </div>
 
         <div className="space-y-0 w-full ">
-          <div className="w-full flex justify-between max-[800px]:flex-col-reverse">
-            <div className="flex items-center justify-center gap-2 border border-b-white py-2 rounded-tr-lg rounded-tl-lg w-44 max-[800px]:w-full font-semibold px-9 shadow-inner">
-              Stock
-              <Image
-                src="/icons/ui-box.svg"
-                alt=""
-                width={20}
-                height={20}
-                className="w-5 h-5"
-              />
+        <div className="w-full flex justify-between max-[800px]:flex-col-reverse">
+        <div className="flex">
+              <div
+                className={`flex items-center justify-center gap-2 rounded-tl-lg border-2 border-gray-100 px-4 py-3 ${
+                  activeTab === "stock" ? "bg-white" : "bg-gray-100"
+                }`}
+                onClick={() => setActiveTab("stock")}
+                role="button"
+                style={{ cursor: "pointer", width: "160px" }}
+              >
+                <span
+                  className={
+                    activeTab === "stock" 
+                    ? "text-black bg-white" 
+                    : "bg-gray-100 text-gray-400"
+                  }
+                >
+                  Stock
+                </span>
+                <Image
+                  src={activeTab === "stock" ? "/icons/ui-box.svg" : "/icons/ui-box-grey.svg"}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="w-5 h-5"
+                />
+              </div>
+
+              <div
+                className={`flex items-center justify-center gap-2 border-2 border-gray-100 px-4 py-3 rounded-tr-lg ${
+                  activeTab === "sales" ? "bg-white" : "bg-gray-100"
+                }`}
+                onClick={() => setActiveTab("sales")}
+                role="button"
+                style={{ cursor:"pointer", width: "160px" }}
+              >
+                <span
+                  className={
+                    activeTab === "sales" ? 
+                    "text-black bg-white" 
+                    : "text-gray-400 bg-gray-100"
+                  }
+                >
+                  Sales
+                </span>
+                <Image
+                  src={activeTab === "sales" ? "/icons/sale-tab.svg" : "/icons/sale-tab-grey.svg"}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="w-5 h-5"
+                />
+              </div>
             </div>
 
             {stockItems.length > 0 && (
@@ -757,6 +803,7 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
               <div className="relative max-[800px]:w-full">
                 <input type="text" 
                 className="h-12 border w-[327px] max-[800px]:w-full rounded-md focus:outline-2 focus:outline-[#009A49] px-10"
+                placeholder="Search by item name, SKU code"
                 onChange={(event)=>{
                   setIsSearching(true);
                   setSearchText(event.target.value);
@@ -765,7 +812,12 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
                   }
                 }}/>
 
-                <Search className="text-[#667085] absolute top-3 left-3 " />
+                <img
+                   src='/icons/search_Icon.svg'
+                   alt="Search Icon"
+                   className="absolute top-3 left-3 w-5 h-5"
+                 />
+
               </div>
 
                 <div className="z-10">
@@ -784,10 +836,14 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
             )}
           </div>
           <div className="flex w-full overflow-hidden mx-auto">
-            <div className={`border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1 overflow-auto w-full transition-all duration-300 ease-in-out ${
-              isSidebarOpen ? "w-full max-w-[989px] mr-1" : "w-full"
-            }`}>
-            {(stockItems.length === 0 || (isSearching && filteredItems.length === 0)) ? (
+          {activeTab === "stock" ? (
+            <div
+              className={`border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1 overflow-auto w-full transition-all duration-300 ease-in-out ${
+                isSidebarOpen ? "w-full max-w-[989px] mr-1" : "w-full"
+              }`}
+            >
+              {stockItems.length === 0 ||
+              (isSearching && filteredItems.length === 0) ? (
                 <div className="relative">
                   <Table>
                     <TableHeader>
@@ -796,10 +852,12 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
                           ITEM NAME
                         </TableHead>
                         <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-center border-b border-r">
+
                          SELLING PRICE
                         </TableHead>
                         <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-center border-b border-r">
                         AVALABLE
+
                         </TableHead>
                         <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] text-center border-b border-r ">
                           SHOW SALES
@@ -864,6 +922,7 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
                     </div>
                   </div>
                 </div>
+
                 ) : (
               <>
                 {/* <Table className="border-collapse border-b min-w-[590px] table-fixed">
@@ -904,9 +963,74 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
                                   {""} 
                                 </TableCell>
                               ))}
+
+              ) : (
+                <>
+                  <Table className="border-collapse border-b min-w-[590px] table-fixed">
+                    <TableHeader>
+                      {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id} className="h-[50px]">
+                          {headerGroup.headers.map((header) => (
+                            <TableHead
+                              key={header.id}
+                              className={`text-[#090F1C] font-circular-medium px-4 py-2 text-center border-b border-r min-w-[100px] ${
+                                header.column.id === "name"
+                                  ? "text-left w-2/7 max-[750px]:w-1/7"
+                                  : "w-1/7"
+                              } ${
+                                header.column.columnDef.meta?.className || ""
+                              }`}
+                            >
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                            </TableHead>
+                          ))}
+
                         </TableRow>
-                      );
-                    })}
+                      ))}
+                    </TableHeader>
+                    <TableBody>
+                      {Array.from({ length: rowsPerPage }).map((_, index) => {
+                        const row = table.getRowModel().rows[index] || null;
+
+                        return (
+                          <TableRow
+                            key={index}
+                            className="h-[50px] cursor-pointer"
+                            onClick={() => row && handleRowClick(row.original)}
+                          >
+                            {row
+                              ? row.getVisibleCells().map((cell) => (
+                                  <TableCell
+                                    key={cell.id}
+                                    className={`px-4 py-3 text-center border-r ${
+                                      cell.column.id === "name"
+                                        ? "text-left overflow-hidden"
+                                        : ""
+                                    } ${
+                                      cell.column.columnDef.meta?.className ||
+                                      ""
+                                    }`}
+                                  >
+                                    {flexRender(
+                                      cell.column.columnDef.cell,
+                                      cell.getContext()
+                                    )}
+                                  </TableCell>
+                                ))
+                              : columns.map((column) => (
+                                  <TableCell
+                                    key={column.id}
+                                    className="px-4 py-3 text-center border-r text-gray-400"
+                                  >
+                                    {""} {/* Placeholder for missing row */}
+                                  </TableCell>
+                                ))}
+                          </TableRow>
+                        );
+                      })}
 
                   </TableBody>
                 </Table> */}
@@ -977,7 +1101,15 @@ const toggleProfit = () => setShowProfit((prev) => !prev);
               </>
             )}                                                                
             </div>
-              {isSidebarOpen && (
+           ) : (
+              <SalesTab
+                onAddSale={() => {
+                  console.log("Add sale action triggered");
+                  console.log("Active tab:", activeTab);
+                }}
+              />
+            )}
+            {isSidebarOpen && (
               <Sidebar
                 key={
                   selectedItem?.id + "-" + (selectedItem?.images?.length || 0)
