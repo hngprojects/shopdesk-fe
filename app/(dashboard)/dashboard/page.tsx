@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState,useCallback,useRef,useMemo } from "react";
-import { ChevronDown, Edit, Loader2, MoreVertical, SaveAll, Trash2 } from "lucide-react";
+import { ChevronDown, Edit, Loader2, MoreVertical, SaveAll, Trash2, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EditItemModal from "@/components/modal/edit-stock";
 import AddItemModal from "@/components/modal/add-item";
@@ -40,6 +40,7 @@ import {
 } from "@tanstack/react-table";
 import { getAccessToken } from "@/app/api/token";
 import Sidebar from "@/components/functional/sidebar";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData, TValue> {
@@ -128,6 +129,13 @@ const Page = () => {
       item.name.toLowerCase().includes(searchText.toLowerCase()) || (item.sku && item.sku.toLowerCase().includes(searchText.toLowerCase()))         
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [showSales, setShowSales] = useState(false);
+
+const toggleSales = () => setShowSales((prev) => !prev);
+  const [showProfit, setShowProfit] = useState(false);
+
+const toggleProfit = () => setShowProfit((prev) => !prev);
+
   const router = useRouter();
 
   const totalItems = stockItems.length;
@@ -364,58 +372,14 @@ const Page = () => {
 
   const columns: ColumnDef<StockItem>[] = useMemo(
     () => [
-      {
-        accessorKey: "image",
-        header: "IMAGE",
-        size: 80,
-        cell: ({ row }) => {
-          const item = row.original;
-          const hasImage =
-            item.image || (item.images && item.images.length > 0);
-
-          return (
-            <div className="flex items-center justify-center">
-              {hasImage ? (
-                <div
-                  className="w-10 h-10 relative cursor-pointer"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleImageClick(item);
-                  }}
-                >
-                  <img
-                    src={
-                      item.image?.src || (item.images && item.images[0]?.src)
-                    }
-                    alt={item.name}
-                    className="w-full h-full object-cover rounded"
-                  />
-                </div>
-              ) : (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleImageClick(item);
-                  }}
-                  className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-gray-400 hover:bg-gray-200"
-                >
-                  <span className="text-xs">
-                    <Image 
-                    src="/icons/column-img.svg"
-                    alt="Add Image"
-                    width={20}
-                    height={20}
-                    />
-                  </span>
-                </button>
-              )}
-            </div>
-          );
-        },
-      },
+     
       {
         accessorKey: "name",
-        header: "ITEM NAME",
+        header: () => (
+          <span className="font-medium text-[18px] leading-[28px] tracking-normal text-center pl-4">
+            ITEM NAME
+          </span>
+        ),
         size: 200,
         maxSize: 200,
         cell: ({ row }) => {
@@ -438,35 +402,20 @@ const Page = () => {
                   className="no-spinner w-full h-full min-w-0 border text-left box-border p-2 focus:outline-[#009A49]"
                 />
               ) : (
-                <span className="block text-balance p-2">{row.original.name}</span>
+                <span className="block text-balance py-2 pl-4">{row.original.name}</span>
               )}
             </div>
           );
         },
       },
+      
       {
-        accessorKey: "sku",
-        header: "SKU",
-        cell: ({ row }) => {
-          const isEditingThisRow = editedItem?.id === row.original.id;
-          const isTransitioning = isEditingTransition === row.original.id;
-
-          return (
-            <div className="inline-block w-full overflow-hidden">
-              {isTransitioning ? (
-                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-              ) : isEditingThisRow ? (
-                <span className="block truncate">{row.original.sku}</span>
-              ) :(
-                <span className="block truncate">{row.original.sku}</span>
-              )}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: "buying_price",
-        header: "PRICE",
+        accessorKey: "selling_price",
+        header: () => (
+          <span className="font-medium text-[18px] leading-[28px] tracking-normal text-center">
+           SELLING PRICE
+          </span>
+        ),
         cell: ({ row }) => {
           const isEditingThisRow = editedItem?.id === row.original.id;
           const isTransitioning = isEditingTransition === row.original.id;
@@ -496,8 +445,12 @@ const Page = () => {
         },
       },
       {
-        accessorKey: "quantity",
-        header: "QUANTITY",
+        accessorKey: "available",
+        header: () => (
+          <span className="font-medium text-[18px] leading-[28px] tracking-normal text-center">
+          AVAILABLE
+          </span>
+        ),
         cell: ({ row }) => {
           const isEditingThisRow = editedItem?.id === row.original.id;
           const isTransitioning = isEditingTransition === row.original.id;
@@ -527,45 +480,173 @@ const Page = () => {
         meta: { className: "" },
       },
       {
-        id: "actions",
-        header: "ACTION",
-        cell: ({ row }) => {
-          const item = row.original;
-          const isEditingThisRow = editedItem?.id === item.id;
-          const isTransitioning = isEditingTransition === row.original.id;
-          return (
-            <div className="inline-block w-[calc(100%-2rem)] max-w-[60px]">
-              {isTransitioning ? (
-                <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-              ) : isEditingThisRow ? (
-                <div className="flex justify-center items-center gap-2 cursor-pointer"
-                onClick={handleSaveInline}>
-                  <div className="flex justify-center items-center gap-2 text-[20px]">
-                    <SaveAll
-                      className="cursor-pointer text-black w-[16px] h-[16px]"                      
-                    />
-                  </div>
-                  <p>Save</p>
-                </div>
-              ) : (
-                <div className="flex justify-center items-center gap-2">
-                  <div className="flex items-center border-r border-[#DEDEDE] pr-2">
-                    <Edit
-                      className="cursor-pointer text-[#19A45B] w-[20px] h-[20px] hover:text-[#137e41]"
-                      onClick={() => handleInlineEdit(item)}
-                    />
-                  </div>
-                  <Trash2
-                    className="cursor-pointer text-red-500 w-[20px] h-[20px] hover:text-red-700"
-                    onClick={() => handleDeleteClick(item)}
-                  />
-                </div>
-              )}
+      accessorKey: "sales",
+      header: () =>
+        showSales ? (
+          <div className="bg-green-100 relative w-full h-full">
+            {/* First Row: Title & Close Button */}
+            <div className="flex justify-between items-center p-3">
+              <span className="text-gray-700 font-semibold text-center w-full">
+                SALES
+              </span>
+              <button
+                onClick={toggleSales}
+                className="p-1 border border-gray-400 rounded-md hover:bg-gray-200"
+              >
+                ✕
+              </button>
             </div>
-          );
-        },
-        meta: { className: "" },
+     <Separator className="my-4" />
+            {/* Second Row: Days of the Week */}
+            <div className="grid grid-cols-5 gap-1 mt-2 text-center ">
+              {["MON", "TUE", "WED", "THU", "FRI"].map((day) => (
+                <span key={day} className="text-gray-700 font-medium w-full h-full border-r px-2 py-1 text-center">
+                  {day}
+                </span>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={toggleSales}
+            className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-md font-medium text-black w-full"
+          >
+            SHOW SALES
+          </button>
+        ),
+      cell: ({ row }) =>
+        showSales ? (
+          <div className="grid grid-cols-5 h-full w-full">
+            {["mon", "tue", "wed", "thu", "fri"].map((day) => (
+              <input
+                key={day}
+                type="number"
+                className="no-spinner w-full h-full border-r px-2 py-1 text-center focus:outline-[#009A49]"
+              />
+            ))}
+          </div>
+        ) : null,
+      size: showSales ? 200 : 100, // Enlarge the column when sales are shown
+    },
+    {
+      accessorKey: "profitGroup",
+      header: () => (
+        <div className="text-center w-full">
+          {!showProfit && (
+            <button
+              onClick={toggleProfit}
+              className="px-4 py-2 bg-gray-100 border border-gray-300 rounded-md font-medium text-black w-full"
+            >
+              SHOW PROFIT
+            </button>
+          )}
+          {showProfit && (
+            <div className="bg-blue-100 p-3 relative inline-block w-full h-full">
+              {/* Header Row: PROFIT */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-700 font-semibold w-full text-center">PROFIT</span>
+                <button
+                  onClick={toggleProfit}
+                  className="p-1 border border-gray-400 w-2 h-1 rounded-md hover:bg-gray-200"
+                >
+                  ✕
+                </button>
+              </div>
+     <Separator className="my-4 text-red-900" />
+              {/* COST PRICE & PROFIT Inputs (Inside Same Cell) */}
+              <div className="grid grid-cols-2 border-t">
+                <div className="text-gray-700 font-medium  border-r text-center">COST PRICE</div>
+                <div className="text-gray-700 font-medium  text-center">PROFIT</div>
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+      cell: ({ row, column }) => {
+        const costPrice = row.getValue("costPrice") || "";
+        const profit = row.getValue("profit") || "";
+    
+        return showProfit ? (
+          <div className="flex items-center justify-between w-full h-full">
+            {/* Editable Cost Price */}
+            <input
+              type="number"
+              onBlur={(e) =>
+                column.columnDef.meta?.updateData(row.index, "costPrice", e.target.value)
+              }
+              className="w-1/2 px-2 py-1 border-r border-gray-300 h-full text-center"
+              placeholder="CP"
+            />
+            
+            {/* Editable Profit */}
+            <input
+              type="number"
+              onBlur={(e) =>
+                column.columnDef.meta?.updateData(row.index, "profit", e.target.value)
+              }
+              className="w-1/2 px-2 py-1 border-gray-300 h-full text-center"
+              placeholder="Profit"
+            />
+          </div>
+        ) : null;
       },
+      size: showProfit ? 200 : 100, // Enlarge the column when profit is shown
+      meta: { updateData: (rowIndex: number, key: string, value: string) => {} },
+    },
+      
+      
+    {
+      id: "actions",
+      header: () => (
+        <div className="flex justify-center items-center">
+          <Plus className="w-5 h-5 text-black" />
+        </div>
+      ),
+      cell: () => null, // Empty cell
+      // size: 8, // Make the column small
+      // meta: { className: "w-2" },
+    },
+
+      // {
+      //   id: "actions",
+      //   header: "ACTION",
+      //   cell: ({ row }) => {
+      //     const item = row.original;
+      //     const isEditingThisRow = editedItem?.id === item.id;
+      //     const isTransitioning = isEditingTransition === row.original.id;
+      //     return (
+      //       <div className="inline-block w-[calc(100%-2rem)] max-w-[60px]">
+      //         {isTransitioning ? (
+      //           <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+      //         ) : isEditingThisRow ? (
+      //           <div className="flex justify-center items-center gap-2 cursor-pointer"
+      //           onClick={handleSaveInline}>
+      //             <div className="flex justify-center items-center gap-2 text-[20px]">
+      //               <SaveAll
+      //                 className="cursor-pointer text-black w-[16px] h-[16px]"                      
+      //               />
+      //             </div>
+      //             <p>Save</p>
+      //           </div>
+      //         ) : (
+      //           <div className="flex justify-center items-center gap-2">
+      //             <div className="flex items-center border-r border-[#DEDEDE] pr-2">
+      //               <Edit
+      //                 className="cursor-pointer text-[#19A45B] w-[20px] h-[20px] hover:text-[#137e41]"
+      //                 onClick={() => handleInlineEdit(item)}
+      //               />
+      //             </div>
+      //             <Trash2
+      //               className="cursor-pointer text-red-500 w-[20px] h-[20px] hover:text-red-700"
+      //               onClick={() => handleDeleteClick(item)}
+      //             />
+      //           </div>
+      //         )}
+      //       </div>
+      //     );
+      //   },
+      //   meta: { className: "" },
+      // },
     ],
     [editedItem, isEditingTransition, handleInlineEdit, handleSaveInline]
   );
@@ -715,16 +796,20 @@ const Page = () => {
                           ITEM NAME
                         </TableHead>
                         <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-center border-b border-r">
-                          SKU CODE
+                         SELLING PRICE
                         </TableHead>
                         <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] max-[400px]:w-1/3 max-[400px]:px-1 text-center border-b border-r">
-                          PRICE
+                        AVALABLE
                         </TableHead>
                         <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] text-center border-b border-r ">
-                          QUANTITY
+                          SHOW SALES
                         </TableHead>
                         <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] text-center border-b ">
-                          ACTION
+                          SHOW PROFIT
+                        </TableHead>
+                        <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/7 min-w-[120px] text-center border-b ">
+          <Plus className="w-5 h-5 text-black" />
+                          
                         </TableHead>
                       </TableRow>
                     </TableHeader>
@@ -781,7 +866,7 @@ const Page = () => {
                 </div>
                 ) : (
               <>
-                <Table className="border-collapse border-b min-w-[590px] table-fixed">
+                {/* <Table className="border-collapse border-b min-w-[590px] table-fixed">
                   <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                       <TableRow key={headerGroup.id} className="h-[50px]">
@@ -800,7 +885,7 @@ const Page = () => {
                   </TableHeader>        
                   <TableBody>
                     {Array.from({ length: rowsPerPage }).map((_, index) => {
-                      const row = table.getRowModel().rows[index] || null; // Get row or null if not available
+                      const row = table.getRowModel().rows[index] || null; 
                       return (
                         <TableRow key={index} className="h-[50px] cursor-pointer" onClick={() => row && handleRowClick(row.original)}>
                           {row
@@ -816,7 +901,7 @@ const Page = () => {
                               ))
                             : columns.map((column) => (
                                 <TableCell key={column.id} className="text-center border-r text-gray-400">
-                                  {""} {/* Placeholder for missing row */}
+                                  {""} 
                                 </TableCell>
                               ))}
                         </TableRow>
@@ -824,7 +909,55 @@ const Page = () => {
                     })}
 
                   </TableBody>
-                </Table>
+                </Table> */}
+                <div style={{ overflowX: 'auto' }}>
+  <Table style={{ minWidth: '800px', borderCollapse: 'collapse' }}>
+    <TableHeader>
+      {table.getHeaderGroups().map((headerGroup) => (
+        <TableRow key={headerGroup.id} className="h-[50px]">
+          {headerGroup.headers.map((header) => (
+           <TableHead
+  key={header.id}
+  className={`text-[#090F1C] font-circular-medium text-center border-b border-r 
+    ${header.column.id === "name" ? "text-left w-1/7 max-[750px]:w-1/7" : "w-1/7"} 
+    ${header.column.id === "actions" ? "w-[5px]" : "w-[5px]"} 
+    ${header.column.columnDef.meta?.className || ""}`
+  }
+>
+              {flexRender(header.column.columnDef.header, header.getContext())}
+            </TableHead>
+          ))}
+        </TableRow>
+      ))}
+    </TableHeader>        
+    <TableBody>
+      {Array.from({ length: rowsPerPage }).map((_, index) => {
+        const row = table.getRowModel().rows[index] || null; 
+        return (
+          <TableRow key={index} className="h-[50px] cursor-pointer" onClick={() => row && handleRowClick(row.original)}>
+            {row
+              ? row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className={`p-0 py-0 align-middle h-[50px] text-center border-r ${
+                      cell.column.id === "name" ? "text-left overflow-hidden" : ""
+                    } ${cell.column.columnDef.meta?.className || ""}`}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))
+              : columns.map((column) => (
+                  <TableCell key={column.id} className="text-center border-r text-gray-400">
+                    {""} 
+                  </TableCell>
+                ))}
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  </Table>
+</div>
+
                 <Table>
                   <TableBody>
                     <TableRow>
