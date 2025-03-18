@@ -1,0 +1,57 @@
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: shopdesk_prometheus
+    ports:
+      - "7778:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: shopdesk_grafana
+    ports:
+      - "7779:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: shopdesk_node_exporter
+    ports:
+      - "7780:9100"
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+
+  blackbox_exporter:
+    image: prom/blackbox-exporter:latest
+    container_name: shopdesk_blackbox
+    ports:
+      - "7781:9115"
+    volumes:
+      - ./blackbox.yml:/etc/blackbox_exporter/config.yml
+    command:
+      - '--config.file=/etc/blackbox_exporter/config.yml'
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  monitoring_network:
+    driver: bridge
