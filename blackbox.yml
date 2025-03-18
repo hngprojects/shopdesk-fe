@@ -1,0 +1,14 @@
+modules:
+  http_2xx:
+    prober: http
+    http:
+      preferred_ip_protocol: "ip4"  # Use IPv4 for probing
+      valid_status_codes: [200]  # Consider the probe successful if the status code is 200
+      method: GET  # Use HTTP GET method for probing
+      headers:  # Optional: Add custom headers if needed
+        User-Agent: "Blackbox Exporter"
+      no_follow_redirects: false  # Follow redirects (set to true to disable)
+      fail_if_ssl: false  # Fail the probe if the target uses SSL (set to true to enable)
+      fail_if_not_ssl: false  # Fail the probe if the target does not use SSL (set to true to enable)
+      tls_config:
+        insecure_skip_verify: false  # Set to true to ignore SSL/TLS certificate validation
