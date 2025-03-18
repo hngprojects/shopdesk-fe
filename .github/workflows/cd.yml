@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        
+
       - name: SSH into server and deploy
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -25,20 +25,20 @@ jobs:
         run: |
           sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no "$SSH_USERNAME@$SSH_IP" << 'EOF'
             set -e  # Stop execution on any error
-            
+
             echo "Connecting to server..."
-            
+
             # Navigate to the project directory or clone if it doesn't exist
             if [ ! -d "shopdesk-fe" ]; then
               echo "Cloning repository..."
               git clone "$REPO_URL" shopdesk-fe || { echo "Git clone failed"; exit 1; }
             fi
-            
+
             cd shopdesk-fe
-            
+
             echo "Fetching latest changes..."
             git fetch --all
-            
+
             echo "Checking out branch: $CURRENT_VERSION"
             git checkout "$CURRENT_VERSION" || { echo "Branch checkout failed"; exit 1; }
             git pull origin "$CURRENT_VERSION" || { echo "Git pull failed"; exit 1; }
@@ -53,13 +53,5 @@ jobs:
               pm2 start "bun run start" --name "shopdesk" --watch --ignore-watch "node_modules logs"
               pm2 save
               echo "Deployment successful!"
-            else
-              echo "Deployment failed! Rolling back to $ROLLBACK_VERSION..."
-              git checkout "$ROLLBACK_VERSION" || { echo "Rollback failed"; exit 1; }
-              git pull origin "$ROLLBACK_VERSION"
-              bun install && bun run build
-              pm2 start "bun run start" --name "shopdesk" --watch --ignore-watch "node_modules logs"
-              pm2 save
-              echo "Rollback completed successfully."
             fi
           EOF
