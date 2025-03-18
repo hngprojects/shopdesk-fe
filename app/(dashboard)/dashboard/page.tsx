@@ -178,54 +178,44 @@ const Page = () => {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    GetProduct()
-    .then((data) => {
-      setIsLoading(false);
-      setProductItems(data.items.map((item: any) => ({
-        ...item, 
-      })));
-        
-      })
-      .catch((error) => {
-        console.error("Error fetching stock:", error);
-      });
-  }, [router]);
-  
-  useEffect(() => {
-    if (productItems.length === 0) return; 
-    setIsLoading(true);
-  
-    const fetchStocks = async () => {
-      try {
-        const stockData = await Promise.all(
-          productItems.map((product) => GetStock(product.id))
-        );
-  
-        const formattedStockItems = stockData.flatMap((data) =>
-          data.items.map((stock: any) => {
-           
-            const matchingProduct = productItems.find(
-              (product) => product.id === stock.product_id
-            );
-  
-            return {
-              ...stock,
-              sku: matchingProduct?.unique_id,
-            };
-          })
-        );
-  
-        setStockItems(formattedStockItems);
-      } catch (error) {
-        console.error("Error fetching stock:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-  
-    fetchStocks();
-  }, [productItems.length]); 
+  let isMounted = true; // Prevents state updates if component unmounts
+  setIsLoading(true);
+
+  const fetchProductsAndStocks = async () => {
+    try {
+      // Fetch products
+      const productData: any = await GetProduct();
+      if (!isMounted) return; // Prevent state update if unmounted
+      setProductItems(productData.items);
+
+      // Fetch stock for each product
+      const stockData = await Promise.all(
+        productData.items.map((product: any) => GetStock(product.id))
+      );
+
+      if (!isMounted) return;
+      const formattedStockItems = stockData.flatMap((data, index) =>
+        data.items.map((stock: any) => ({
+          ...stock,
+          sku: productData.items[index]?.unique_id, 
+        }))
+      );
+
+      setStockItems(formattedStockItems);
+    } catch (error) {
+      console.error("Error fetching products or stocks:", error);
+    } finally {
+      if (isMounted) setIsLoading(false);
+    }
+  };
+
+  fetchProductsAndStocks();
+
+  return () => {
+    isMounted = false;
+  };
+}, [router]);
+
 
   const handleEditClick = (item: StockItem) => {
     setSelectedItem(item);

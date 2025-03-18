@@ -3,6 +3,7 @@ import { useStore } from "@/store/useStore";
 
 
 type Stock = {
+  unique_id: any;
   id: string;
   name: string;
   quantity: number;
