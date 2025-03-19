@@ -102,7 +102,12 @@ body {
   .no-spinner {
     -moz-appearance: textfield; /* Firefox */
   }
-
+  @layer utilities {
+    .dropdown-content-width-full {
+      width: var(--radix-dropdown-menu-trigger-width);
+      max-height: var(--radix-dropdown-menu-content-available-height);
+    }
+  }
 @theme {
   --font-circular-light: "Circular Std Light";
   --font-circular-normal: "Circular Std Normal";

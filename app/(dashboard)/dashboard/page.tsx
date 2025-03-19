@@ -570,10 +570,10 @@ const Page = () => {
   }
 
   const handleRowClick = (item: StockItem) => {
+    if (selectedItem?.id === item.id && isSidebarOpen) return; 
     setSelectedItem(item);
     setIsSidebarOpen(true);
   };
-
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
@@ -631,7 +631,7 @@ const Page = () => {
         <div className="w-full flex justify-between max-[800px]:flex-col-reverse">
         <div className="flex">
               <div
-                className={`flex items-center justify-center gap-2 rounded-tl-lg border-2 border-gray-100 px-4 py-3 ${
+                className={`flex items-center justify-center gap-2 rounded-tl-lg border-x-2 border-t-2 border-gray-100 px-4 py-3 ${
                   activeTab === "stock" ? "bg-white" : "bg-gray-100"
                 }`}
                 onClick={() => setActiveTab("stock")}
@@ -657,7 +657,7 @@ const Page = () => {
               </div>
 
               <div
-                className={`flex items-center justify-center gap-2 border-2 border-gray-100 px-4 py-3 rounded-tr-lg ${
+                className={`flex items-center justify-center gap-2 border-x-2 border-t-2 border-gray-100 px-4 py-3 rounded-tr-lg ${
                   activeTab === "sales" ? "bg-white" : "bg-gray-100"
                 }`}
                 onClick={() => setActiveTab("sales")}
@@ -832,45 +832,38 @@ const Page = () => {
                       ))}
                     </TableHeader>
                     <TableBody>
-                      {Array.from({ length: rowsPerPage }).map((_, index) => {
-                        const row = table.getRowModel().rows[index] || null;
+                    {Array.from({ length: rowsPerPage }).map((_, index) => {
+  const row = table.getRowModel().rows[index] || null;
 
-                        return (
-                          <TableRow
-                            key={index}
-                            className="h-[50px] cursor-pointer"
-                            onClick={() => row && handleRowClick(row.original)}
-                          >
-                            {row
-                              ? row.getVisibleCells().map((cell) => (
-                                  <TableCell
-                                    key={cell.id}
-                                    className={`px-4 py-3 text-center border-r ${
-                                      cell.column.id === "name"
-                                        ? "text-left overflow-hidden"
-                                        : ""
-                                    } ${
-                                      cell.column.columnDef.meta?.className ||
-                                      ""
-                                    }`}
-                                  >
-                                    {flexRender(
-                                      cell.column.columnDef.cell,
-                                      cell.getContext()
-                                    )}
-                                  </TableCell>
-                                ))
-                              : columns.map((column) => (
-                                  <TableCell
-                                    key={column.id}
-                                    className="px-4 py-3 text-center border-r text-gray-400"
-                                  >
-                                    {""} {/* Placeholder for missing row */}
-                                  </TableCell>
-                                ))}
-                          </TableRow>
-                        );
-                      })}
+  return (
+    <TableRow
+      key={row?.id || `row-placeholder-${index}`} 
+      className="h-[50px] cursor-pointer"
+      onClick={() => row && handleRowClick(row.original)}
+    >
+      {row
+        ? row.getVisibleCells().map((cell, cellIndex) => (
+            <TableCell
+              key={`${row.id}-cell-${cellIndex}`}
+              className={`px-4 py-3 text-center border-r ${
+                cell.column.id === "name" ? "text-left overflow-hidden" : ""
+              } ${cell.column.columnDef.meta?.className || ""}`}
+            >
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </TableCell>
+          ))
+        : columns.map((column, columnIndex) => (
+            <TableCell
+              key={`placeholder-cell-${columnIndex}`} 
+              className="px-4 py-3 text-center border-r text-gray-400"
+            >
+              {""} {/* Placeholder for missing row */}
+            </TableCell>
+          ))}
+    </TableRow>
+  );
+})}
+
 
                       {/* Pagination */}
                     </TableBody>

@@ -13,6 +13,7 @@ import Logo from "@/components/functional/logo";
 import { loginUser } from "@/services/auth";
 import { useStore } from "@/store/useStore";
 
+
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,7 +27,7 @@ export default function SignIn() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    console.log({ email, password });
+    
 
     setTouched({ email: true, password: true });
 
@@ -41,13 +42,15 @@ export default function SignIn() {
       const data = await loginUser(email, password);
       const { first_name, last_name } = data.data;
       const organization = await getOrganization();
-      setOrganizationId(organization?.[0].id || "");
-      setOrganizationName(organization?.[0].name || "");
+      await setOrganizationId(organization?.[0].id || "");
+      await setOrganizationName(organization?.[0].name || "");
+      
       sendLoginEmail(email, first_name, last_name);
 
       if (!data || data.error) {
         throw new Error(data?.message || "Invalid email or password.");
       }
+      router.refresh();
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
@@ -314,6 +317,15 @@ export default function SignIn() {
                   "Sign in"
                 )}
               </motion.button>
+               <motion.p
+                              className="text-center text-xs text-gray-600"
+                              variants={itemVariants}
+                            >
+                              Don't have an account?{" "}
+                              <a href="/sign-up" className="text-[#009A49] hover:underline">
+                                Sign up
+                              </a>
+                            </motion.p>
             </motion.form>
           </motion.div>
         </motion.div>

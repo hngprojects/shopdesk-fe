@@ -7,24 +7,45 @@ import { motion } from "framer-motion";
 import Illustration from "@/public/auth/illustration.svg";
 import Cube from "@/public/auth/cube.svg";
 import Logo from "@/components/functional/logo";
-import { useStore } from "@/store/useStore";
+// import { useStore } from "@/store/useStore";
+import { signUpUser } from "@/services/auth";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import SignUpSuccess from "@/components/modal/signUpSucccess";
+
+const countryCodes = [
+  { code: "+234", name: "Nigeria", flag: "/modal-images/nigeria-flag.svg" },
+  { code: "+20", name: "Egypt", flag: "/modal-images/egypt-flag.svg" },
+  { code: "+251", name: "Ethiopia", flag: "/modal-images/ethiopia-flag.svg" },
+  { code: "+233", name: "Ghana", flag: "/modal-images/ghana-flag.svg" },
+  { code: "+91", name: "India", flag: "/modal-images/india-flag.svg" },
+  { code: "+254", name: "Kenya", flag: "/modal-images/kenya-flag.svg" },
+];
 
 export default function SignUp() {
+
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
     email: "",
     password: "",
+    firstName: "",
+    lastName: "",
+    phoneNumber: "",
+    phoneCountryCode: countryCodes[0].code,
     confirmPassword: "",
+  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
     phoneNumber: "",
   });
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState({
     firstName: false,
@@ -34,9 +55,9 @@ export default function SignUp() {
     confirmPassword: false,
     phoneNumber: false,
   });
-  const { setOrganizationId, setOrganizationName } = useStore();
+  // const { setOrganizationId, setOrganizationName } = useStore();
 
-  const router = useRouter();
+  // const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -47,13 +68,53 @@ export default function SignUp() {
   };
 
   const handleBlur = (field: string) => {
+    const value = formData[field as keyof typeof formData];
+    const error = validateField(field, value);
+
     setTouched((prev) => ({ ...prev, [field]: true }));
+    setErrors((prev) => ({ ...prev, [field]: error }));
+  };
+
+  const handleCountryChange = (code: string) => {
+    setFormData({ ...formData, phoneCountryCode: code });
+  };
+
+  const validateField = (field: string, value: string) => {
+    let error = "";
+
+    if (field === "email") {
+      if (!value) error = "Email is required";
+      else if (!/^\S+@\S+\.\S+$/.test(value)) error = "Invalid email format";
+    }
+
+    if (field === "password") {
+      if (!value) error = "Password is required";
+      else if (value.length < 8)
+        error = "Password must be at least 8 characters";
+      else if (!/[A-Z]/.test(value))
+        error = "Password must contain at least one uppercase letter";
+      else if (!/[a-z]/.test(value))
+        error = "Password must contain at least one lowercase letter";
+      else if (!/[0-9]/.test(value))
+        error = "Password must contain at least one number";
+      else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value))
+        error = "Password must contain at least one special character";
+    }
+
+    if (field === "phoneNumber") {
+      if (!value) error = "Phone number is required";
+      else if (!/^\d+$/.test(value))
+        error = "Phone number must contain only numbers";
+      else if (value.length < 10)
+        error = "Phone number must be at least 10 digits";
+    }
+
+    return error;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    console.log(formData);
 
     setTouched({
       firstName: true,
@@ -63,6 +124,17 @@ export default function SignUp() {
       confirmPassword: true,
       phoneNumber: true,
     });
+    const emailError = validateField("email", formData.email);
+    const passwordError = validateField("password", formData.password);
+    const phoneNumberError = validateField("phoneNumber", formData.phoneNumber);
+    if (emailError || passwordError || phoneNumberError) {
+      setErrors({
+        email: emailError,
+        password: passwordError,
+        phoneNumber: phoneNumberError,
+      });
+      return;
+    }
 
     const requiredFields = [
       "firstName",
@@ -89,15 +161,19 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      // Replace with actual signup API call
+      const formattedData = {
+        email: formData.email,
+        password: formData.password,
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        phone_number: formData.phoneNumber,
+        phone_country_code: formData.phoneCountryCode,
+      };
+      await signUpUser(formattedData);
 
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Set organization data here...
-      setOrganizationId("new-org-id");
-      setOrganizationName("New Organization");
-
-      router.push("/dashboard");
+    
+      setIsModalOpen(true);
+       router.push("/create-organization");
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
@@ -261,6 +337,7 @@ export default function SignUp() {
                   <motion.input
                     type="text"
                     id="firstName"
+                    name="firstName"
                     className={`w-full p-2.5 border rounded-lg outline-none text-[#2A2A2A] text-sm
                       ${
                         touched.firstName && !formData.firstName
@@ -305,6 +382,7 @@ export default function SignUp() {
                   <motion.input
                     type="text"
                     id="lastName"
+                    name="lastName"
                     className={`w-full p-2.5 border rounded-lg outline-none text-[#2A2A2A] text-sm
                       ${
                         touched.lastName && !formData.lastName
@@ -347,9 +425,10 @@ export default function SignUp() {
                 <motion.input
                   type="email"
                   id="email"
+                  name="email"
                   className={`w-full p-2.5 border rounded-lg outline-none text-[#2A2A2A] text-sm
                     ${
-                      touched.email && !formData.email
+                      (touched.email && !formData.email) || errors.email
                         ? "border-red-500"
                         : "border-gray-300"
                     }
@@ -365,16 +444,16 @@ export default function SignUp() {
                   whileFocus={{ scale: 1.01 }}
                   transition={{ type: "spring", stiffness: 400 }}
                 />
-                {touched.email && !formData.email && (
+                {(touched.email && !formData.email) || errors.email ? (
                   <motion.p
                     className="text-red-500 text-xs"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    Email is required.
+                    {errors.email || "Email is required."}
                   </motion.p>
-                )}
+                ) : null}
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -392,9 +471,11 @@ export default function SignUp() {
                   <motion.input
                     type="password"
                     id="password"
+                    name="password"
                     className={`w-full p-2.5 border rounded-lg outline-none text-[#2A2A2A] text-sm
                       ${
-                        touched.password && !formData.password
+                        (touched.password && !formData.password) ||
+                        errors.password
                           ? "border-red-500"
                           : "border-gray-300"
                       }
@@ -410,14 +491,15 @@ export default function SignUp() {
                     whileFocus={{ scale: 1.01 }}
                     transition={{ type: "spring", stiffness: 400 }}
                   />
-                  {touched.password && !formData.password && (
+                  {((touched.password && !formData.password) ||
+                    errors.password) && (
                     <motion.p
                       className="text-red-500 text-xs"
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      Password is required.
+                      {errors.password || "Password is required."}
                     </motion.p>
                   )}
                 </motion.div>
@@ -491,21 +573,28 @@ export default function SignUp() {
                   Phone Number <span className="text-[#FF1925]">*</span>
                 </label>
                 <div className="flex rounded-lg border border-gray-300 overflow-hidden">
-                  {/* Country code dropdown */}
                   <div className="flex items-center px-3 py-2 bg-white border-r border-gray-300">
-                    {/* Nigeria flag */}
                     <div className="flex items-center gap-1">
                       <div className="w-6 h-4 bg-white flex items-center justify-center">
                         <div className="w-5 h-3 bg-white flex items-center relative">
                           <div className="absolute inset-0 flex items-center justify-center">
-                          <img src="/modal-images/nigeria-flag.svg" alt="Nigeria" className="h-6 w-6" />
+                            <img
+                              src={
+                                countryCodes.find(
+                                  (c) => c.code === formData.phoneCountryCode
+                                )?.flag
+                              }
+                              alt="Selected Country"
+                              className="h-6 w-6"
+                            />
                           </div>
                         </div>
                       </div>
-                      <span className="text-gray-700 text-sm">+234</span>
+                      <span className="text-gray-700 text-sm">
+                        {formData.phoneCountryCode}
+                      </span>
                       <DropdownMenu>
                         <DropdownMenuTrigger className="h-4 w-4 text-gray-500">
-                        
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="h-4 w-4"
@@ -522,57 +611,21 @@ export default function SignUp() {
                           </svg>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          {/* Add your dropdown items here */}
-                          <DropdownMenuItem>
-                            <div className="flex items-center gap-2">
-                              <img
-                                src="/modal-images/egypt-flag.svg"
-                                alt="Egypt"
-                                className="h-4 w-6"
-                              />
-                              <span>+20 </span>
-                            </div>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <div className="flex items-center gap-2">
-                              <img
-                                src="/modal-images/ethiopia-flag.svg"
-                                alt="Ethiopia"
-                                className="h-4 w-6"
-                              />
-                              <span>+251 </span>
-                            </div>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <div className="flex items-center gap-2">
-                              <img
-                                src="/modal-images/ghana-flag.svg"
-                                alt="Ghana"
-                                className="h-4 w-6"
-                              />
-                              <span>+233 </span>
-                            </div>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <div className="flex items-center gap-2">
-                              <img
-                                src="/modal-images/india-flag.svg"
-                                alt="India"
-                                className="h-4 w-6"
-                              />
-                              <span>+91</span>
-                            </div>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            <div className="flex items-center gap-2">
-                              <img
-                                src="/modal-images/kenya-flag.svg"
-                                alt="Kenya"
-                                className="h-4 w-6"
-                              />
-                              <span>+254</span>
-                            </div>
-                          </DropdownMenuItem>
+                          {countryCodes.map((country) => (
+                            <DropdownMenuItem
+                              key={country.code}
+                              onClick={() => handleCountryChange(country.code)}
+                            >
+                              <div className="flex items-center gap-2">
+                                <img
+                                  src={country.flag}
+                                  alt={country.name}
+                                  className="h-4 w-6"
+                                />
+                                <span>{country.code}</span>
+                              </div>
+                            </DropdownMenuItem>
+                          ))}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -581,6 +634,7 @@ export default function SignUp() {
                   <motion.input
                     type="tel"
                     id="phoneNumber"
+                    name="phoneNumber"
                     className="w-full p-2.5 outline-none text-[#2A2A2A] text-sm border-0"
                     placeholder="8131234567"
                     value={formData.phoneNumber}
@@ -590,14 +644,15 @@ export default function SignUp() {
                     transition={{ type: "spring", stiffness: 400 }}
                   />
                 </div>
-                {touched.phoneNumber && !formData.phoneNumber && (
+                {((touched.phoneNumber && !formData.phoneNumber) ||
+                  errors.phoneNumber) && (
                   <motion.p
                     className="text-red-500 text-xs"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    Phone number is required.
+                    {errors.phoneNumber || "phoneNumber is required."}
                   </motion.p>
                 )}
               </motion.div>
@@ -617,7 +672,7 @@ export default function SignUp() {
               {/* Sign Up Button*/}
               <motion.button
                 type="submit"
-                className="w-1/2 mx-auto bg-[#2A2A2A] hover:bg-[#B8B8B8] active:bg-[#B8B8B8] text-white p-2.5 rounded-lg font-medium transition duration-200 flex justify-center items-center gap-2 text-sm cursor-pointer"
+                className="w-full md:w-1/2 mx-auto bg-[#2A2A2A] hover:bg-[#B8B8B8] active:bg-[#B8B8B8] text-white p-2.5 rounded-lg font-medium transition duration-200 flex justify-center items-center gap-2 text-sm cursor-pointer"
                 disabled={loading}
                 variants={buttonVariants}
                 whileHover="hover"
@@ -651,7 +706,13 @@ export default function SignUp() {
           </motion.div>
         </motion.div>
       </main>
-
+      {isModalOpen && (
+        <SignUpSuccess 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          email={formData.email} 
+        />
+      )}
       <motion.div
         className="py-2"
         initial={{ opacity: 0, y: 20 }}
