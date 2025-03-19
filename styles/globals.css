@@ -3,6 +3,11 @@
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
+@layer utilities {
+  th, td {
+    padding: 0 !important;
+   
+  }}
 
 @font-face {
   font-family: "Circular Std Light";
