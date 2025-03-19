@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start -p 7777",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest --run"
+
   },
   "dependencies": {
     "@next/font": "^14.2.15",
@@ -42,6 +44,11 @@
     "@types/react-dom": "^19",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "webpack": "^5.98.0"
+    "webpack": "^5.98.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.2.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jest-environment-jsdom": "^29.7.0",
+    "vitest": "^3.0.9"
   }
 }
