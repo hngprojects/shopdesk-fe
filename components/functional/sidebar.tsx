@@ -72,9 +72,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
 
   return (
     <>
-      <div className="fixed inset-x-[-15] inset-0 md:relative w-full md:max-w-[356px] bg-white transition-transform duration-300 ease-in-out transform translate-x-0 flex flex-col flex-grow items-center rounded-xl md:border md:border-[#DEE5ED] ml-4 mr-[15px] md:m-0">
+      <div className="fixed inset-x-[-15] md:inset-x-0 inset-0 md:relative w-full md:max-w-[356px] bg-white transition-transform duration-300 ease-in-out transform translate-x-0 flex flex-col flex-grow items-center rounded-xl md:border md:border-[#DEE5ED] md:m-0 overflow-auto">
         <div className="hidden md:flex py-5.5 px-4 items-center justify-between border-b border-b-[#DEE5ED] w-full">
-          <p className="font-circular-medium text-2xl leading-9">
+          <p className="font-circular-medium text-2xl">
             {selectedItem.name}
           </p>
           <button onClick={onClose} className="p-[9px] bg-neutral-200 rounded-md" aria-label="Close sidebar">
@@ -89,7 +89,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
             </div>
 
             <div className="flex items-center justify-between border-b border-b-[#DEE5ED] w-full md:hidden p-3">
-              <p className="font-circular-medium text-xl leading-9">
+              <p className="font-circular-medium text-xl">
                 Edit stock
               </p>
               <button onClick={onClose} className="p-[7px] bg-neutral-100 rounded-lg">
