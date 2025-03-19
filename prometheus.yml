@@ -5,8 +5,7 @@ global:
 alerting:
   alertmanagers:
     - static_configs:
-        - targets:
-            - ['shopdesk_alertmanager:9093']  # Alertmanager address
+        - targets: ['shopdesk_alertmanager:9093']  # Alertmanager address
 
 rule_files:
   - alertmanager.yml  # Path to your alerting rules file

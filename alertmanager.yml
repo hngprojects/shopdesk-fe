@@ -2,13 +2,19 @@ global:
   resolve_timeout: 5m
 
 route:
-  receiver: 'slack-notification'
+  receiver: "slack-alerts"
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
 
 receivers:
-  - name: 'slack-notification'
+  - name: "slack-alerts"
     slack_configs:
-      - api_url: 'https://hooks.slack.com/services/your/slack/webhook/url'
-        channel: '#devops-alerts'
-        send_resolved: true
-        text: '{{ range .Alerts }}{{ .Annotations.summary }}: {{ .Annotations.description }}{{ end }}'
+      - send_resolved: true
+        channel: "#devops-alerts"
+        username: "PrometheusAlert"
+        title: ":rotating_light: [ALERT] {{ .CommonLabels.alertname }}"
+        text: "Summary: {{ .CommonAnnotations.summary }}\n*Description:* {{ .CommonAnnotations.description }}"
+        icon_emoji: ":fire:"
+        api_url: "https://hooks.slack.com/services/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"
   
