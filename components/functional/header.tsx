@@ -63,10 +63,10 @@ const Header = () => {
         <div className="flex items-center gap-4">
           <button
             type="button"
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/sign-up")}
             className="btn-primary"
           >
-            Sign In
+            Sign up
           </button>
           <button
             type="button"
