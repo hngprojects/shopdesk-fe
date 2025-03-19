@@ -1,0 +1,14 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'slack-notification'
+
+receivers:
+  - name: 'slack-notification'
+    slack_configs:
+      - api_url: 'https://hooks.slack.com/services/your/slack/webhook/url'
+        channel: '#devops-alerts'
+        send_resolved: true
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}: {{ .Annotations.description }}{{ end }}'
+  

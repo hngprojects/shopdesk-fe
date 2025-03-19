@@ -2,6 +2,15 @@ global:
   scrape_interval: 15s  # How often to scrape targets
   evaluation_interval: 15s  # How often to evaluate rules
 
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - ['shopdesk_alertmanager:9093']  # Alertmanager address
+
+rule_files:
+  - alertmanager.yml  # Path to your alerting rules file
+
 scrape_configs:
   # Scrape Prometheus itself
   - job_name: 'prometheus'

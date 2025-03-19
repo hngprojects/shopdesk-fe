@@ -12,6 +12,8 @@ services:
     restart: unless-stopped
     networks:
       - monitoring_network
+    depends_on:
+      - alertmanager
 
   grafana:
     image: grafana/grafana:latest
@@ -48,10 +50,26 @@ services:
     networks:
       - monitoring_network
 
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: shopdesk_alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    restart: unless-stopped
+    networks:
+      - monitoring_network
+
 volumes:
   prometheus_data:
   grafana_data:
-
+  alertmanager_data:
 
 networks:
   monitoring_network:
