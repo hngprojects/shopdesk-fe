@@ -27,7 +27,7 @@ jobs:
             linux-node-
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
 
       - name: Run tests
-        run: npm test
+        run: bun run test
