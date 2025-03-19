@@ -52,18 +52,25 @@ const PaginationFeature = ({
     <div className="w-full flex flex-col min-[500px]:flex-row min-[500px]:items-center min-[500px]:justify-between gap-2 text-[#32475C99]">
       {/* Items per page and count */}
       <span className="text-sm flex items-center justify-center flex-wrap whitespace-nowrap">
-        <span className="max-[640px]:hidden">
-          You have <span className="font-medium mx-1 text-[#2A2A2A]">{totalItems}</span>
-          stock
+        <span>
+          You have<span className="font-medium mx-1 text-[#2A2A2A]">{totalItems}</span>
         </span>
-        (Displaying{""}
-        <span className="font-medium mx-1 text-[#2A2A2A]">
+        stock (Displaying{""}
+        {/* <span className="font-medium mx-1 text-[#2A2A2A]">
           {displayedItemsCount > 0 ? `${startIndex + 1}-${endIndex}` : 0}
         </span>{" "}
-        of <span className="font-medium mx-1 text-[#2A2A2A]">{totalItems}</span>
+        of <span className="font-medium mx-1 text-[#2A2A2A]">{totalItems}</span> */}
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center font-medium mx-1 text-[#2A2A2A]">
-            {itemsPerPage} <ChevronDown className="w-3 h-3 ml-1" />
+            {itemsPerPage}  
+            <svg
+             className="w-3 h-3 ml-1 text-[#32475C8A]"
+             viewBox="0 0 10 10"
+             fill="currentColor"
+           >
+             <path d="M5 7L1 3h8z" />
+           </svg>
+
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {itemsPerPageOptions.map((count) => (
