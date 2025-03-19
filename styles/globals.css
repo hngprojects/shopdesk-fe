@@ -65,7 +65,12 @@
     cursor: pointer;
   }
 }
-
+@layer utilities {
+  th, td {
+    padding: 0 !important;
+   
+  }
+}
 html {
   width: 100vw;
   display: flex;

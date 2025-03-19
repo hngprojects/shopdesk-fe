@@ -19,7 +19,8 @@ import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import PaginationFeature from "./paginationfeature";
 
-// Define the SalesItem type outside the component
+import SalesModal from "@/components/modal/sales-modal";
+
 export type SalesItem = {
   id: string;
   item_name: string;
@@ -33,10 +34,10 @@ export type SalesItem = {
 
 interface SalesTabProps {
   onAddSale: () => void;
+  salesItems: SalesItem[];
 }
 
-const SalesTab = ({ onAddSale }: SalesTabProps) => {
-  const [salesItems, setSalesItems] = useState<SalesItem[]>([]);
+const SalesTab = ({ onAddSale, salesItems }: SalesTabProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -44,8 +45,7 @@ const SalesTab = ({ onAddSale }: SalesTabProps) => {
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-      setTimeout(() => {
-      setSalesItems([]);
+    setTimeout(() => {
       setIsLoading(false);
     }, 500);
   }, []);
@@ -58,13 +58,13 @@ const SalesTab = ({ onAddSale }: SalesTabProps) => {
   const totalPages = Math.ceil(totalItems / rowsPerPage);
   const paginatedData = isSearching
     ? filteredItems.slice(
-        (currentPage - 1) * rowsPerPage,
-        currentPage * rowsPerPage
-      )
+      (currentPage - 1) * rowsPerPage,
+      currentPage * rowsPerPage
+    )
     : salesItems.slice(
-        (currentPage - 1) * rowsPerPage,
-        currentPage * rowsPerPage
-      );
+      (currentPage - 1) * rowsPerPage,
+      currentPage * rowsPerPage
+    );
 
   const salesColumns: ColumnDef<SalesItem>[] = useMemo(
     () => [
@@ -197,24 +197,24 @@ const SalesTab = ({ onAddSale }: SalesTabProps) => {
                   <TableRow key={index} className="h-[50px]">
                     {row
                       ? row.getVisibleCells().map((cell) => (
-                          <TableCell
-                            key={cell.id}
-                            className="px-4 py-3 text-center border-r"
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))
+                        <TableCell
+                          key={cell.id}
+                          className="px-4 py-3 text-center border-r"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))
                       : salesColumns.map((column) => (
-                          <TableCell
-                            key={column.id}
-                            className="px-4 py-3 text-center border-r text-gray-400"
-                          >
-                            {""} {/* Placeholder for missing row */}
-                          </TableCell>
-                        ))}
+                        <TableCell
+                          key={column.id}
+                          className="px-4 py-3 text-center border-r text-gray-400"
+                        >
+                          {""}
+                        </TableCell>
+                      ))}
                   </TableRow>
                 );
               })}
