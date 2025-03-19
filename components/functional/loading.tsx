@@ -1,7 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Cube from "@/public/auth/cube.svg";
 
 const LoadingAnimation = () => {
   return (
@@ -12,7 +11,7 @@ const LoadingAnimation = () => {
         transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
       >
         <Image
-          src={Cube}
+          src="/favicon.ico" 
           alt="Loading..."
           width={100}
           height={100}

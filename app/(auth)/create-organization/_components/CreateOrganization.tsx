@@ -196,7 +196,6 @@ const CreateOrganization = () => {
     currency: "",
     country: "",
     state: "",
-    address: "",
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -207,7 +206,6 @@ const CreateOrganization = () => {
     currency: false,
     country: false,
     state: false,
-    address: false,
   });
   const { setOrganizationId, setOrganizationName } = useStore();
 
@@ -235,7 +233,6 @@ const CreateOrganization = () => {
       currency: true,
       country: true,
       state: true,
-      address: true,
     });
 
     const requiredFields = [
@@ -408,7 +405,7 @@ const CreateOrganization = () => {
               variants={containerVariants}
             >
               <div className="flex flex-col gap-4">
-                {/* Organization Name Field */}
+                {/* First Name Field */}
                 <motion.div
                   className="flex flex-col gap-1"
                   variants={itemVariants}
@@ -496,18 +493,17 @@ const CreateOrganization = () => {
                   )}
                 </motion.div>
 
-                <div className="flex w-full gap-10">
-                  {/* Currency Field */}
-                  <motion.div className="flex flex-col gap-1 relative w-full">
-                    <label
-                      htmlFor="currency"
-                      className="block text-sm font-medium text-[#717171]"
-                    >
-                      Currency Code <span className="text-[#FF1925]">*</span>
-                    </label>
+                {/* Currency Field */}
+                <motion.div className="flex flex-col gap-1 relative">
+                  <label
+                    htmlFor="currency"
+                    className="block text-sm font-medium text-[#717171]"
+                  >
+                    Currency Code <span className="text-[#FF1925]">*</span>
+                  </label>
 
-                    <motion.div
-                      className={`flex items-center w-full p-4 border rounded-[9px] text-xl cursor-pointer
+                  <motion.div
+                    className={`flex items-center w-full p-4 border rounded-[9px] text-xl cursor-pointer
           ${
             touched.currency && !formData.currency
               ? "border-red-500"
@@ -518,89 +514,89 @@ const CreateOrganization = () => {
                           ? "border focus:border-[#009A49] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB]"
                           : ""
                       }`}
-                      onClick={toggleCurrencyModal}
-                    >
-                      <span className="w-full text-[#b8b8b8] md:text-xl text-base">
-                        {selectedCurrency
-                          ? `${selectedCurrency.name} (${selectedCurrency.symbol})`
-                          : "Select Currency Code"}
-                      </span>
+                    onClick={toggleCurrencyModal}
+                  >
+                    <span className="w-full text-[#b8b8b8] md:text-xl text-base">
+                      {selectedCurrency
+                        ? `${selectedCurrency.name} (${selectedCurrency.symbol})`
+                        : "Select Currency Code"}
+                    </span>
 
-                      {selectedCurrency && (
-                        <Image
-                          src={selectedCurrency.flag}
-                          alt={`${selectedCurrency.name} Flag`}
-                          className="w-5 h-5 md:w-6 md:h-6"
-                          width={20}
-                          height={20}
-                        />
-                      )}
-
-                      <FaChevronDown className="w-[10px] h-[10px] text-[#b8b8b8] ml-2" />
-                    </motion.div>
-
-                    {touched.currency && !selectedCurrency && (
-                      <motion.p
-                        className="text-red-500 text-xs"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        Please select your currency
-                      </motion.p>
+                    {selectedCurrency && (
+                      <Image
+                        src={selectedCurrency.flag}
+                        alt={`${selectedCurrency.name} Flag`}
+                        className="w-5 h-5 md:w-6 md:h-6"
+                        width={20}
+                        height={20}
+                      />
                     )}
 
-                    {isCurrencyModalOpen && (
-                      <div
-                        ref={currencyRef}
-                        className="absolute top-full left-0 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
-                      >
-                        <div className="p-4">
-                          <input
-                            type="text"
-                            className="w-full rounded-[10px] p-2 outline-none placeholder:text-[#B8B8B8] text-[16px] border"
-                            placeholder="Search Currency"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                          />
-                        </div>
-
-                        <div className="h-[200px] overflow-y-auto px-[20px] py-3">
-                          {filteredCurrencies.map((currency) => (
-                            <div
-                              key={currency.code}
-                              className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => handleCurrencySelect(currency)}
-                            >
-                              <Image
-                                src={currency.flag}
-                                alt={`${currency.name} Flag`}
-                                className="w-8 h-8 rounded-full object-cover mr-3"
-                                width={32}
-                                height={32}
-                              />
-                              <p className="text-[14px]">
-                                {currency.name} ({currency.code}){" "}
-                                <span>{currency.symbol}</span>
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    <FaChevronDown className="w-[10px] h-[10px] text-[#b8b8b8] ml-2" />
                   </motion.div>
 
-                  {/* Country Field */}
-                  <motion.div className="flex flex-col gap-1 relative w-full">
-                    <label
-                      htmlFor="country"
-                      className="block text-sm font-medium text-[#717171]"
+                  {touched.currency && !selectedCurrency && (
+                    <motion.p
+                      className="text-red-500 text-xs"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      Select Country <span className="text-[#FF1925]">*</span>
-                    </label>
+                      Please select your currency
+                    </motion.p>
+                  )}
 
-                    <motion.div
-                      className={`flex items-center w-full p-4 border rounded-[9px] text-xl cursor-pointer
+                  {isCurrencyModalOpen && (
+                    <div
+                      ref={currencyRef}
+                      className="absolute top-full left-0 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
+                    >
+                      <div className="p-4">
+                        <input
+                          type="text"
+                          className="w-full rounded-[10px] p-2 outline-none placeholder:text-[#B8B8B8] text-[16px] border"
+                          placeholder="Search Currency"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="h-[200px] overflow-y-auto px-[20px] py-3">
+                        {filteredCurrencies.map((currency) => (
+                          <div
+                            key={currency.code}
+                            className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => handleCurrencySelect(currency)}
+                          >
+                            <Image
+                              src={currency.flag}
+                              alt={`${currency.name} Flag`}
+                              className="w-8 h-8 rounded-full object-cover mr-3"
+                              width={32}
+                              height={32}
+                            />
+                            <p className="text-[14px]">
+                              {currency.name} ({currency.code}){" "}
+                              <span>{currency.symbol}</span>
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+
+                {/* Country Field */}
+                <motion.div className="flex flex-col gap-1 relative">
+                  <label
+                    htmlFor="country"
+                    className="block text-sm font-medium text-[#717171]"
+                  >
+                    Select Country <span className="text-[#FF1925]">*</span>
+                  </label>
+
+                  <motion.div
+                    className={`flex items-center w-full p-4 border rounded-[9px] text-xl cursor-pointer
           ${
             touched.country && !formData.country
               ? "border-red-500"
@@ -611,58 +607,57 @@ const CreateOrganization = () => {
                           ? "border focus:border-[#009A49] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB]"
                           : ""
                       }`}
-                      onClick={toggleCountryModal}
-                    >
-                      <span className="w-full text-[#b8b8b8] md:text-xl text-base">
-                        {selectedCountry
-                          ? `${selectedCountry.name}`
-                          : "Select Country Code"}
-                      </span>
+                    onClick={toggleCountryModal}
+                  >
+                    <span className="w-full text-[#b8b8b8] md:text-xl text-base">
+                      {selectedCountry
+                        ? `${selectedCountry.name}`
+                        : "Select Country Code"}
+                    </span>
 
-                      <FaChevronDown className="w-[10px] h-[10px] text-[#b8b8b8] ml-2" />
-                    </motion.div>
-
-                    {touched.country && !selectedCountry && (
-                      <motion.p
-                        className="text-red-500 text-xs"
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        Please select your country
-                      </motion.p>
-                    )}
-
-                    {isCountryModalOpen && (
-                      <div
-                        ref={countryRef}
-                        className="absolute top-full left-0 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
-                      >
-                        <div className="p-4">
-                          <input
-                            type="text"
-                            className="w-full rounded-[10px] p-2 outline-none placeholder:text-[#B8B8B8] text-[16px] border"
-                            placeholder="Search country"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                          />
-                        </div>
-
-                        <div className="h-[200px] overflow-y-auto px-[20px] py-3">
-                          {filteredCountries.map((country) => (
-                            <div
-                              key={country.id}
-                              className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => handleCountrySelect(country)}
-                            >
-                              <p className="text-[14px]">{country.name}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                    <FaChevronDown className="w-[10px] h-[10px] text-[#b8b8b8] ml-2" />
                   </motion.div>
-                </div>
+
+                  {touched.country && !selectedCountry && (
+                    <motion.p
+                      className="text-red-500 text-xs"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      Please select your country
+                    </motion.p>
+                  )}
+
+                  {isCountryModalOpen && (
+                    <div
+                      ref={countryRef}
+                      className="absolute top-full left-0 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
+                    >
+                      <div className="p-4">
+                        <input
+                          type="text"
+                          className="w-full rounded-[10px] p-2 outline-none placeholder:text-[#B8B8B8] text-[16px] border"
+                          placeholder="Search country"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="h-[200px] overflow-y-auto px-[20px] py-3">
+                        {filteredCountries.map((country) => (
+                          <div
+                            key={country.id}
+                            className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => handleCountrySelect(country)}
+                          >
+                            <p className="text-[14px]">{country.name}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
 
                 {/* State Field */}
                 <motion.div className="flex flex-col gap-1 relative">
@@ -734,50 +729,6 @@ const CreateOrganization = () => {
                     </div>
                   )}
                 </motion.div>
-
-                {/* Address Field */}
-                <motion.div
-                  className="flex flex-col gap-1"
-                  variants={itemVariants}
-                >
-                  <label
-                    htmlFor="address"
-                    className="block text-sm font-medium text-[#717171]"
-                  >
-                    Full Address <span className="text-[#FF1925]">*</span>
-                  </label>
-                  <motion.input
-                    type="text"
-                    id="address"
-                    className={`w-full p-4 border rounded-[9px] outline-none text-[#b8b8b8] md:text-xl text-base
-                      ${
-                        touched.address && !formData.address
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }
-                      ${
-                        formData.address
-                          ? "border focus:border-[#009A49] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB]"
-                          : ""
-                      }`}
-                    placeholder="write your full address"
-                    value={formData.address}
-                    onChange={handleChange}
-                    onBlur={() => handleBlur("address")}
-                    whileFocus={{ scale: 1.01 }}
-                    transition={{ type: "spring", stiffness: 400 }}
-                  />
-                  {touched.address && !formData.address && (
-                    <motion.p
-                      className="text-red-500 text-xs"
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      Full address is required.
-                    </motion.p>
-                  )}
-                </motion.div>
               </div>
 
               {/* Error Message */}
@@ -801,8 +752,7 @@ const CreateOrganization = () => {
                   !formData.businessType ||
                   !formData.currency ||
                   !formData.country ||
-                  !formData.state ||
-                  !formData.address
+                  !formData.state
                     ? "bg-[#d0d0d0]"
                     : "bg-[#1b1b1b] hover:bg-[#1b1b1b] active:bg-[#1b1b1b]"
                 } text-white py-3 px-6 mt-2 rounded-[12px] font-medium transition duration-200 flex justify-center items-center gap-2 text-sm cursor-pointer`}
@@ -812,8 +762,7 @@ const CreateOrganization = () => {
                   !formData.businessType ||
                   !formData.currency ||
                   !formData.country ||
-                  !formData.state ||
-                  !formData.address
+                  !formData.state
                 }
                 variants={buttonVariants}
                 whileHover="hover"
