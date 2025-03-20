@@ -82,7 +82,7 @@ const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
         </div>
       </DialogContent>
     </Dialog>
-  );
+)
 };
 
 export default LogoutConfirmModal;
