@@ -15,15 +15,15 @@ const Page = () => {
       plan: "Free Plan",
       price: "₦0/Mo",
       item: [
-        "Track up to 50 items in stock.",
+        "Track up to 10 items in stock.",
         "Basic sales and profit tracking.",
         "Offline mode with local storage.",
         "Single user (admin role only)",
       ],
     },
     {
-      plan: "Pro Plan",
-      price: "₦15,000/Mo",
+      plan: "Basic Plan",
+      price: "₦$30/Month",
       item: [
         "Unlimited items in stock.",
         "Export daily/weekly reports.",
@@ -32,8 +32,8 @@ const Page = () => {
       ],
     },
     {
-      plan: "Enterprise Plan",
-      price: "₦55,000/Mo",
+      plan: "Premium Plan",
+      price: "$50/Month",
       item: [
         "Unlimited users and roles",
         "Bulk import/export for stock",
