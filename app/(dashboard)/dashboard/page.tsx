@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState,useCallback,useRef,useMemo } from "react";
-import { ChevronDown, Edit, Loader2, MoreVertical, SaveAll, Trash2, Plus,X } from "lucide-react";
+import { ChevronDown, Edit, Loader2, MoreVertical, SaveAll, Trash2, Plus,X, Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EditItemModal from "@/components/modal/edit-stock";
 import AddItemModal from "@/components/modal/add-item";
@@ -122,7 +122,8 @@ const Page = () => {
   const [user, setUser] = useState<any>(null);
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isMobileLogoutModalOpen, setIsMobileLogoutModalOpen] = useState(false);
+  const [isDesktopLogoutModalOpen, setIsDesktopLogoutModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
@@ -141,6 +142,7 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showSales, setShowSales] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isNavbarOpen, setIsNavbarOpen] = useState(false);
 
   const [showProfit, setShowProfit] = useState(false);
 
@@ -191,6 +193,15 @@ const Page = () => {
     setImageModalOpen(true);
   };
 
+  const toggleNavbar = () => {
+    setIsNavbarOpen(!isNavbarOpen);
+  };
+ 
+ 
+  const closeNavbar = () => {
+    setIsNavbarOpen(false);
+  };
+ 
   const handleSaveImages = (images: { id: string; src: string }[]) => {
     if (!currentItem) return;
 
@@ -686,7 +697,7 @@ const Page = () => {
 
   const handleRowClick = (item: StockItem) => {
     setSelectedItem(item)
-    setIsSidebarOpen(false)
+    setIsSidebarOpen(true)
   }
 
   const closeSidebar = () => {
@@ -696,10 +707,19 @@ const Page = () => {
   return (
     <main className="px-6 py-4 w-full max-w-7xl mx-auto flex flex-col main-h-svh ">
       <div ref={tableAreaRef} className="space-y-8 w-full h-full ">
-        <LogoutConfirmModal
-          open={isLogoutModalOpen}
-          onOpenChange={setIsLogoutModalOpen}
-          onCancel={() => setIsLogoutModalOpen(false)}
+      <LogoutConfirmModal
+          organizationName={organizationName}
+          open={isMobileLogoutModalOpen || isDesktopLogoutModalOpen} 
+          onOpenChange={(open) => {
+            if (!open) {
+              setIsMobileLogoutModalOpen(false); 
+              setIsDesktopLogoutModalOpen(false);
+            }
+          }}
+          onCancel={() => {
+            setIsMobileLogoutModalOpen(false); 
+            setIsDesktopLogoutModalOpen(false);
+          }}
         />
 
         <DeleteItem
@@ -714,18 +734,58 @@ const Page = () => {
           }
         />
         <div className="lg:border px-4 py-2 lg:shadow-md rounded-lg lg:flex items-center justify-between mx-auto">
-          <div className="flex items-center gap-6">
-            <div className="flex justify-center lg:justify-start w-full lg:w-auto">
+          <div className="flex items-center gap-6 p-2">
+            <div className="flex justify-start w-full lg:w-auto">
               <Logo />
             </div>
             <small className="text-black text-left hidden lg:block">
               The simplest way to manage your shop!
             </small>
+            <button onClick={toggleNavbar} className="lg:hidden hover:cursor-pointer">
+             <Menu strokeWidth={1.5} color="#667085" />
+           </button>
           </div>
-          <div className="">
+
+          {/* Mobile Slide-In Navbar */}
+         <div
+         className={`fixed inset-y-0 right-0 w-full sm:w-3/4 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:hidden z-2 ${
+           isNavbarOpen ? 'translate-x-0' : 'translate-x-full'
+         }`}
+       >
+         {/* Flex container for dropdown and close button */}
+           <div className="flex items-center justify-between p-4">
+             {/* Dropdown Menu */}
+             <DropdownMenu modal>
+               <DropdownMenuTrigger
+                 className="btn-primary hover:cursor-pointer flex items-center gap-2 text-white max-w-56"
+               >
+                 <span className="py-2 px-4 rounded-lg bg-white text-black">
+                   {organizationInitial}
+                 </span>
+                 {organizationName}
+                 <ChevronDown strokeWidth={1.5} color="white" />
+               </DropdownMenuTrigger>
+               <DropdownMenuContent>
+                 <DropdownMenuItem
+                   className="w-full px-[5rem]"
+                   onClick={() => setIsMobileLogoutModalOpen(true)}
+                 >
+                   Log out
+                 </DropdownMenuItem>
+               </DropdownMenuContent>
+             </DropdownMenu>
+
+
+             {/* Close Button */}
+             <button onClick={closeNavbar} className="hover:cursor-pointer">
+               <X strokeWidth={1.5} color="black" />
+             </button>
+           </div>
+       </div>
+
+          <div className="hidden lg:block">
             <DropdownMenu modal>
               <DropdownMenuTrigger
-                disabled
                 className="btn-primary hover:cursor-pointer hidden lg:flex items-center gap-2 text-white"
               >
                 <span className="py-2 px-4 rounded-lg bg-white text-black">
@@ -737,7 +797,7 @@ const Page = () => {
               <DropdownMenuContent>
                 <DropdownMenuItem
                   className="w-full px-[5rem]"
-                  onClick={() => setIsLogoutModalOpen(true)}
+                  onClick={() => setIsDesktopLogoutModalOpen(true)}
                 >
                   Log out
                 </DropdownMenuItem>
@@ -785,6 +845,7 @@ const Page = () => {
                 <div className="relative max-[800px]:w-full">
                   <input
                     type="text"
+                     placeholder="Search by item name"
                     className="h-12 border w-[327px] max-[800px]:w-full rounded-md focus:outline-2 focus:outline-[#009A49] px-10"
                     onChange={(event) => {
                       setIsSearching(true)
@@ -795,7 +856,12 @@ const Page = () => {
                     }}
                   />
 
-                  <Search className="text-[#667085] absolute top-3 left-3 " />
+                <img
+                   src='/icons/search_icon.svg'
+                   alt="Search Icon"
+                   className="absolute top-3 left-3 w-5 h-5"
+                 />
+
                 </div>
 
                 <div className="z-10">
@@ -812,10 +878,10 @@ const Page = () => {
               </div>
             )}
           </div>
-          <div className="flex w-full overflow-hidden mx-auto">
+          <div className="flex w-full overflow-hidden mx-auto gap-4">
             <div
               className={`border shadow-md rounded-b-lg rounded-bl-lg relative rounded-tr-lg flex-1 overflow-auto w-full transition-all duration-300 ease-in-out ${
-                isSidebarOpen ? 'w-full max-w-[989px] mr-1' : 'w-full'
+                isSidebarOpen ? 'w-full max-w-[989px]' : 'w-full'
               }`}
             >
               {stockItems.length === 0 ||
