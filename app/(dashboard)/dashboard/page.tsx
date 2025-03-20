@@ -47,6 +47,7 @@ import { getAccessToken } from "@/app/api/token";
 import Sidebar from "@/components/functional/sidebar";
 import SalesTab from "@/components/functional/salestab";
 
+
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData, TValue> {
     className?: string;
