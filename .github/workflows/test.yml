@@ -18,6 +18,9 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install Bun
+        run: npm install -g bun
+
       - name: Cache Node.js modules
         uses: actions/cache@v3
         with:
@@ -27,7 +30,7 @@ jobs:
             linux-node-
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
 
       - name: Run tests
-        run: npm test
+        run: bun run test
