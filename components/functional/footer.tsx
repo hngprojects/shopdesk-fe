@@ -69,7 +69,7 @@ const Footer = () => {
             </p>
 
             <p className="text-base text-[#414141] underline underline-offset-4 mt-2">
-              208 Parisian Plains, Bulahport 27156, France
+              No. 2 Laula Ibrahim Street, Akoka, Lagos.
             </p>
 
             <div className="flex gap-4 mt-[70px] max-[500px]:hidden">
