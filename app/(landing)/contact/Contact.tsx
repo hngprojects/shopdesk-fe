@@ -139,7 +139,7 @@ const Contact = () => {
         </form>
 
         <div className="flex flex-col gap-6 text-[#2A2A2A] text-lg">
-          <div className="flex flex-col gap-4">
+          {/* <div className="flex flex-col gap-4">
             <h3 className="text-xl font-bold">Chat with us</h3>
             <span className="flex flex-col gap-1">
               <p className="text-[#717171]">Speak with us via live chat</p>
@@ -154,7 +154,7 @@ const Contact = () => {
                 <span className="underline">start a live chat</span>
               </Link>
             </span>
-          </div>
+          </div> */}
 
           <div className="flex flex-col gap-4">
             <h3 className="text-xl font-bold">Call us</h3>
@@ -167,7 +167,7 @@ const Contact = () => {
                 className="flex items-center gap-2"
               >
                 <FiPhoneCall className="size-6" />
-                <span className="underline">+234 000 000 0000</span>
+                <span className="underline">+234 700 880 8800</span>
               </Link>
             </span>
           </div>
@@ -179,7 +179,7 @@ const Contact = () => {
               <Link href="" className="flex items-center gap-2">
                 <MapPin className="size-6" />
                 <span className="underline">
-                  24, Badmos street , Heritage V22, NY City
+                  No. 2 Laula Ibrahim Street, Akoka, Lagos.
                 </span>
               </Link>
             </span>
