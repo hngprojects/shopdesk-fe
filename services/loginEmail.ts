@@ -1,34 +1,36 @@
-import { loginEmailBody } from '@/lib/utils';
+
+
+import { loginEmailBody } from "@/lib/utils";
 
 export async function sendLoginEmail(
   email: string,
   first_name: string,
   last_name: string
 ): Promise<string> {
-  if (!first_name) first_name = '';
-  if (!last_name) last_name = '';
-  const apiUrl = 'api/email/login';
+  if (!first_name) first_name = "";
+  if (!last_name) last_name = "";
+  const apiUrl = "api/email/login";
   const body = JSON.stringify({
-    subject: '',
-    title: ' Login Successful – Welcome Back to ShopDesk',
+    subject: "",
+    title: " Login Successful – Welcome Back to ShopDesk",
     recipients: [email],
-    first_name: 'user',
+    first_name: "user",
     body: loginEmailBody(first_name, last_name),
   });
   try {
     const response = await fetch(apiUrl, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: body,
     });
     if (!response.ok) {
-      throw new Error('Failed to send email');
+      throw new Error("Failed to send email");
     }
-    return 'Email sent successfully';
+    return "Email sent successfully";
   } catch (error) {
-    console.error('Error sending login email:', error);
-    return 'Error sending login email';
+    console.error("Error sending login email:", error);
+    return "Error sending login email";
   }
 }
