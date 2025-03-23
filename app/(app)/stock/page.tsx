@@ -6,6 +6,7 @@ import { DataTable } from './components/data-table';
 import { useGetUserQuery } from '@/redux/features/auth/auth.api';
 import { useAppSelector } from '@/redux/hooks';
 import { useEffect } from 'react';
+import data from './data/stocks.json'
 // import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 // import { useCreateStockMutation } from '@/redux/features/stock/stock.api';
 // import { startStocksLoading } from '@/redux/features/stock/stock.slice';
