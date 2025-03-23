@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { getAccessToken } from '@/app/api/token';
 import { useStore } from '@/store/useStore';
 
@@ -25,8 +23,6 @@ type Product = {
   is_service: boolean;
   previous_url_slugs: {};
   unavailable: false;
-  // "unavailable_start": "2025-03-14T13:14:42.799Z"
-  // "unavailable_end": "2025-03-14T13:14:42.799Z",
   status: string;
   id: string;
   parent_product_id: string;
@@ -64,7 +60,9 @@ type ProductResponse = {
   next_page: number | null;
   items: Product[];
 };
+
 const token = await getAccessToken();
+
 export async function CreateProduct(
   productName: string,
   unique_id: string,
@@ -146,6 +144,7 @@ export async function AddStock(
     throw error;
   }
 }
+
 export async function GetProduct(): Promise<StockResponse> {
   const organization_id = useStore.getState().organizationId;
   try {
@@ -262,189 +261,3 @@ export async function editStock(
     throw error;
   }
 }
-export async function editStockv3(
-  stockId: string,
-  stockData: {
-    name: string;
-    quantity: number;
-  }
-): Promise<void> {
-  const organization_id = useStore.getState().organizationId;
-  try {
-    const token = await getAccessToken();
-
-    const response = await fetch(`/api/stocks/edit`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        stock_id: stockId,
-        organization_id: organization_id,
-        ...stockData,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update stock');
-    }
-  } catch (error) {
-    console.error('Error updating stock:', error);
-    throw error;
-  }
-}
-export async function editPrice(
-  stockId: string,
-  stockData: {
-    buying_price: number;
-    currency_code: string;
-  }
-): Promise<void> {
-  const organization_id = useStore.getState().organizationId;
-  try {
-    const token = await getAccessToken();
-
-    const response = await fetch(`/api/stocks/edit`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        stock_id: stockId,
-        organization_id: organization_id,
-        ...stockData,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update price');
-    }
-  } catch (error) {
-    console.error('Error updating price:', error);
-    throw error;
-  }
-}
-export async function editQuantity(
-  stockId: string,
-  stockData: {
-    quantity: number;
-  }
-): Promise<void> {
-  const organization_id = useStore.getState().organizationId;
-  try {
-    const token = await getAccessToken();
-
-    const response = await fetch(`/api/stocks/edit`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        stock_id: stockId,
-        organization_id: organization_id,
-        ...stockData,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update stock');
-    }
-  } catch (error) {
-    console.error('Error updating stock:', error);
-    throw error;
-  }
-}
-
-export async function editName(
-  stockId: string,
-  stockData: {
-    name: string;
-  }
-): Promise<void> {
-  const organization_id = useStore.getState().organizationId;
-  try {
-    const token = await getAccessToken();
-
-    const response = await fetch(`/api/stocks/edit`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        stock_id: stockId,
-        organization_id: organization_id,
-        ...stockData,
-      }),
-    });
-
-<<<<<<< HEAD
-//   }
-// ): Promise<void> {
-//   const organization_id = useStore.getState().organizationId;
-//   try {
-//     const token = await getAccessToken();
-
-//     const response = await fetch(`/api/stocks/edit`, {
-//       method: "PUT",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: JSON.stringify({
-//         stock_id: stockId,
-//         organization_id: organization_id,
-//         ...stockData,
-//       }),
-//     });
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       throw new Error(errorData.message || "Failed to update stock");
-//     }
-//   } catch (error) {
-//     console.error("Error updating stock:", error);
-//     throw error;
-//   }
-// }
-
-// export async function editName(
-//   stockId: string,
-//   stockData: {
-//     name: string;
-
-//   }
-// ): Promise<void> {
-//   const organization_id = useStore.getState().organizationId;
-//   try {
-//     const token = await getAccessToken();
-
-//     const response = await fetch(`/api/stocks/edit`, {
-//       method: "PUT",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: JSON.stringify({
-//         stock_id: stockId,
-//         organization_id: organization_id,
-//         ...stockData,
-//       }),
-//     });
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       throw new Error(errorData.message || "Failed to update stock");
-//     }
-//   } catch (error) {
-//     console.error("Error updating stock:", error);
-//     throw error;
-//   }
-// }
-
