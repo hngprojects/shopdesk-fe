@@ -1,0 +1,90 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - staging
+      - main
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, shopdesk]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log deployment start time
+        id: deploy_start
+        run: |
+          echo "DEPLOY_START_TIME=$(date +%s)" >> $GITHUB_ENV
+          echo "COMMIT_TIMESTAMP=$(git log -1 --format=%ct)" >> $GITHUB_ENV
+
+      - name: Restore build artifacts
+        uses: actions/cache@v3
+        with:
+          path: .next 
+          key: build-${{ github.sha }}
+          restore-keys: |
+            build-
+
+      - name: Save current commit hash
+        id: save_commit
+        run: echo "CURRENT_COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+      - name: Determine port and environment
+        id: determine_port_env
+        run: |
+          if [ "${{ github.ref_name }}" == "staging" ]; then
+            echo "PORT=7777" >> $GITHUB_ENV
+            echo "ENV=staging" >> $GITHUB_ENV
+          else
+            echo "PORT=3000" >> $GITHUB_ENV
+            echo "ENV=prod" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy to Staging or Production
+        if: github.ref_name == 'staging' || github.ref_name == 'main'
+        env:
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_IP: ${{ secrets.SSH_IP }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          PORT: ${{ env.PORT }}
+          ENV: ${{ env.ENV }}
+        run: |
+          echo "$SSH_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          ssh -o StrictHostKeyChecking=no -i deploy_key.pem "$SSH_USERNAME@$SSH_IP" "
+            cd shopdesk-fe &&  # Navigate to the repository directory
+            git fetch origin &&  # Fetch the latest changes
+            git checkout ${{ github.ref_name }} &&  # Switch to the correct branch
+            git reset --hard origin/${{ github.ref_name }} &&  # Reset to the latest commit
+            pm2 delete shopdesk-${{ github.ref_name }} || true &&  # Stop the existing process
+            sudo fuser -k $PORT/tcp || echo 'No process found on port $PORT' &&  # Free the port
+            bun install &&  # Install dependencies
+            bun run build &&  # Build the application
+            pm2 start \"bun run start:$ENV\" --name \"shopdesk-${{ github.ref_name }}\" --watch  # Start the application
+          "
+
+      - name: Log deployment end time
+        if: always()
+        run: |
+          echo "DEPLOY_END_TIME=$(date +%s)" >> $GITHUB_ENV
+          echo "DEPLOY_DURATION=$((${{ env.DEPLOY_END_TIME }} - ${{ env.DEPLOY_START_TIME }}))" >> $GITHUB_ENV
+          echo "DEPLOY_STATUS=${{ job.status }}" >> $GITHUB_ENV
+
+      - name: Push deployment metrics to Prometheus
+        if: always()
+        run: |
+          curl -X POST http://${{ secrets.SSH_IP }}:9091/metrics/job/github_actions \
+            --data-binary @- <<EOF
+          # TYPE deploy_duration_seconds gauge
+          deploy_duration_seconds{workflow="cd", branch="${{ github.ref_name }}"} ${{ env.DEPLOY_DURATION }}
+          # TYPE deploy_success gauge
+          deploy_success{workflow="cd", branch="${{ github.ref_name }}"} $([ "${{ env.DEPLOY_STATUS }}" == "success" ] && echo 1 || echo 0)
+          # TYPE deploy_failure gauge
+          deploy_failure{workflow="cd", branch="${{ github.ref_name }}"} $([ "${{ env.DEPLOY_STATUS }}" == "failure" ] && echo 1 || echo 0)
+          # TYPE lead_time_for_changes gauge
+          lead_time_for_changes{workflow="cd", branch="${{ github.ref_name }}"} $((${{ env.DEPLOY_END_TIME }} - ${{ env.COMMIT_TIMESTAMP }}))
+          # TYPE mttr_seconds gauge
+          mttr_seconds{workflow="cd", branch="${{ github.ref_name }}"} $(($(date +%s) - ${{ env.DEPLOY_START_TIME }}))
+          EOF

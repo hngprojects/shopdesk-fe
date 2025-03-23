@@ -21,6 +21,24 @@ export async function loginUser(email: string, password: string) {
   }
 }
 
+export async function logoutUser() {
+  try {
+    const response = await fetch("/api/auth/logout", {
+      method: "POST",
+    });
+ 
+ 
+    const data = await response.json();
+    console.log(data)
+    if (!response.ok) {
+      throw new Error(data.message || "Logout failed");
+    }
+    return data;
+  } catch (error) {
+    throw error;
+  }
+ } 
+
 export async function signUpUser(userData: {
   email: string;
   password: string;

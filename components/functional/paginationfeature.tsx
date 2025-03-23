@@ -49,11 +49,12 @@ const PaginationFeature = ({
   };
 
   return (
-    <div className="w-full flex flex-col min-[500px]:flex-row min-[500px]:items-center min-[500px]:justify-between gap-2 text-[#32475C99]">
+    <div className="w-full flex flex-col border border-t-2 min-[500px]:flex-row min-[500px]:items-center min-[500px]:justify-between py-2 px-1.5 pl-4 gap-2 text-[#32475C99]">
       {/* Items per page and count */}
       <span className="text-sm flex items-center justify-center flex-wrap whitespace-nowrap">
         <span>
-          You have<span className="font-medium mx-1 text-[#2A2A2A]">{totalItems}</span>
+          You have
+          <span className="font-medium mx-1 text-[#2A2A2A]">{totalItems}</span>
         </span>
         stock (Displaying{""}
         {/* <span className="font-medium mx-1 text-[#2A2A2A]">
@@ -62,15 +63,14 @@ const PaginationFeature = ({
         of <span className="font-medium mx-1 text-[#2A2A2A]">{totalItems}</span> */}
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center font-medium mx-1 text-[#2A2A2A]">
-            {itemsPerPage}  
+            {itemsPerPage}
             <svg
-             className="w-3 h-3 ml-1 text-[#32475C8A]"
-             viewBox="0 0 10 10"
-             fill="currentColor"
-           >
-             <path d="M5 7L1 3h8z" />
-           </svg>
-
+              className="w-3 h-3 ml-1 text-[#32475C8A]"
+              viewBox="0 0 10 10"
+              fill="currentColor"
+            >
+              <path d="M5 7L1 3h8z" />
+            </svg>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {itemsPerPageOptions.map((count) => (
@@ -168,7 +168,7 @@ const PaginationFeature = ({
               {currentPage < totalPages && (
                 <PaginationItem>
                   <PaginationNext
-                    pageNum = {currentPage}
+                    pageNum={currentPage}
                     onClick={(e) => handlePageClick(e, currentPage + 1)}
                   />
                 </PaginationItem>

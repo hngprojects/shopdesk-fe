@@ -1,0 +1,76 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+
+jobs:
+  build:
+    runs-on: [self-hosted, shopdesk]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log CI start time
+        id: ci_start
+        run: |
+          echo "CI_START_TIME=$(date +%s)" >> $GITHUB_ENV
+          echo "COMMIT_TIMESTAMP=$(git log -1 --format=%ct)" >> $GITHUB_ENV
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Bun
+        run: npm install -g bun
+
+      - name: Cache Bun modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.bun
+          key: bun-${{ hashFiles('**/bun.lockb') }}
+
+      - name: Install dependencies
+        run: bun install
+
+      # - name: Run linting
+      #   run: bun run lint
+
+      # - name: Run tests
+      #   run: bun test
+
+      - name: Log CI end time
+        if: always()
+        run: |
+          echo "CI_END_TIME=$(date +%s)" >> $GITHUB_ENV
+          echo "CI_DURATION=$((${{ env.CI_END_TIME }} - ${{ env.CI_START_TIME }}))" >> $GITHUB_ENV
+          echo "CI_STATUS=${{ job.status }}" >> $GITHUB_ENV
+
+      - name: Push CI metrics to Prometheus
+        if: always()
+        run: |
+          curl -X POST http://${{ secrets.SSH_IP }}:9091/metrics/job/github_actions \
+            --data-binary @- <<EOF
+          # TYPE ci_duration_seconds gauge
+          ci_duration_seconds{workflow="ci"} ${{ env.CI_DURATION }}
+          # TYPE ci_success gauge
+          ci_success{workflow="ci"} $([ "${{ env.CI_STATUS }}" == "success" ] && echo 1 || echo 0)
+          # TYPE ci_failure gauge
+          ci_failure{workflow="ci"} $([ "${{ env.CI_STATUS }}" == "failure" ] && echo 1 || echo 0)
+          # TYPE lead_time_for_changes gauge
+          lead_time_for_changes{workflow="ci"} $((${{ env.CI_END_TIME }} - ${{ env.COMMIT_TIMESTAMP }}))
+          # TYPE mttr_seconds gauge
+          mttr_seconds{workflow="ci", branch="${{ github.ref_name }}"} $(($(date +%s) - ${{ env.CI_START_TIME }}))
+          EOF
+
+      - name: Push failure metrics to Prometheus
+        if: always()
+        run: |
+          curl -X POST http://${{ secrets.SSH_IP }}:9091/metrics/job/github_actions \
+            --data-binary @- <<EOF
+          # TYPE ci_failure gauge
+          ci_failure{workflow="ci"} $([ "${{ env.CI_STATUS }}" == "failure" ] && echo 1 || echo 0)
+          EOF

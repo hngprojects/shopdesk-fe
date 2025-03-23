@@ -2,13 +2,20 @@ import FAQAccordion from "@/app/(landing)/faq/_components/faq-accordion";
 import QuestionsCTA from "@/app/(landing)/faq/_components/questions-cta";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
+import { Metadata } from "next";
 
-const Page = () => {
+export const metadata: Metadata = {
+  title: "FAQs",
+  description:
+    "Find answers to frequently asked questions about ShopDesk's business inventory management solution, features, pricing, and support options.",
+};
+
+const FAQPage = () => {
   return (
     <div className="flex flex-col justify-center items-center gap-6 lg:gap-8 px-4 py-12 md:max-w-[768px] xl:max-w-[1280px] mx-auto">
       <div className="text-center grid gap-5 max-w-[768px]">
         <h2 className="text-[#1B1B1B] text-4xl md:text-[60px] font-bold">
-        Frequently Asked <span className="text-[#19A45B]">Questions</span> 
+          Frequently Asked <span className="text-[#19A45B]">Questions</span>
         </h2>
         <p className="text-[#717171] text-xl">
           Find answers to common questions about ShopDesk. Use the search bar or
@@ -35,4 +42,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default FAQPage;

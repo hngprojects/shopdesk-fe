@@ -261,11 +261,32 @@ const CreateOrganization = () => {
       return;
     }
 
-    const response = await createOrg({
-      ...formData,
-      accessToken,
-    });
-    if ("data" in response) {
+    setLoading(true);
+
+    const orgData = {
+      name: formData.orgName,
+      currency_code: formData.currency,
+      business_type: formData.businessType,
+      locations: [
+        {
+          country: formData.country,
+          state: formData.state,
+          full_address: `${formData.state} ${formData.country}`,
+        },
+      ],
+    };
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const data = await createOrg(orgData);
+      const organization = await getOrganization();
+      await setOrganizationId(organization?.[0].id || "");
+      await setOrganizationName(organization?.[0].name || "");
+
+      if (!data || data.error) {
+        throw new Error(data?.message || "Unable to create organization.");
+      }
+
       router.push("/dashboard");
     } else {
       if (response.error && "data" in response.error) {
@@ -487,7 +508,7 @@ const CreateOrganization = () => {
                   )}
                 </motion.div>
 
-                <div className="flex w-full gap-10">
+                <div className="flex flex-col md:flex-row w-full gap-2.5 md:gap-10">
                   {/* Currency Field */}
                   <motion.div className="flex flex-col gap-1 relative w-full">
                     <label
@@ -826,7 +847,7 @@ const CreateOrganization = () => {
       </main>
 
       <motion.div
-        className="py-2"
+        className="py-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8, duration: 0.5 }}

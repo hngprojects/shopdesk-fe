@@ -21,16 +21,16 @@ const Header = () => {
         event.target instanceof Node &&
         !menuRef.current.contains(event.target) &&
         !menuBtnRef.current.contains(event.target) // Prevent closing if clicking the button
-      ){
+      ) {
         setIsOpen(false);
       }
     };
-  
+
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
     }
-  
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
@@ -42,14 +42,14 @@ const Header = () => {
       <div className="py-4 flex items-center justify-between max-w-screen-xl">
         <Logo />
 
-        <nav className="hidden add-this-back-flex gap-6 text-[16px] max-[850px]:hidden">
-          <Link href="/features" className="hover:text-green-500 transition">
+        <nav className="flex gap-6 text-[16px] max-[850px]:hidden">
+          <Link href="/#features" className="hover:text-green-500 transition">
             Features
           </Link>
           <Link href="/pricing" className="hover:text-green-500 transition">
             Pricing
           </Link>
-          <Link href="/blog" className="hover:text-green-500 transition">
+          <Link hidden href="/blog" className="hover:text-green-500 transition">
             Blog
           </Link>
           <Link href="/faq" className="hover:text-green-500 transition">
@@ -60,27 +60,28 @@ const Header = () => {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => router.push("/sign-up")}
-            className="btn-primary"
-          >
-            Sign up
-          </button>
+        <div className="flex items-center gap-4 max-[900px]:hidden">
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition hidden"
+            className="btn-outline"
+          >
+            Sign in
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/sign-up")}
+            className="btn-primary hover:bg-gray-800 transition"
           >
             Start for free
           </button>
         </div>
 
-        <div className="hidden  add-this-back-flex items-center gap-2 min-[900px]:hidden">
-          <button 
-          onClick={() => router.push("/dashboard")}
-          className="btn-primary min-[900px]:hidden max-[500]:hidden max-[600px]:text-[14px]">
+        <div className="flex items-center gap-2 min-[900px]:hidden">
+          <button
+            onClick={() => router.push("/dashboard")}
+            className="btn-primary min-[900px]:hidden max-[500]:hidden max-[600px]:text-[14px]"
+          >
             Get Started
           </button>
 
@@ -92,15 +93,17 @@ const Header = () => {
             ref={menuBtnRef}
           >
             <Image src={menu} alt="menu" width={28} height={28} />
-          </button>          
+          </button>
         </div>
-
       </div>
 
       {isOpen && (
-        <div ref={menuRef} className="absolute z-50 top-16 left-0 w-screen bg-white shadow-lg flex flex-col items-left py-6 overflow-hidden px-4 min-[850px]:hidden">
+        <div
+          ref={menuRef}
+          className="absolute z-50 top-16 left-0 w-screen bg-white shadow-lg flex flex-col items-left py-6 overflow-hidden px-4 min-[850px]:hidden"
+        >
           <Link
-            href="/features"
+            href="/#features"
             className="hover:text-green-500 transition py-5"
             onClick={() => setIsOpen(false)}
           >
@@ -114,6 +117,7 @@ const Header = () => {
             Pricing
           </Link>
           <Link
+            hidden
             href="/blog"
             className="hover:text-green-500 transition py-5"
             onClick={() => setIsOpen(false)}

@@ -1,0 +1,76 @@
+[33me77f240[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: reset: moving to origin/main
+[33me77f240[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{1}: reset: moving to origin/main
+[33md8138f3[m HEAD@{2}: commit: .
+[33m3cc9e90[m HEAD@{3}: checkout: moving from main to main
+[33m3cc9e90[m HEAD@{4}: checkout: moving from landing-page to main
+[33m45eb9d7[m[33m ([m[1;31mupstream/hotfix[m[33m, [m[1;32mlanding-page[m[33m, [m[1;32mhotfix[m[33m)[m HEAD@{5}: checkout: moving from hotfix to landing-page
+[33m45eb9d7[m[33m ([m[1;31mupstream/hotfix[m[33m, [m[1;32mlanding-page[m[33m, [m[1;32mhotfix[m[33m)[m HEAD@{6}: checkout: moving from main to hotfix
+[33m3cc9e90[m HEAD@{7}: commit (merge): .
+[33ma9e3a4a[m HEAD@{8}: commit: .
+[33me77f240[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{9}: checkout: moving from 404-page to main
+[33m9f1f15e[m[33m ([m[1;31morigin/404-page[m[33m, [m[1;32m404-page[m[33m)[m HEAD@{10}: commit: feat:added a custom 404 page
+[33me77f240[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{11}: checkout: moving from main to 404-page
+[33me77f240[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{12}: merge upstream/main: Fast-forward
+[33mccc4b38[m HEAD@{13}: checkout: moving from feat/signup-api-implmentation to main
+[33me6a820e[m[33m ([m[1;32mfeat/signup-api-implmentation[m[33m)[m HEAD@{14}: commit: .
+[33m8e9fab0[m[33m ([m[1;31morigin/feat/signup-api-implmentation[m[33m)[m HEAD@{15}: commit: feat: added the signup successful modal
+[33m44a35bd[m HEAD@{16}: commit: fix: uncomment the router.push after successful signup
+[33m7c2932e[m HEAD@{17}: commit: feat:implemented the api for sign-up page
+[33mccc4b38[m HEAD@{18}: checkout: moving from main to feat/signup-api-implmentation
+[33mccc4b38[m HEAD@{19}: merge upstream/main: Fast-forward
+[33m4d92e7b[m HEAD@{20}: checkout: moving from Sign-up-authentication to main
+[33m4174e45[m[33m ([m[1;32mSign-up-authentication[m[33m)[m HEAD@{21}: commit: .
+[33md4ef998[m[33m ([m[1;32mfix/main-stock-page-design[m[33m, [m[1;32mahmed[m[33m)[m HEAD@{22}: checkout: moving from ahmed to Sign-up-authentication
+[33md4ef998[m[33m ([m[1;32mfix/main-stock-page-design[m[33m, [m[1;32mahmed[m[33m)[m HEAD@{23}: checkout: moving from fix/main-stock-page-design to ahmed
+[33md4ef998[m[33m ([m[1;32mfix/main-stock-page-design[m[33m, [m[1;32mahmed[m[33m)[m HEAD@{24}: commit: fix: redesigned the stock tab be match the main design
+[33m4d92e7b[m HEAD@{25}: checkout: moving from main to fix/main-stock-page-design
+[33m4d92e7b[m HEAD@{26}: checkout: moving from version1.6 to main
+[33m69d527c[m[33m ([m[1;32mversion1.6[m[33m)[m HEAD@{27}: checkout: moving from main to version1.6
+[33m4d92e7b[m HEAD@{28}: merge upstream/main: Fast-forward
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{29}: checkout: moving from main to main
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{30}: checkout: moving from main to main
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{31}: checkout: moving from version1.2 to main
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{32}: checkout: moving from version1.2 to main
+[33m84f219b[m[33m ([m[1;32mversion1.2[m[33m)[m HEAD@{33}: commit (merge): resolved merged conflict
+[33m5f4d5b9[m HEAD@{34}: checkout: moving from feat/HNG-2145-added-inline-edit-with-api to version1.2
+[33m2834d09[m[33m ([m[1;32mfeat/HNG-2145-added-inline-edit-with-api[m[33m)[m HEAD@{35}: checkout: moving from version1.2 to feat/HNG-2145-added-inline-edit-with-api
+[33m5f4d5b9[m HEAD@{36}: reset: moving to HEAD
+[33m5f4d5b9[m HEAD@{37}: checkout: moving from feat/HNG-2145-added-inline-edit-with-api to version1.2
+[33m2834d09[m[33m ([m[1;32mfeat/HNG-2145-added-inline-edit-with-api[m[33m)[m HEAD@{38}: reset: moving to upstream/main
+[33mcb52710[m[33m ([m[1;31morigin/feat/HNG-2145-added-inline-edit-with-api[m[33m)[m HEAD@{39}: commit: fix: added the search feature to v1.2 branch
+[33md7dc52d[m HEAD@{40}: commit: fix: fixed the whole v1.2 brach to meet up with main branch
+[33m77686f4[m HEAD@{41}: reset: moving to upstream/main
+[33ma3e80c7[m HEAD@{42}: commit: fix: adjusted the losing focus of the input when editing the stock values
+[33m2739851[m HEAD@{43}: checkout: moving from version1.2 to feat/HNG-2145-added-inline-edit-with-api
+[33m5f4d5b9[m HEAD@{44}: checkout: moving from feat/HNG-2145-added-inline-edit-with-api to version1.2
+[33m2739851[m HEAD@{45}: checkout: moving from version1.2 to feat/HNG-2145-added-inline-edit-with-api
+[33m5f4d5b9[m HEAD@{46}: commit: fix: adjusted the losing focus of the input when editing the stock values
+[33m2739851[m HEAD@{47}: reset: moving to HEAD
+[33m2739851[m HEAD@{48}: checkout: moving from feat/HNG-2145-added-inline-edit-with-api to version1.2
+[33m2739851[m HEAD@{49}: checkout: moving from version1.2 to feat/HNG-2145-added-inline-edit-with-api
+[33m2739851[m HEAD@{50}: checkout: moving from feat/HNG-2145-add-inline-edit-with-api to version1.2
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{51}: reset: moving to HEAD
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{52}: checkout: moving from version1.2 to feat/HNG-2145-add-inline-edit-with-api
+[33m2739851[m HEAD@{53}: checkout: moving from feat/HNG-2145-add-inline-edit-with-api to version1.2
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{54}: checkout: moving from version1.2 to feat/HNG-2145-add-inline-edit-with-api
+[33m2739851[m HEAD@{55}: checkout: moving from feat/HNG-2145-add-inline-edit-with-api to version1.2
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{56}: checkout: moving from version1.2 to feat/HNG-2145-add-inline-edit-with-api
+[33m2739851[m HEAD@{57}: commit: fix: the v1.2 edit now uses api call for the edit
+[33m4d53788[m HEAD@{58}: checkout: moving from feat/HNG-2145-add-inline-edit-with-api to version1.2
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{59}: checkout: moving from main to feat/HNG-2145-add-inline-edit-with-api
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{60}: reset: moving to upstream/main
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{61}: reset: moving to upstream/main
+[33mb82d923[m[33m ([m[1;32mfeat/HNG-2145-add-inline-edit-with-api[m[33m)[m HEAD@{62}: reset: moving to upstream/main
+[33m2918462[m HEAD@{63}: reset: moving to upstream/main
+[33m2918462[m HEAD@{64}: reset: moving to upstream/main
+[33m111dfd6[m HEAD@{65}: merge upstream/main: Fast-forward
+[33maeb367d[m HEAD@{66}: checkout: moving from feat/logout-and-authorized-dashboard to main
+[33md0c31ea[m[33m ([m[1;31morigin/feat/logout-and-authorized-dashboard[m[33m, [m[1;32mfeat/logout-and-authorized-dashboard[m[33m)[m HEAD@{67}: commit: feat: added a logout confirmation modal
+[33mb178c02[m HEAD@{68}: commit: fix: fix the responsiveness of the placeholder text in the add-items modal
+[33ma56c69a[m HEAD@{69}: commit: fix: dashboard and modal redesigned
+[33maeb367d[m HEAD@{70}: checkout: moving from main to feat/logout-and-authorized-dashboard
+[33maeb367d[m HEAD@{71}: pull upstream main: Fast-forward
+[33mb4a8103[m HEAD@{72}: reset: moving to upstream/main
+[33mb4a8103[m HEAD@{73}: pull upstream main: Fast-forward
+[33m2b08141[m HEAD@{74}: reset: moving to upstream/main
+[33m2b08141[m H

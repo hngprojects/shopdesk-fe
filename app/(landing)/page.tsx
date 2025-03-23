@@ -17,6 +17,7 @@ import right from "@/public/icons/right.svg";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect } from "react";
 
 export default function Home() {
@@ -53,9 +54,12 @@ export default function Home() {
     >
       <img src={iconSrc} alt={title} className="w-8 h-8 mb-4 mt-2.5" />
       <h3 className="text-2xl leading-6 font-medium text-gray-900">{title}</h3>
-      <p className="text-gray-700 text-lg leading-6">{description}</p>
-      <div className="flex items-center gap-2">
-        <button className="w-full text-green-600 cursor-pointer font-medium flex items-center text-left md:text-base text-sm ">
+      <p className="text-gray-700 text-lg leading-6 font-circular-light">
+        {description}
+      </p>
+
+      <Link className="flex items-center gap-2" href="/sign-up">
+        <button className="w-full cursor-pointer font-medium flex items-center text-left md:text-base text-sm ">
           {buttonText}
         </button>
         <Image
@@ -63,7 +67,7 @@ export default function Home() {
           alt="Arrow Right"
           className="w-3.5 h-3.5 cursor-pointer"
         />
-      </div>
+      </Link>
     </div>
   );
 
@@ -71,26 +75,26 @@ export default function Home() {
     const features = [
       {
         iconSrc: "/icons/stock.svg",
-        title: "Easy Stock Entry",
+        title: "Smart Stock Management",
         description:
-          "Retailers can add and view stock items with unique SKU codes, ensuring accurate tracking. Soft-deleted SKUs cannot be reused, and all added items appear in the stock list.",
-        buttonText: "View Stock List",
+          "Track stock in real-time and manage your products with confidence and precision. Our easy to use stock inventory solution helps you track and organize all your products all in real time.",
+        buttonText: "Get Instant Business Insights",
         bgColor: "bg-blue-50",
       },
       {
         iconSrc: "/icons/note.svg",
-        title: "Quick Stock Updates",
+        title: "Easy Sales Tracking",
         description:
-          "Retailers can update stock names, prices, and quantities while keeping SKU codes locked for accuracy. This feature simplifies inventory management, reducing errors and improving stock tracking.",
-        buttonText: "Manage Stock",
+          "Process transactions quickly, sync and update your inventory with every transaction that supports cash, card, and online payments for a fast checkout experience. ",
+        buttonText: "Get Access To Sales Insights",
         bgColor: "bg-rose-50",
       },
       {
         iconSrc: "/icons/delete.svg",
-        title: "Smart Stock Control",
+        title: "Custom Reports & Insights",
         description:
-          "Retailers can soft-delete stock items, removing them from the stock list without permanent deletion. Items are marked as Is deleted in the database for record-keeping and recovery.",
-        buttonText: "Remove Stock",
+          "Make smarter decisions with detailed sales and inventory reports. Monitor your revenue, identify best-selling products, and trends all in one dashboard.",
+        buttonText: "Get Instant Business Insights",
         bgColor: "bg-yellow-50",
       },
     ];
@@ -104,20 +108,30 @@ export default function Home() {
             data-aos-once="false" // Allow this element to re-animate
           >
             <span className="text-[#19A45B]">Simplify</span> Inventory
-            Management – No More Spreadsheets
+            Management for Your Business
           </h1>
 
           <p
-            className="text-gray-600 text-base leading-6 md:text-3xl md:leading-9 font-circular-light text-center font-light min-[400px]:px-5"
+            className="text-gray-600 text-base leading-6 md:text-[24px] md:leading-9 font-circular-light text-center font-light min-[400px]:px-5"
             data-aos="fade-up"
             data-aos-delay="200"
             data-aos-once="false" // Allow this element to re-animate
           >
-            Managing your stock shouldn't be a hassle. With ShopDesk, you can
-            securely track your inventory effortlessly all in one simple
-            platform.
+            ShopDesk is a cloud based inventory management software that helps
+            you track stock, process sales, and generate business records so you
+            can focus on growing your business.
           </p>
         </div>
+
+        <Link
+          href="/sign-up"
+          className="w-full flex justify-center items-center mt-8 -mb-4"
+          data-aos="fade-up"
+          data-aos-delay="200"
+          data-aos-once="false"
+        >
+          <button className="btn-primary">Start your free trial</button>
+        </Link>
 
         <div className="w-full md:mt-[40px] mt-[20px] flex flex-col items-center">
           <Image
@@ -138,7 +152,8 @@ export default function Home() {
           />
 
           <div
-            className="bg-[#19A45B] w-full px-[clamp(18px,_3vw,_80px)] p-6 flex items-center gap-[clamp(16px,_3vw,_48px)] justify-center flex-wrap h-[101px]"
+            hidden // hidden for now
+            className="bg-[#19A45B] w-full px-[clamp(18px,_3vw,_80px)] p-6 flex items-center gap-[clamp(16px,_3vw,_48px)] justify-center flex-wrap h-fit"
             data-aos="fade-up"
             data-aos-once="false" // Allow this element to re-animate
           >
@@ -155,7 +170,7 @@ export default function Home() {
                 key={index}
                 src={logo}
                 alt="Logo"
-                className="w-[clamp(70px,_11vw,_140px)] hidden"
+                className="w-[clamp(70px,_11vw,_140px)]"
                 data-aos="fade-up"
                 data-aos-delay={`${(index + 1) * 100}`}
                 data-aos-once="false" // Allow this element to re-animate
@@ -164,7 +179,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="mx-auto max-w-[1198px] px-5 min-[600px]:px-10">
+        <div
+          id="features"
+          className="mx-auto max-w-[1198px] px-5 min-[600px]:px-10 pt-12"
+        >
           <h2
             className="text-center py-4 md:py-3 font-medium leading-6 text-[#009A49]"
             data-aos="fade-up"

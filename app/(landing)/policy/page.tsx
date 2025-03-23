@@ -1,11 +1,14 @@
+import { Metadata } from "next";
 import Policy from "./policyComponent";
 
-const page = () => {
-  return (
-    <div>
-      <Policy />
-    </div>
-  );
+export const metadata: Metadata = {
+  title: "Policy",
+  description:
+    "Learn about ShopDesk's terms of service, privacy policies, and guidelines for using our business inventory management solution.",
 };
 
-export default page;
+const PolicyPage = () => {
+  return <Policy />;
+};
+
+export default PolicyPage;

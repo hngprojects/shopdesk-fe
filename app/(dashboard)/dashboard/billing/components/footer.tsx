@@ -33,7 +33,7 @@ const BillingFooter = () => {
                 We protect your data in our
               </p>
               <Link
-                href="/privacy"
+                href="/policy"
                 className="italic underline underline-offset-4 max-[650px]:text-[#717171]"
               >
                 privacy policy
@@ -48,7 +48,7 @@ const BillingFooter = () => {
           <div className="flex gap-0.5 justify-self-center w-full max-w-[600px] text-[14px] mt-1 max-[650px]:hidden">
             <p>We protect your data in our</p>
             <Link
-              href="/privacy"
+              href="/policy"
               className="italic underline underline-offset-4"
             >
               privacy policy

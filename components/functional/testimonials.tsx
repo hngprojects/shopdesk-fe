@@ -15,25 +15,25 @@ const testimonialsData = [
   {
     id: 1,
     name: "Jerome Bell",
-    title: "Online Store Owner",
+    title: "Google",
     review:
-      "“ShopDesk completely transformed the way we track inventory. The real-time stock updates ensure we never run out of our best-sellers”",
+      "“Before ShopDesk, I lost 10 hours a week manually tracking 500+ chairs across two warehouses. Now, with real-time alerts, my team knows exactly what’s in stock. Last month, we cut stockout by 60%, and sales grew by 25%!”",
     image: Avatar1,
   },
   {
     id: 2,
     name: "Kristin Watson",
-    title: "Small Business Owner",
+    title: "Netflix",
     review:
-      "“We operate three stores, and ShopDesk keeps all our stock levels in sync. Now we always know what we have, without messy spreadsheets.”",
+      "“My accountant hated me for messy sales reports. ShopDesk’s report dashboard changed everything – we spotted low-margin items and boosted profits by 35% in 3 months. Even my accountant is impressed!”",
     image: Avatar2,
   },
   {
     id: 3,
     name: "Annette Black",
-    title: "Retail Manager",
+    title: "Whatsapp",
     review:
-      "“We run multiple store locations, and ShopDesk keeps everything in sync. No more manual inventory checks—everything is automated!”",
+      "“I no longer worry about missing sales or running out of stock. This is the best software for managing a small retail store”",
     image: Avatar3,
   },
 ];
@@ -144,7 +144,7 @@ const Testimonials = () => {
                 variants={slideVariants}
                 className="flex w-full max-w-sm md:max-w-[384px] p-6 md:p-8 flex-col gap-5 rounded-2xl shadow-2xl bg-white"
               >
-                <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-5 h-full">
                   <div className="flex items-center gap-3">
                     <Image
                       src={testimonial.image}
@@ -164,6 +164,7 @@ const Testimonials = () => {
                   <p className="text-base font-circular-light text-[#061C3D]">
                     {testimonial.review}
                   </p>
+                  <div className="flex-1"></div>
                   <div className="flex gap-1">
                     {[...Array(5)].map((_, i) => (
                       <Star key={i} color="#FF8800" fill="#FF8800" />

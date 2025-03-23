@@ -52,6 +52,7 @@ function SignInContent() {
       const organization = await getOrganization();
       await setOrganizationId(organization?.[0].id || "");
       await setOrganizationName(organization?.[0].name || "");
+      
 
       sendLoginEmail(email, first_name, last_name);
 
