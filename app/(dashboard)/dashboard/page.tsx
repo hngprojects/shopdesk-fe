@@ -767,11 +767,25 @@ const Page = () => {
           </div>
         </div>
 
-        <div className='space-y-0 w-full '>
-          <div className='w-full flex justify-between max-[800px]:flex-col-reverse'>
-            <div>
-              <div className='flex items-center justify-center gap-2 border border-b-white py-2 rounded-tr-lg rounded-tl-lg w-44 max-[800px]:w-full font-semibold px-9 shadow-inner'>
-                Stock
+        <div className="space-y-0 w-full ">
+          <div className="w-full flex justify-between max-[800px]:flex-col-reverse">
+            <div className="flex">
+              <div
+                className={`flex items-center justify-center gap-2 rounded-tl-lg border-2 border-gray-100 px-4 py-3 ${activeTab === "stock" ? "bg-white" : "bg-gray-100"
+                  }`}
+                onClick={() => setActiveTab("stock")}
+                role="button"
+                style={{ cursor: "pointer", width: "160px" }}
+              >
+                <span
+                  className={
+                    activeTab === "stock"
+                      ? "text-black bg-white"
+                      : "bg-gray-100 text-gray-400"
+                  }
+                >
+                  Stock
+                </span>
                 <Image
                   src='/icons/ui-box.svg'
                   alt=''
@@ -781,28 +795,31 @@ const Page = () => {
                 />
               </div>
 
-              {/*<SalesTab
-               // onAddSale={() => {
-                //  console.log("Add sale action triggered");
-                 // console.log("Active tab:", activeTab);
-                //}}
-             // /> */}
+              <div
+                className={`flex items-center justify-center gap-2 border-2 border-gray-100 px-4 py-3 rounded-tr-lg ${activeTab === "sales" ? "bg-white" : "bg-gray-100"
+                  }`}
+                onClick={() => setActiveTab("sales")}
+                role="button"
+                style={{ cursor: "pointer", width: "160px" }}
+              >
+                <span
+                  className={
+                    activeTab === "sales" ?
+                      "text-black bg-white"
+                      : "text-gray-400 bg-gray-100"
+                  }
+                >
+                  Sales
+                </span>
+                <Image
+                  src={activeTab === "sales" ? "/icons/sale-tab.svg" : "/icons/sale-tab-grey.svg"}
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="w-5 h-5"
+                />
+              </div>
             </div>
-            {stockItems.length > 0 && (
-              <div className='mb-2 max-[800px]:mb-4 max-[640px]:self-end flex items-center justify-center max-[1000px]:flex-row-reverse max-[800px]:w-full'>
-                <div className='relative group inline-block'>
-                  {/* Tooltip */}
-                  {!isPremium && stockItems.length >= 10 && (
-                    <div className='z-50 absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-sm rounded-md px-3 py-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity'>
-                      Upgrade to Premium to add more.
-                      <a
-                        href='/pricing'
-                        className='text-blue-400 underline ml-1 '
-                      >
-                        Upgrade now
-                      </a>
-                    </div>
-                  )}
 
                   {/* Button */}
                   <button
@@ -883,99 +900,64 @@ const Page = () => {
                           </TableHead>
                         </TableRow>
                       </TableHeader>
-                    </TableHeader>
-                  </Table>
-                  <div className='w-full overflow-x-auto'>
-                    <span className='w-full h-px bg-[#DEDEDE] block'></span>
-                    <div className='relative h-[80vh] w-full'>
-                      {!(isSearching && filteredItems.length === 0) ? (
-                        <div className='absolute space-y-4 right-0 left-0 top-28 w-56 mx-auto text-center'>
-                          <Image
-                            src='/icons/empty-note-pad.svg'
-                            alt=''
-                            width={56}
-                            height={56}
-                            className='mx-auto'
-                          />
-                          <p className='text-[#888888] text-sm'>
-                            You have 0 items in stock
-                          </p>
-                          <button
-                            type='button'
-                            onClick={openModal}
-                            className='btn-outline hover:cursor-pointer'
-                          >
-                            + Add New Stock
-                          </button>
-                          <AddItemModal
-                            isOpen={isOpen}
-                            onClose={closeModal}
-                            onSave={(newItem) => {
-                              setStockItems((prev) => [newItem, ...prev]);
-                              closeModal();
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <div className='absolute inset-0 flex items-center justify-center'>
-                          <div className='bg-[#F8FAFB] border border-[#DEDEDE] w-[563px] h-[200px] rounded-lg flex flex-col items-center justify-center gap-3 max-[800px]:w-[343px] max-[800px]:h-[334px]'>
+                    </Table>
+                    <div className="w-full overflow-x-auto">
+                      <span className="w-full h-px bg-[#DEDEDE] block"></span>
+                      <div className="relative h-[80vh] w-full">
+                        {!(isSearching && filteredItems.length === 0) ? (
+                          <div className="absolute space-y-4 right-0 left-0 top-28 w-56 mx-auto text-center">
                             <Image
-                              src={box}
-                              alt=''
+                              src="/icons/empty-note-pad.svg"
+                              alt=""
                               width={56}
                               height={56}
-                              className='size-8'
+                              className="mx-auto"
                             />
-                            <p className='text-[#2A2A2A] text-sm'>
-                              Search Item not found.
+                            <p className="text-[#888888] text-sm">
+                              You have 0 items in stock
                             </p>
+                            <button
+                              type="button"
+                              onClick={openModal}
+                              className="btn-outline hover:cursor-pointer"
+                            >
+                              + Add New Stock
+                            </button>
+                            <AddItemModal
+                              isOpen={isOpen}
+                              onClose={closeModal}
+                              onSave={(newItem) => {
+                                setStockItems((prev) => [newItem, ...prev]);
+                                closeModal();
+                              }}
+                            />
                           </div>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="bg-[#F8FAFB] border border-[#DEDEDE] w-[563px] h-[200px] rounded-lg flex flex-col items-center justify-center gap-3 max-[800px]:w-[343px] max-[800px]:h-[334px]">
+                              <Image
+                                src={box}
+                                alt=""
+                                width={56}
+                                height={56}
+                                className="size-8"
+                              />
+                              <p className="text-[#2A2A2A] text-sm">
+                                Search Item not found.
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ) : (
-                <div style={{ overflowX: 'auto' }}>
-                  <Table
-                    style={{ minWidth: '800px', borderCollapse: 'collapse' }}
-                  >
-                    <TableHeader>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id} className='h-[50px]'>
-                          {headerGroup.headers.map((header) => {
-                            let widthClass = 'w-auto'; // Default width of the header columns
-
-                            if (header.column.id === 'name') {
-                              widthClass =
-                                showSales && showProfit
-                                  ? 'max-w-[259px]'
-                                  : showSales
-                                    ? 'max-w-[292px]'
-                                    : showProfit
-                                      ? 'max-w-[292px]'
-                                      : 'max-w-[374px] pl-4';
-                            } else if (header.column.id === 'sell_price') {
-                              widthClass =
-                                showSales && showProfit
-                                  ? 'w-auto px-4'
-                                  : showSales || showProfit
-                                    ? 'w-[262px]'
-                                    : 'w-[280px]';
-                            } else if (header.column.id === 'available') {
-                              widthClass =
-                                showSales && showProfit
-                                  ? 'w-auto px-4'
-                                  : showSales || showProfit
-                                    ? 'w-[206px]'
-                                    : 'w-[198px]';
-                            } else if (header.column.id === 'sales') {
-                              widthClass = showSales ? 'w-[30px]' : 'w-auto ';
-                            } else if (header.column.id === 'profitGroup') {
-                              widthClass = showProfit ? 'w-[350px]' : 'w-auto ';
-                            }
-
-                            return (
+                ) : (
+                  <>
+                    <Table className="border-collapse border-b min-w-[590px] table-fixed">
+                      <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                          <TableRow key={headerGroup.id} className="h-[50px]">
+                            {headerGroup.headers.map((header) => (
                               <TableHead
                                 key={header.id}
                                 className={`text-[#090F1C] font-circular-medium text-center border-b border-r min-w-[100px] 
@@ -1077,35 +1059,47 @@ const Page = () => {
                                     {''} {/* Placeholder for missing row */}
                                   </TableCell>
                                 ))}
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
+                            </TableRow>
+                          );
+                        })}
 
-                  <Table>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell colSpan={columns.length} className=''>
-                          <PaginationFeature
-                            totalItems={
-                              isSearching
-                                ? filteredItems.length
-                                : stockItems.length
-                            }
-                            currentPage={currentPage}
-                            itemsPerPage={rowsPerPage}
-                            totalPages={totalPages}
-                            onPageChange={handlePageChange}
-                            onItemsPerPageChange={handleItemsPerPageChange}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </div>
+                      </TableBody>
+                    </Table>
+                    <Table>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell colSpan={columns.length} className="">
+                            <PaginationFeature
+                              totalItems={isSearching ? filteredItems.length : stockItems.length}
+                              currentPage={currentPage}
+                              itemsPerPage={rowsPerPage}
+                              totalPages={totalPages}
+                              onPageChange={handlePageChange}
+                              onItemsPerPageChange={handleItemsPerPageChange}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="w-full">
+                <SalesTab
+                  onAddSale={() => setIsModalOpen(true)} 
+                  salesItems={salesItems}
+                  />
+
+                <SalesModal
+                  isOpen={isModalOpen}
+                  onClose={() => setIsModalOpen(false)}
+                  stockItems={stockItems}
+                  productItems={productItems}
+                  onCompleteSale={handleAddSale}
+                />
+              </div>
+            )}
             {isSidebarOpen && (
               <Sidebar
                 key={
