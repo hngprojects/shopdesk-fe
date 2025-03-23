@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3f02695 (update: add services)
 export async function deleteImage(
   productId: string,
   organizationId: string,
@@ -25,6 +28,7 @@ export async function deleteImage(
     return null;
   }
 }
+<<<<<<< HEAD
 =======
 // export async function deleteImage(
 //   productId: string,
@@ -53,3 +57,5 @@ export async function deleteImage(
 //   }
 // }
 >>>>>>> 3d48554 (update: add services folder)
+=======
+>>>>>>> 3f02695 (update: add services)
