@@ -1,17 +1,16 @@
 import { Button } from "@/components/ui/button";
 
-function StockPreference() {
+function UserPermission() {
   return (
     <>
       <div>
         <div className="flex flex-row w-full justify-between items-center gap-4  md:border-b border-[#e9eaeb] pb-6">
           <div className="w-full flex flex-col gap-1 text-[#181d27]">
             <p className="text-xl font-circular-medium leading-7">
-              Stock Preference
+              User Permission Settings
             </p>
             <p className="text-[#535862]  font-circular-light leading-5 text-base">
-              Customize your store settings to optimize your business
-              operations.
+              Control team access by assigning roles and managing permissions
             </p>
           </div>
           <div className="flex flex-row gap-3 mt-4 md:mt-0">
@@ -31,4 +30,4 @@ function StockPreference() {
   );
 }
 
-export default StockPreference;
+export default UserPermission;
