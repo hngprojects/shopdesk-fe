@@ -26,6 +26,7 @@ import { useEffect } from "react";
 import Pricing from "./landPricing";
 import FAQAccordion from "./landFaqAccordion";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function Home() {
   // Initialize AOS on component mount
@@ -38,6 +39,44 @@ export default function Home() {
     });
   }, []);
 
+
+  const fadeLeft = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.8, ease: "easeInOut" }
+    }
+  
+  };
+
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.8, ease: "easeInOut" }
+    }
+  };
+
+  const fadeRight = {
+    hidden: { opacity: 0, x: -50 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.8, ease: "easeInOut" }
+    }
+  };
+
+  const zoomIn = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { 
+      opacity: 1, 
+      scale: 1,
+      transition: { duration: 0.8, ease: "easeInOut" }
+    }
+  };
   interface FeatureCardProps {
     iconSrc: string;
     title: string;
@@ -262,23 +301,44 @@ export default function Home() {
             </h1>
           </div>
 
-          <section className="flex justify-center pt-[24px] items-center mb-[62px] mt-8 md:mt-0">
-            <div
-              className="w-[min(80%,800px)] xl:w-[1003px] xl:h-[613px] rounded-[24px] outline-[10px] sm:outline-[15px]  lg:outline-[20px] outline-[#00000080] relative bg-cover aspect-[1003/613] xl:aspect-auto flex flex-col items-center justify-between pt-5"
-              style={{
-                backgroundImage:
-                  "linear-gradient(#000000B2, #000000B2), url('/coming-soon/coming-soon.jpeg')",
-              }}
-            >
-              <div className="flex gap-2 items-start">
-                <Image src={logo} alt="shop desk logo" priority width={20} />
-                <p className="text-[17px] text-white font-[500]">ShopDesk</p>
-              </div>
-              <div className="rounded-[12px] p-3 flex items-center bg-[#00000066] h-[53.5px] w-[53.5px] my-auto">
-                <Image src={play} alt="play button" width={30} priority />
-              </div>
-            </div>
-          </section>
+          <section className="px-6 md:px-12 flex justify-center flex-col items-center lg:px-16 py-8 md:py-12">
+      <motion.div
+        className="relative w-full max-w-4xl border-[24px] border-[#00000080] rounded-lg overflow-hidden shadow-lg"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={zoomIn}
+      >
+        <motion.div
+          className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeRight}
+        >
+          <Image
+              src={logo}
+              alt="Person holding a crate of oranges"
+              width={100}
+              height={100}
+              className="w-full h-full"
+            />
+        </motion.div>
+
+     
+        <div className="relative w-full h-[500px]">
+  <iframe
+    className="w-full h-full"
+    src="https://drive.google.com/file/d/1PT9nTD26pwDUmQJNYKwG9jht5Rv8THPT/preview"
+    allow="autoplay"
+  ></iframe>
+  <div className="absolute inset-0 bg-black/30 bg-opacity-50 pointer-events-none"></div>
+</div>
+
+      </motion.div>
+
+      <h2 className="text-center text-2xl font-bold mt-6">Your Smart Business Sidekick!</h2>
+    </section>
         </div>
 
         <div
