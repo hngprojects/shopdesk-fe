@@ -4,6 +4,7 @@ type Organization = {
   id: string;
 };
 
+
 export async function getOrganization(): Promise<Organization[] | null> {
   try {
     const response = await fetch('api/organization', {
@@ -24,7 +25,7 @@ export async function getOrganization(): Promise<Organization[] | null> {
     return null;
   }
 }
-=======
+
 // type Organization = {
 //   name: string;
 //   id: string;
@@ -50,7 +51,8 @@ export async function getOrganization(): Promise<Organization[] | null> {
 //     return null;
 //   }
 // }
- (update: add services folder)
+(update: add services folder)
+
 
 export async function getOrganization(): Promise<Organization[] | null> {
   try {
@@ -72,4 +74,4 @@ export async function getOrganization(): Promise<Organization[] | null> {
     return null;
   }
 }
-(update: add services)
+ (update: add services)

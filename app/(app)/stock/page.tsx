@@ -18,7 +18,7 @@ export default function StockPage() {
     getStock(orgId ?? '160db8736a9d47989381e01a987e4413').unwrap();
   }, [orgId, getStock]);
 
-  console.log(data, 'data', isLoading);
+  // console.log(data, 'data', isLoading);
 
   return (
     <div className='container'>

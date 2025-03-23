@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 3f02695 (update: add services)
 import { getAccessToken } from '@/app/api/token';
 
 export async function loginUser(email: string, password: string) {
@@ -88,6 +92,7 @@ export async function createOrg(orgData: {
     throw error;
   }
 }
+<<<<<<< HEAD
 
 // export async function loginUser(email: string, password: string) {
 //   try {
@@ -108,7 +113,14 @@ export async function createOrg(orgData: {
 //     console.error('Login error:', error);
 //     throw error;
 //   }
+<<<<<<< HEAD
 // import { getAccessToken } from "@/app/api/token";
+=======
+=======
+// import { getAccessToken } from "@/app/api/token";
+=======
+>>>>>>> 3f02695 (update: add services)
+>>>>>>> origin/hotfix
 
 // export async function loginUser(email: string, password: string) {
 //   try {
@@ -129,6 +141,10 @@ export async function createOrg(orgData: {
 //     console.error('Login error:', error);
 //     throw error;
 //   }
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/hotfix
 
 // export async function loginUser(email: string, password: string) {
 //     try {
@@ -149,4 +165,11 @@ export async function createOrg(orgData: {
 //         console.error("Login error:", error);
 //         throw error;
 //     }
+<<<<<<< HEAD
 // // }
+=======
+>>>>>>> 3d48554 (update: add services folder)
+=======
+>>>>>>> 3f02695 (update: add services)
+// }
+>>>>>>> origin/hotfix

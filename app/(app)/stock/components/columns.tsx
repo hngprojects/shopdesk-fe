@@ -8,6 +8,10 @@ import { DataTableRowActions } from './data-table-row-actions';
 import { EditableCell } from './editable-cell';
 import { Icons } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
+<<<<<<< HEAD
+=======
+
+>>>>>>> ca12451 (update: columns)
 
 export const columns: ColumnDef<Stock>[] = [
   {
@@ -79,9 +83,13 @@ export const columns: ColumnDef<Stock>[] = [
       <DataTableColumnHeader column={column} title='AVAILABLE' />
     ),
     cell: ({ row }) => {
+<<<<<<< HEAD
       const value = row.original.quantity;
 
       console.log(value, 'value');
+=======
+      const value = row.getValue<string>('quantity');
+>>>>>>> ca12451 (update: columns)
 
       return (
         <EditableCell
