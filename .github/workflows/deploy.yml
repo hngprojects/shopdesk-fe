@@ -88,3 +88,32 @@ jobs:
           # TYPE mttr_seconds gauge
           mttr_seconds{workflow="cd", branch="${{ github.ref_name }}"} $(($(date +%s) - ${{ env.DEPLOY_START_TIME }}))
           EOF
+      - name: Rollback on failure
+        if: failure()
+        env:
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_IP: ${{ secrets.SSH_IP }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}  # Use the PEM key from GitHub secrets
+          PORT: ${{ env.PORT }}  # Use the determined port
+          ENV: ${{ env.ENV }}  # Use the determined environment
+        run: |
+          echo "$SSH_KEY" > deploy_key.pem  # Write the PEM key to a file
+          chmod 600 deploy_key.pem  # Set the correct permissions for the PEM file
+          ssh -o StrictHostKeyChecking=no -i deploy_key.pem "$SSH_USERNAME@$SSH_IP" "
+            cd shopdesk-fe &&
+            git checkout ${{ github.ref_name }} &&
+            git reset --hard ${{ env.CURRENT_COMMIT }} &&
+            pm2 delete shopdesk-${{ github.ref_name }} || true &&
+            sudo fuser -k $PORT/tcp || echo 'No process found on port $PORT' &&
+            pm2 start \"bun run start:$ENV\" --name \"shopdesk-${{ github.ref_name }}\" --watch
+          "
+      - name: Push rollback metrics to Prometheus
+        if: failure()
+        run: |
+          curl -X POST http://${{ secrets.SSH_IP }}:9091/metrics/job/github_actions \
+            --data-binary @- <<EOF
+          # TYPE rollback_success gauge
+          rollback_success{workflow="cd", branch="${{ github.ref_name }}"} $([ "${{ job.status }}" == "success" ] && echo 1 || echo 0)
+          # TYPE mttr_seconds gauge
+          mttr_seconds{workflow="cd", branch="${{ github.ref_name }}"} $(($(date +%s) - ${{ env.DEPLOY_START_TIME }}))
+          EOF
