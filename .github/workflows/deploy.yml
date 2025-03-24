@@ -52,19 +52,27 @@ jobs:
           PORT: ${{ env.PORT }}
           ENV: ${{ env.ENV }}
         run: |
-          echo "$SSH_KEY" > deploy_key.pem  # Write the PEM key to a file
-          chmod 600 deploy_key.pem  # Set the correct permissions for the PEM file
+          echo "$SSH_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          
+          # Set a flag to track if we've started the deployment process
+          echo "DEPLOYMENT_STARTED=true" >> $GITHUB_ENV
+          
+          # Execute the deployment commands in a way that captures failures
+          set -e
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem "$SSH_USERNAME@$SSH_IP" "
             cd shopdesk-fe &&
+            git fetch origin &&
             git checkout ${{ github.ref_name }} &&
-            git reset --hard HEAD &&
-            git pull origin ${{ github.ref_name }} &&
+            git reset --hard origin/${{ github.ref_name }} &&
             pm2 delete shopdesk-${{ github.ref_name }} || true &&
             sudo fuser -k $PORT/tcp || echo 'No process found on port $PORT' &&
             bun install &&
             bun run build &&
             pm2 start \"bun run start:$ENV\" --name \"shopdesk-${{ github.ref_name }}\" --watch
           "
+          set +e
+
       - name: Log deployment end time
         if: always()
         run: |
@@ -88,7 +96,7 @@ jobs:
           # TYPE mttr_seconds gauge
           mttr_seconds{workflow="cd", branch="${{ github.ref_name }}"} $(($(date +%s) - ${{ env.DEPLOY_START_TIME }}))
           EOF
-          
+
       - name: Rollback on failure
         if: failure() && steps.deployment.outcome == 'failure' && env.DEPLOYMENT_STARTED == 'true'
         env:
