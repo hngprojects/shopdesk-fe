@@ -27,7 +27,25 @@ const Hero = () => {
                 </p>
                 </div>
             </section>
+<<<<<<< HEAD:app/ecommerce/components/Hero.tsx
+            {/* <section className="px-6 md:px-12 flex justify-center flex-col items-center lg:px-16 py-8 md:py-12"> */}
+      {/* <motion.div
+        className="relative w-full max-w-4xl border-[24px] border-[#00000080] rounded-lg overflow-hidden shadow-lg"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={zoomIn}
+      >
+        <motion.div
+          className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeRight}
+        > */}
+=======
          
+>>>>>>> upstream/dev:app/(marketing)/ecommerce/components/Hero.tsx
             <section className="px-6 md:px-12 flex justify-center flex-col items-center lg:px-16 py-8 md:py-12">
 
           <div
@@ -47,6 +65,10 @@ const Hero = () => {
                       className="w-full h-full"
                     />
               </div>
+<<<<<<< HEAD:app/ecommerce/components/Hero.tsx
+                      {/* </motion.div> */}
+=======
+>>>>>>> upstream/dev:app/(marketing)/ecommerce/components/Hero.tsx
               
                    
                       <div className="relative w-full h-[500px]">
