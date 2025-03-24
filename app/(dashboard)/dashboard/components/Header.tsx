@@ -16,12 +16,14 @@ import { useRouter } from "next/navigation";
 import { getOrganization } from "@/services/getOrganization";
 import logout from "@/public/icons/_ui-log-out-02.svg";
 import settings from "@/public/icons/_ui-settings-01.svg";
+import LoadingAnimation from "@/components/functional/loading";
 
 function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
   const router = useRouter();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [showOrgList, setShowOrgList] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { organizationName, organizationInitial, setOrganizationId, setOrganizationName } = useStore();
 
   useEffect(() => {
@@ -35,12 +37,17 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
     };
     fetchOrganizations();
   }, []);
+console.log(organizationInitial);
+  
 
   const handleSelection = async (org: { id: string; name: string }) => {
+    setIsLoading(true);
     await setOrganizationId(org.id);
     await setOrganizationName(org.name);
     setShowOrgList(false);
-    router.push("/dashboard");
+    setTimeout(() => {
+      window.location.reload();
+    })
   };
 
   const handleAddNewOrganization = () => {
@@ -98,13 +105,16 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
               <span>Switch Organization</span>
               <ChevronDown className={`ml-auto h-4 w-4 transition-transform duration-200 ${showOrgList ? 'rotate-180' : ''}`} />
             </DropdownMenuItem>
-            
+           
             {showOrgList && (
               <>
                 <DropdownMenuSeparator />
                 <div className="max-h-60 overflow-y-auto custom-scrollbar">
-                  {organizations.map((org) => (
-                    <DropdownMenuItem
+                 
+                     {isLoading?<div><LoadingAnimation/></div>:
+                     <>
+                      {organizations.map((org) => (
+                      <DropdownMenuItem
                       key={org.id}
                       onSelect={async (e) => {
                         e.preventDefault();
@@ -122,7 +132,11 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
                         )}
                       </div>
                     </DropdownMenuItem>
+                     
+                    
                   ))}
+                  </>
+                  }
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
