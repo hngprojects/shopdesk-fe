@@ -48,13 +48,13 @@ function SignInContent() {
 
     try {
       const data = await loginUser(email, password);
-      const { first_name, last_name } = data.data;
-      const organization = await getOrganization();
-      await setOrganizationId(organization?.[0].id || "");
-      await setOrganizationName(organization?.[0].name || "");
+      // const { first_name, last_name } = data.data;
+      // const organization = await getOrganization();
+      // await setOrganizationId(organization?.[0].id || "");
+      // await setOrganizationName(organization?.[0].name || "");
       
 
-      sendLoginEmail(email, first_name, last_name);
+      // sendLoginEmail(email, first_name, last_name);
 
       if (!data || data.error) {
         throw new Error(data?.message || "Invalid email or password.");
