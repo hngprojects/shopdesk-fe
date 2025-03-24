@@ -69,7 +69,7 @@ const Footer = () => {
             </p>
 
             <p className="text-base text-[#414141] underline underline-offset-4 mt-2">
-              208 Parisian Plains, Bulahport 27156, France
+              No. 2 Laula Ibrahim Street, Akoka, Lagos.
             </p>
 
             <div className="flex gap-4 mt-[70px] max-[500px]:hidden">
@@ -123,17 +123,17 @@ const Footer = () => {
             </p>
 
             <ul className="text-[14px] text-[#52525B] flex flex-col gap-6 mt-8">
-              <li>
-                <Link
+              <li className="hover:text-black transition duration-200 cursor-pointer">
+                {/* <Link
                   href="/overview"
                   className="hover:text-black transition duration-200"
                 >
-                  Overview
-                </Link>
+                </Link> */}
+                Overview
               </li>
               <li>
                 <Link
-                  href="/features"
+                  href="/#features"
                   className="hover:text-black transition duration-200"
                 >
                   Features
@@ -214,13 +214,13 @@ const Footer = () => {
             </p>
 
             <ul className="text-[14px] text-[#52525B] flex flex-col gap-6 mt-8">
-              <li>
-                <Link
+              <li className="hover:text-black transition duration-200 cursor-pointer">
+                {/* <Link
                   href="/support"
                   className="hover:text-black transition duration-200"
                 >
-                  Customer Support
-                </Link>
+                </Link> */}
+                Customer Support
               </li>
               <li>
                 <Link
@@ -230,13 +230,13 @@ const Footer = () => {
                   FAQ
                 </Link>
               </li>
-              <li>
-                <Link
+              <li className="hover:text-black transition duration-200 cursor-pointer">
+                {/* <Link
                   href="/help"
                   className="hover:text-black transition duration-200"
                 >
-                  Help center
-                </Link>
+                </Link> */}
+                Help center
               </li>
               <li hidden>
                 <Link
