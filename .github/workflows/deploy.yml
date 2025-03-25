@@ -43,7 +43,6 @@ jobs:
           fi
 
       - name: Deploy to Staging or Production
-        id: deployment
         if: github.ref_name == 'staging' || github.ref_name == 'main'
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -54,24 +53,17 @@ jobs:
         run: |
           echo "$SSH_KEY" > deploy_key.pem
           chmod 600 deploy_key.pem
-          
-          # Set a flag to track if we've started the deployment process
-          echo "DEPLOYMENT_STARTED=true" >> $GITHUB_ENV
-          
-          # Execute the deployment commands in a way that captures failures
-          set -e
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem "$SSH_USERNAME@$SSH_IP" "
-            cd shopdesk-fe &&
-            git fetch origin &&
-            git checkout ${{ github.ref_name }} &&
-            git reset --hard origin/${{ github.ref_name }} &&
-            pm2 delete shopdesk-${{ github.ref_name }} || true &&
-            sudo fuser -k $PORT/tcp || echo 'No process found on port $PORT' &&
-            bun install &&
-            bun run build &&
-            pm2 start \"bun run start:$ENV\" --name \"shopdesk-${{ github.ref_name }}\" --watch
+            cd shopdesk-fe &&  # Navigate to the repository directory
+            git fetch origin &&  # Fetch the latest changes
+            git checkout ${{ github.ref_name }} &&  # Switch to the correct branch
+            git reset --hard origin/${{ github.ref_name }} &&  # Reset to the latest commit
+            pm2 delete shopdesk-${{ github.ref_name }} || true &&  # Stop the existing process
+            sudo fuser -k $PORT/tcp || echo 'No process found on port $PORT' &&  # Free the port
+            bun install &&  # Install dependencies
+            bun run build &&  # Build the application
+            pm2 start \"bun run start:$ENV\" --name \"shopdesk-${{ github.ref_name }}\" --watch  # Start the application
           "
-          set +e
 
       - name: Log deployment end time
         if: always()
@@ -96,31 +88,28 @@ jobs:
           # TYPE mttr_seconds gauge
           mttr_seconds{workflow="cd", branch="${{ github.ref_name }}"} $(($(date +%s) - ${{ env.DEPLOY_START_TIME }}))
           EOF
-
+          
       - name: Rollback on failure
-        if: failure() && steps.deployment.outcome == 'failure' && env.DEPLOYMENT_STARTED == 'true'
+        if: failure()
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_IP: ${{ secrets.SSH_IP }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          PORT: ${{ env.PORT }}
-          ENV: ${{ env.ENV }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}  # Use the PEM key from GitHub secrets
+          PORT: ${{ env.PORT }}  # Use the determined port
+          ENV: ${{ env.ENV }}  # Use the determined environment
         run: |
-          echo "$SSH_KEY" > deploy_key.pem
-          chmod 600 deploy_key.pem
-          echo "Attempting rollback to commit ${{ env.CURRENT_COMMIT }}"
+          echo "$SSH_KEY" > deploy_key.pem  # Write the PEM key to a file
+          chmod 600 deploy_key.pem  # Set the correct permissions for the PEM file
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem "$SSH_USERNAME@$SSH_IP" "
             cd shopdesk-fe &&
             git checkout ${{ github.ref_name }} &&
             git reset --hard ${{ env.CURRENT_COMMIT }} &&
             pm2 delete shopdesk-${{ github.ref_name }} || true &&
             sudo fuser -k $PORT/tcp || echo 'No process found on port $PORT' &&
-            bun install &&
             pm2 start \"bun run start:$ENV\" --name \"shopdesk-${{ github.ref_name }}\" --watch
           "
-
       - name: Push rollback metrics to Prometheus
-        if: failure() && steps.deployment.outcome == 'failure' && env.DEPLOYMENT_STARTED == 'true'
+        if: failure()
         run: |
           curl -X POST http://${{ secrets.SSH_IP }}:9091/metrics/job/github_actions \
             --data-binary @- <<EOF
