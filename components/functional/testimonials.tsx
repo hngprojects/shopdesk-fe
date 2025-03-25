@@ -14,24 +14,24 @@ import { Star } from "lucide-react";
 const testimonialsData = [
   {
     id: 1,
-    name: "Jerome Bell",
-    title: "Google",
+    name: "Bayo Ahmed",
+    title: "Businessman",
     review:
       "“Before ShopDesk, I lost 10 hours a week manually tracking 500+ chairs across two warehouses. Now, with real-time alerts, my team knows exactly what’s in stock. Last month, we cut stockout by 60%, and sales grew by 25%!”",
     image: Avatar1,
   },
   {
     id: 2,
-    name: "Kristin Watson",
-    title: "Netflix",
+    name: "Okon Bassey",
+    title: "Wine Seller",
     review:
       "“My accountant hated me for messy sales reports. ShopDesk’s report dashboard changed everything – we spotted low-margin items and boosted profits by 35% in 3 months. Even my accountant is impressed!”",
     image: Avatar2,
   },
   {
     id: 3,
-    name: "Annette Black",
-    title: "Whatsapp",
+    name: "Adaku Udokah",
+    title: "Jewellery Seller",
     review:
       "“I no longer worry about missing sales or running out of stock. This is the best software for managing a small retail store”",
     image: Avatar3,
