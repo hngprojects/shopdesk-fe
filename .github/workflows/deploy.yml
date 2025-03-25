@@ -42,7 +42,7 @@ jobs:
             echo "ENV=prod" >> $GITHUB_ENV
           fi
 
-      - name: Deploy to Staging or Production
+      - name: Deploy to Staging
         if: github.ref_name == 'staging'
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -65,7 +65,7 @@ jobs:
             pm2 start \"bun run start:$ENV\" --name \"shopdesk-${{ github.ref_name }}\" --watch  # Start the application
           "
 
-      - name: Deploy to Staging or Production
+      - name: Deploy to Production
         if: github.ref_name == 'main'
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -121,16 +121,23 @@ jobs:
           PORT: ${{ env.PORT }}  # Use the determined port
           ENV: ${{ env.ENV }}  # Use the determined environment
         run: |
-          echo "$SSH_KEY" > deploy_key.pem  # Write the PEM key to a file
-          chmod 600 deploy_key.pem  # Set the correct permissions for the PEM file
+          echo "$SSH_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem "$SSH_USERNAME@$SSH_IP" "
             cd shopdesk-fe &&
-            git checkout ${{ github.ref_name }} &&
-            git reset --hard ${{ env.CURRENT_COMMIT }} &&
+            git fetch origin &&  # Fetch latest changes
+            git checkout ${{ github.ref_name }} &&  # Switch to the correct branch
+            # Find the previous commit (skip the current one)
+            PREVIOUS_COMMIT=\$(git log --skip=1 -1 --format=%H) &&
+            echo 'Rolling back to commit: '\$PREVIOUS_COMMIT &&
+            git reset --hard \$PREVIOUS_COMMIT &&  # Reset to the previous commit
             pm2 delete shopdesk-${{ github.ref_name }} || true &&
             sudo fuser -k $PORT/tcp || echo 'No process found on port $PORT' &&
+            bun install &&  # Reinstall dependencies
+            bun run build &&  # Rebuild
             pm2 start \"bun run start:$ENV\" --name \"shopdesk-${{ github.ref_name }}\" --watch
           "
+          
       - name: Push rollback metrics to Prometheus
         if: failure()
         run: |
