@@ -43,7 +43,30 @@ jobs:
           fi
 
       - name: Deploy to Staging or Production
-        if: github.ref_name == 'staging' || github.ref_name == 'main'
+        if: github.ref_name == 'staging'
+        env:
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SSH_IP: ${{ secrets.SSH_IP }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          PORT: ${{ env.PORT }}
+          ENV: ${{ env.ENV }}
+        run: |
+          echo "$SSH_KEY" > deploy_key.pem
+          chmod 600 deploy_key.pem
+          ssh -o StrictHostKeyChecking=no -i deploy_key.pem "$SSH_USERNAME@$SSH_IP" "
+            cd shopdesk-fe &&  # Navigate to the repository directory
+            git fetch origin &&  # Fetch the latest changes
+            git checkout ${{ github.ref_name }} &&  # Switch to the correct branch
+            git reset --hard origin/${{ github.ref_name }} &&  # Reset to the latest commit
+            pm2 delete shopdesk-${{ github.ref_name }} || true &&  # Stop the existing process
+            sudo fuser -k $PORT/tcp || echo 'No process found on port $PORT' &&  # Free the port
+            bun install &&  # Install dependencies
+            bun run build &&  # Build the application
+            pm2 start \"bun run start:$ENV\" --name \"shopdesk-${{ github.ref_name }}\" --watch  # Start the application
+          "
+
+      - name: Deploy to Staging or Production
+        if: github.ref_name == 'main'
         env:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SSH_IP: ${{ secrets.SSH_IP }}
@@ -88,7 +111,7 @@ jobs:
           # TYPE mttr_seconds gauge
           mttr_seconds{workflow="cd", branch="${{ github.ref_name }}"} $(($(date +%s) - ${{ env.DEPLOY_START_TIME }}))
           EOF
-          
+
       - name: Rollback on failure
         if: failure()
         env:
