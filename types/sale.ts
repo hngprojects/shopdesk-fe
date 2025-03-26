@@ -1,3 +1,5 @@
+import type { StockItem } from './stocks';
+
 type ContactInfo = {
   id: string;
   contact_data: string;
@@ -79,7 +81,7 @@ type SoldProduct = {
   last_updated: string;
   product: Product;
   price_id: string;
-  stock: Stock;
+  stock: StockItem;
   is_deleted: boolean;
 };
 

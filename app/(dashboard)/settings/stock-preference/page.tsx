@@ -1,3 +1,5 @@
+'use client';
+
 import { StockHeader } from './components/stock-header';
 import { CurrencySelection } from './components/currency-selection';
 import { PaymentOptions } from './components/payment-options';

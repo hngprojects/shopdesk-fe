@@ -1,9 +1,10 @@
+import { StockItem } from '@/types/stocks';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SalesState {
   activeItem: number | null;
   searchText: string;
-  selectedItems: { id: number; quantity: number }[];
+  selectedItems: StockItem[];
   currentTime: string;
 }
 
@@ -24,7 +25,7 @@ const salesSlice = createSlice({
     setSearchText: (state, action: PayloadAction<string>) => {
       state.searchText = action.payload;
     },
-    setSelectedItems: (state, action: PayloadAction<{ id: number; quantity: number }[]>) => {
+    setSelectedItems: (state, action: PayloadAction<StockItem[]>) => {
       state.selectedItems = action.payload;
     },
     updateCurrentTime: (state) => {
@@ -33,7 +34,14 @@ const salesSlice = createSlice({
   },
 });
 
-export const { setActiveItem, setSearchText, setSelectedItems, updateCurrentTime } = salesSlice.actions;
+export const {
+  setActiveItem,
+  setSearchText,
+  setSelectedItems,
+  updateCurrentTime,
+} = salesSlice.actions;
 export default salesSlice.reducer;
-export const selectActiveItem = (state: { sales: SalesState }) => state.sales.activeItem;
-export const selectSearchText = (state: { sales: SalesState }) => state.sales.searchText; 
+export const selectActiveItem = (state: { sales: SalesState }) =>
+  state.sales.activeItem;
+export const selectSearchText = (state: { sales: SalesState }) =>
+  state.sales.searchText;

@@ -1,10 +1,11 @@
 // features/sidebar/sidebar.slice.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Stock} from '@/app/(app)/stock/data/schema'; // Import the StockItem type
+// import type { Stock } from '@/types/sale';
+import type { StockItem } from '@/types/stocks';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 interface SidebarState {
   isOpen: boolean;
-  selectedItem: Stock | null;
+  selectedItem: StockItem | null;
   isEditModalOpen: boolean;
   isEditNameOpen: boolean;
   isEditQuantityOpen: boolean;
@@ -30,7 +31,7 @@ const sidebarSlice = createSlice({
   name: 'sidebar',
   initialState,
   reducers: {
-    openSidebar: (state, action: PayloadAction<Stock>) => {
+    openSidebar: (state, action: PayloadAction<StockItem>) => {
       state.isOpen = true;
       state.selectedItem = action.payload;
     },
@@ -80,7 +81,7 @@ const sidebarSlice = createSlice({
     closeEditImageModal: (state) => {
       state.isEditImageModalOpen = false;
     },
-    saveItem: (state, action: PayloadAction<Stock>) => {
+    saveItem: (state, action: PayloadAction<StockItem>) => {
       if (state.selectedItem) {
         state.selectedItem = action.payload;
       }

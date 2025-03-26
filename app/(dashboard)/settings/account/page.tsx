@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import profilePhoto from '@/public/Avatar.svg';

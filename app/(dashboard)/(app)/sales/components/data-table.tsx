@@ -1,8 +1,8 @@
-"use client";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+'use client';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import {
-  ColumnDef,
-  ColumnFiltersState,
+  type ColumnDef,
+  type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -10,11 +10,11 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  SortingState,
+  type SortingState,
   useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table";
-import React from "react";
+  type VisibilityState,
+} from '@tanstack/react-table';
+import React from 'react';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -29,7 +29,6 @@ export function DataTable<TData, TValue>({
   data,
   loading,
   error,
-  showHeader = true,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
@@ -38,9 +37,6 @@ export function DataTable<TData, TValue>({
     []
   );
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [viewType, setViewType] = React.useState<"Daily" | "Weekly" | "Flat">(
-    "Daily"
-  );
 
   const table = useReactTable({
     data,
@@ -64,17 +60,16 @@ export function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
-  console.log(table.getRow("0"), "col 1");
   return (
-    <div className="flex flex-col w-full h-full">
-      <div className="flex-1 flex flex-col min-w-[900px] overflow-x-auto">
+    <div className='flex flex-col w-full h-full'>
+      <div className='flex-1 flex flex-col min-w-[900px] overflow-x-auto'>
         <Table>
           <TableBody>
             {loading ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className='h-24 text-center'
                 >
                   Loading sales...
                 </TableCell>
@@ -83,31 +78,33 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center text-red-500"
+                  className='h-24 text-center text-red-500'
                 >
                   {error}
                 </TableCell>
               </TableRow>
             ) : (
-              table.getRowModel().rows.map((row) =>
-                row.original.isSpacer ? (
-                  <TableRow key={row.id} className="h-7">
-                    <TableCell
-                      colSpan={columns.length}
-                      className="border-none bg-transparent h-15 border-r-0 border-l-0"
-                    ></TableCell>
-                  </TableRow>
-                ) : (
+              table
+                .getRowModel()
+                .rows.map((row) => (
+                  // row.original.isSpacer ? (
+                  //   <TableRow key={row.id} className='h-7'>
+                  //     <TableCell
+                  //       colSpan={columns.length}
+                  //       className='border-none bg-transparent h-15 border-r-0 border-l-0'
+                  //     />
+                  //   </TableRow>
+                  // ) : (
                   <TableRow
                     key={row.id}
-                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-                    data-state={row.getIsSelected() && "selected"}
-                    className={`hover:bg-gray-50 cursor-pointer overflow-x-auto grid grid-cols-4 border-b border-gray-200 first:h-11 `}
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    data-state={row.getIsSelected() && 'selected'}
+                    className='hover:bg-gray-50 cursor-pointer overflow-x-auto grid grid-cols-4 border-b border-gray-200 first:h-11 '
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className={`px-4 py-3 text-sm text-gray-800 border-r border-gray-200 last:border-r-0 h-11`}
+                        className='px-4 py-3 text-sm text-gray-800 border-r border-gray-200 last:border-r-0 h-11'
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -116,8 +113,8 @@ export function DataTable<TData, TValue>({
                       </TableCell>
                     ))}
                   </TableRow>
-                )
-              )
+                ))
+              // )
             )}
           </TableBody>
         </Table>

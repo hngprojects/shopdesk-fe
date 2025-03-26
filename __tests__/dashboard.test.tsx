@@ -1,7 +1,8 @@
+import StockPage from "@/app/(dashboard)/(app)/stock/page";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import Page from "@/components/stock-components/page";
+
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
@@ -33,12 +34,12 @@ vi.mock("@/store/useStore", () => ({
 
 describe("Dashboard Page", () => {
   it("shows the loading animation initially", async () => {
-    render(<Page />);
+    render(<StockPage />);
     expect(screen.queryByAltText("Loading...")).toBeInTheDocument();
   }, 10000);
 
   it("renders static content after loading", async () => {
-    render(<Page />);
+    render(<StockPage />);
     await waitFor(() => expect(screen.queryByAltText("Loading...")).not.toBeInTheDocument(), { timeout: 10000 });
 
     const text = await screen.findByText(/The simplest way to manage your shop!/i);
@@ -46,7 +47,7 @@ describe("Dashboard Page", () => {
   }, 10000);
 
   it("displays the organization name", async () => {
-    render(<Page />);
+    render(<StockPage />);
     await waitFor(() => expect(screen.queryByAltText("Loading...")).not.toBeInTheDocument(), { timeout: 10000 });
 
     const text = await screen.findByText(/Test Organization/i);
@@ -54,7 +55,7 @@ describe("Dashboard Page", () => {
   }, 10000);
 
   it("displays the product name", async () => {
-    render(<Page />);
+    render(<StockPage />);
     await waitFor(() => expect(screen.queryByAltText("Loading...")).not.toBeInTheDocument(), { timeout: 10000 });
 
     const text = await screen.findByText(/Sample Item/i);
@@ -62,7 +63,7 @@ describe("Dashboard Page", () => {
   }, 10000);
 
   it("displays the stock price", async () => {
-    render(<Page />);
+    render(<StockPage />);
     await waitFor(() => expect(screen.queryByAltText("Loading...")).not.toBeInTheDocument(), { timeout: 10000 });
 
     const text = await screen.findByText(/usd 100/i);
@@ -70,7 +71,7 @@ describe("Dashboard Page", () => {
   }, 10000);
 
   it("displays the stock quantity", async () => {
-    render(<Page />);
+    render(<StockPage />);
     await waitFor(() => expect(screen.queryByAltText("Loading...")).not.toBeInTheDocument(), { timeout: 10000 });
 
     const text = await screen.findAllByText(/10/i);
@@ -86,7 +87,8 @@ describe("Dashboard Page", () => {
       deleteStock: vi.fn(() => Promise.resolve({})),
     }));
 
-    const UpdatedPage = (await import("@/components/stock-components/page")).default;
+    const UpdatedPage = (await import('@/app/(dashboard)/(app)/stock/page'))
+      .default;
 
     render(<UpdatedPage />);
 
@@ -99,7 +101,7 @@ describe("Dashboard Page", () => {
 
 describe("Search Feature", () => {
   it("filters stock items based on search input - should find 'sample'", async () => {
-    render(<Page />);
+    render(<StockPage />);
 
     await waitFor(() => expect(screen.queryByAltText("Loading...")).not.toBeInTheDocument(), { timeout: 10000 });
 
@@ -110,7 +112,7 @@ describe("Search Feature", () => {
   });
 
   it("filters stock items based on search input - should not find 'prod'", async () => {
-    render(<Page />);
+    render(<StockPage />);
 
     await waitFor(() => expect(screen.queryByAltText("Loading...")).not.toBeInTheDocument(), { timeout: 10000 });
 
@@ -121,7 +123,7 @@ describe("Search Feature", () => {
   });
 
   it("filters stock items based on search input - should display empty search message", async () => {
-    render(<Page />);
+    render(<StockPage />);
 
     await waitFor(() => expect(screen.queryByAltText("Loading...")).not.toBeInTheDocument(), { timeout: 10000 });
 

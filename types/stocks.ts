@@ -22,6 +22,18 @@ export type StockItem = {
   original_quantity: number;
   supplier: string | null;
   timeslots: any[];
+  price: number;
+  sku: string;
+  sell_price: string;
+  remaining: number;
+  photos: string;
 };
 
 export type StockResponse = Stock<StockItem>;
+
+export interface Currency {
+  code: string;
+  symbol: string;
+  name: string;
+  flag: string;
+}

@@ -45,8 +45,15 @@ export default function SalesPage() {
                     {typeof column.header === 'function'
                       ? column.header({
                           column: column as Column<Sale, unknown>,
-                          header: column.header,
-                          table: {},
+                          header: typeof column.header === 'function'
+                            ? column.header({
+                                column: column as Column<Sale, unknown>,
+                                // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+                                header: {} as any, // Replace with appropriate Header<Sale, unknown> if available
+                                table: table,
+                              })
+                            : column.header,
+                          table: table,
                         })
                       : column.header}
                   </TableHead>
