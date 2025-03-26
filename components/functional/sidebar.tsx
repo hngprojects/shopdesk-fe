@@ -265,6 +265,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
             closeEditModal();
             openSucessModal();
           }}
+          openSuccessModal={openSucessModal}
         />
       )}
 
@@ -273,7 +274,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
           isOpen={isEditQuantityOpen}
           item={localItem}
           onClose={closeEditQuantity}
-          onSave={handleSaveQuantity}
+          onSave={(updatedItem) => handleSaveQuantity(updatedItem.quantity)}
+          openSuccessModal={openSucessModal}
         />
       )}
 
@@ -290,6 +292,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
           onClose={closeEditPriceModal}
           item={localItem}
           onSave={handleSavePrice}
+          openSuccessModal={openSucessModal}
         />
       )}
 
@@ -298,7 +301,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
           isOpen={isEditNameOpen}
           item={localItem}
           onClose={closeEditName}
-          onSave={handleSaveName}
+          onSave={(updatedItem) => handleSaveName(updatedItem.name)}
+          openSuccessModal={openSucessModal}
         />
       )}
 
