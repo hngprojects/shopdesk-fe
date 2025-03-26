@@ -131,7 +131,9 @@ const RevenueGraph = () => {
       {isEmpty && !isRevenueLoading && !isRevenueError && (
         <p className="text-sm text-gray-400 mb-2">No revenue data available</p>
       )}
-      <Line data={chartData} options={options} />
+      <div className="w-full max-w-full sm:max-w-[100%] md:max-w-[100%] lg:max-w-[100%] h-[250px] lg:h-[400px]">
+        <Line data={chartData} options={options} />
+      </div>
     </div>
   );
 };
