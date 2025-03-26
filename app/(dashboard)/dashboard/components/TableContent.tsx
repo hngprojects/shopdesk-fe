@@ -832,26 +832,26 @@ function TableContent({
                         if (header.column.id === "name") {
                           widthClass =
                             showSales && showProfit
-                              ? "max-w-[259px]"
+                              ? "min-w-[259px]"
                               : showSales
-                              ? "max-w-[292px]"
+                              ? "min-w-[292px]"
                               : showProfit
-                              ? "max-w-[292px]"
-                              : "max-w-[374px] pl-4";
+                              ? "min-w-[292px]"
+                              : "min-w-[374px] pl-4";
                         } else if (header.column.id === "sell_price") {
                           widthClass =
                             showSales && showProfit
                               ? "w-auto px-4"
                               : showSales || showProfit
-                              ? "w-[262px]"
-                              : "w-[280px]";
+                              ? "min-w-[262px]"
+                              : "min-w-[280px]";
                         } else if (header.column.id === "available") {
                           widthClass =
                             showSales && showProfit
                               ? "w-auto px-4"
                               : showSales || showProfit
-                              ? "w-[206px]"
-                              : "w-[198px]";
+                              ? "min-w-[206px]"
+                              : "min-w-[198px]";
                         } else if (header.column.id === "sales") {
                           widthClass = showSales ? "w-[30px]" : "w-auto ";
                         } else if (header.column.id === "profitGroup") {
@@ -916,12 +916,12 @@ function TableContent({
                               if (cell.column.id === "name") {
                                 cellWidthClass =
                                   showSales && showProfit
-                                    ? "w-[259px]"
+                                    ? "min-w-[259px]"
                                     : showSales
-                                    ? "w-[292px]"
+                                    ? "min-w-[292px]"
                                     : showProfit
-                                    ? "w-[292px]"
-                                    : "w-[374px]";
+                                    ? "min-w-[292px]"
+                                    : "min-w-[374px]";
                               } else if (
                                 cell.column.id === "price" ||
                                 cell.column.id === "available"

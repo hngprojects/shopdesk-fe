@@ -20,7 +20,8 @@ import LoadingAnimation from "@/components/functional/loading";
 
 function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
   const router = useRouter();
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isMobileLogoutModalOpen, setIsMobileLogoutModalOpen] = useState(false);
+  const [isDesktopLogoutModalOpen, setIsDesktopLogoutModalOpen] = useState(false);
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [showOrgList, setShowOrgList] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,10 +64,19 @@ console.log(organizationInitial);
   return (
     <div className="lg:border px-4 py-2 lg:shadow-md rounded-lg lg:flex items-center justify-between mx-auto mb-4">
       <LogoutConfirmModal
-        open={isLogoutModalOpen}
-        onOpenChange={setIsLogoutModalOpen}
-        onCancel={() => setIsLogoutModalOpen(false)}
-      />
+         organizationName={organizationName}
+         open={isMobileLogoutModalOpen || isDesktopLogoutModalOpen}
+         onOpenChange={(open) => {
+           if (!open) {
+             setIsMobileLogoutModalOpen(false);
+             setIsDesktopLogoutModalOpen(false);
+           }
+         }}
+         onCancel={() => {
+           setIsMobileLogoutModalOpen(false);
+           setIsDesktopLogoutModalOpen(false);
+         }}
+       />
       
       <div className="flex items-center gap-6">
         <div className="flex justify-center lg:justify-start w-full lg:w-auto">
@@ -170,7 +180,7 @@ console.log(organizationInitial);
               className="p-3 text-[#ff1925] hover:bg-red-50 cursor-pointer transition-colors duration-200"
               onSelect={(e) => {
                 e.preventDefault();
-                setIsLogoutModalOpen(true);
+                setIsDesktopLogoutModalOpen(true);
               }}
             >
               <div className="flex items-center gap-2">
