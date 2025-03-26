@@ -1,6 +1,8 @@
+"use client";
+
 import { StockItem } from "@/app/(dashboard)/dashboard/page";
 import { X } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ImageUploader from "@/components/modal/add-image";
 import { Button } from "@/components/ui/button";
 import EditStockV3Modal from "../modal/modalV3/edit-stock";
@@ -19,6 +21,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave }) => {
+  const [localItem, setLocalItem] = useState<StockItem | null>(null);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   const [isEditNameOpen, setEditNameOpen] = useState(false);
   const [isEditQuantityOpen, setEditQuantityOpen] = useState(false);
@@ -27,14 +30,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
   const [isImageUploaderOpen, setImageUploaderOpen] = useState(false);
   const [isEditImageModalOpen, setEditImageModalOpen] = useState(false);
 
-  if (!isOpen || !selectedItem) return null;
+  // Sync local state with selectedItem prop
+  useEffect(() => {
+    if (selectedItem) {
+      setLocalItem({ ...selectedItem });
+    }
+  }, [selectedItem]);
 
-  // Helper functions
+  if (!isOpen || !localItem) return null;
+
   const formatCurrency = (value: number, currencyCode: string = '¥') => {
     return `${currencyCode}${value.toLocaleString()}`;
   };
 
-  const hasImage = selectedItem.image || (selectedItem.images && selectedItem.images.length > 0);
+  const hasImage = localItem.image || (localItem.images && localItem.images.length > 0);
 
   // Modal handlers
   const openEditModal = () => setEditModalOpen(true);
@@ -54,18 +63,37 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
 
   const handleSaveImages = (images: { id: string; src: string }[]) => {
     const updatedItem = {
-      ...selectedItem,
+      ...localItem,
       images: images,
       image: images.length > 0 ? images[0] : null,
     };
+    setLocalItem(updatedItem);
     onSave(updatedItem);
     closeImageUploader();
   };
 
   const handleSavePrice = (updatedPrice: number) => {
-    const updatedItem = { ...selectedItem, buying_price: updatedPrice };
+    const updatedItem = { ...localItem, buying_price: updatedPrice };
+    setLocalItem(updatedItem);
     onSave(updatedItem);
     closeEditPriceModal();
+    openSucessModal();
+  };
+
+  const handleSaveName = (name: string) => {
+    const updatedItem = { ...localItem, name };
+    setLocalItem(updatedItem);
+    onSave(updatedItem);
+    closeEditName();
+    openSucessModal();
+  };
+
+  const handleSaveQuantity = (quantity: number) => {
+    const updatedItem = { ...localItem, quantity };
+    setLocalItem(updatedItem);
+    onSave(updatedItem);
+    closeEditQuantity();
+    openSucessModal();
   };
 
   return (
@@ -73,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
       <div className="fixed inset-x-[-15] md:inset-x-0 inset-0 md:relative w-full md:max-w-[356px] bg-white transition-transform duration-300 ease-in-out transform translate-x-0 flex flex-col flex-grow items-center rounded-xl md:border md:border-[#DEE5ED] md:m-0 overflow-auto">
         {/* Header */}
         <div className="hidden md:flex py-5.5 px-4 items-center justify-between border-b border-b-[#DEE5ED] w-full">
-          <p className="font-circular-medium text-2xl">{selectedItem.name}</p>
+          <p className="font-circular-medium text-2xl">{localItem.name}</p>
           <button onClick={onClose} className="p-[9px] bg-neutral-200 rounded-md" aria-label="Close sidebar">
             <X size={16} />
           </button>
@@ -100,7 +128,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
                 Cost Price
               </p>
               <p className="text-[#2A2A2A] text-[18px] md:text-[20px] leading-7.5 font-circular-normal">
-                {formatCurrency(selectedItem.buying_price)}
+                {formatCurrency(localItem.buying_price)}
               </p>
             </div>
             <button
@@ -118,7 +146,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
                 Sell Price
               </p>
               <p className="text-[#2A2A2A] text-[18px] md:text-[20px] leading-7.5 font-circular-normal">
-                {formatCurrency(selectedItem.selling_price || selectedItem.buying_price * 1.1)}
+                {formatCurrency(localItem.buying_price)}
               </p>
             </div>
             <button
@@ -136,13 +164,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
                 Discount
               </p>
               <p className="text-[#2A2A2A] text-[18px] md:text-[20px] leading-7.5 font-circular-normal">
-                {selectedItem.discount ? `${selectedItem.discount}%` : 'Not Set'}
+                Not Set
               </p>
             </div>
             <button
               className="text-[#1B1B1B] md:text-[#009A49] font-circular-normal text-sm leading-6 cursor-pointer md:w-1/3 text-right border border-[#A0A0A0] rounded-xl py-3 px-6 md:py-0 md:px-0 md:border-none"
             >
-              {selectedItem.discount ? 'Edit' : 'Add'}
+               Add
             </button>
           </div>
 
@@ -153,7 +181,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
                 Available
               </p>
               <p className="text-[#2A2A2A] text-[18px] md:text-[20px] leading-7.5 font-circular-normal">
-                {selectedItem.quantity}
+                {localItem.quantity}
               </p>
             </div>
             <button
@@ -171,7 +199,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
                 Quantity Sold
               </p>
               <p className="text-[#2A2A2A] text-[18px] md:text-[20px] leading-7.5 font-circular-normal">
-                {selectedItem.quantity_sold || 0}
+                 0
               </p>
             </div>
           </div>
@@ -218,8 +246,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
       {isEditImageModalOpen && (
         <EditImage
           isOpen={isEditImageModalOpen}
-          itemName={selectedItem.name}
-          existingImages={selectedItem.images || []}
+          itemName={localItem.name}
+          existingImages={localItem.images || []}
           onCancel={closeEditImageModal}
           onSave={handleSaveImages}
           onDeleteImage={() => void 0}
@@ -229,26 +257,23 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
       {isEditModalOpen && (
         <EditStockV3Modal
           isOpen={isEditModalOpen}
-          item={selectedItem}
+          item={localItem}
           onClose={closeEditModal}
           onSave={(updatedItem) => {
+            setLocalItem(updatedItem);
             onSave(updatedItem);
             closeEditModal();
+            openSucessModal();
           }}
-          openSuccessModal={openSucessModal}
         />
       )}
 
       {isEditQuantityOpen && (
         <EditQuantityModal
           isOpen={isEditQuantityOpen}
-          item={selectedItem}
+          item={localItem}
           onClose={closeEditQuantity}
-          onSave={(updatedItem) => {
-            onSave(updatedItem);
-            closeEditQuantity();
-          }}
-          openSuccessModal={openSucessModal}
+          onSave={handleSaveQuantity}
         />
       )}
 
@@ -263,8 +288,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
         <EditPriceModal
           isOpen={isEditPriceOpen}
           onClose={closeEditPriceModal}
-          item={selectedItem}
-          openSuccessModal={openSucessModal}
+          item={localItem}
           onSave={handleSavePrice}
         />
       )}
@@ -272,20 +296,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, selectedItem, onSave
       {isEditNameOpen && (
         <EditStockName
           isOpen={isEditNameOpen}
-          item={selectedItem}
+          item={localItem}
           onClose={closeEditName}
-          onSave={(updatedItem) => {
-            onSave(updatedItem);
-            closeEditName();
-          }}
-          openSuccessModal={openSucessModal}
+          onSave={handleSaveName}
         />
       )}
 
       <ImageUploader
         isOpen={isImageUploaderOpen}
-        itemName={selectedItem.name}
-        existingImages={selectedItem.images || []}
+        itemName={localItem.name}
+        existingImages={localItem.images || []}
         onSave={handleSaveImages}
         onCancel={closeImageUploader}
       />
