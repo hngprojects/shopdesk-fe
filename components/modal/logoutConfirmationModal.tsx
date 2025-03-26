@@ -83,7 +83,7 @@ const LogoutConfirmModal: React.FC<LogoutConfirmModalProps> = ({
            </Button>
            <Button
              onClick={handleLogout}
-             className="flex-2 py-6 rounded-md bg-red-500 text-white"
+             className="flex-2 py-6 rounded-md bg-[#414141] text-white"
            >
              {loading ? "Logging out..." : "Logout"}
            </Button>
