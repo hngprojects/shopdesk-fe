@@ -18,13 +18,6 @@ import { EditableCell } from "./editable-cell";
 import { ProfitColumnHeader } from "./profit-column/profit-column-header";
 import { SalesColumnHeader } from "./sales-column/sales-column-header";
 
-declare module "@tanstack/react-table" {
-  interface TableMeta<TData> {
-    isSalesExpanded?: boolean;
-    toggleSalesExpand?: () => void;
-  }
-}
-
 export const columns: ColumnDef<Stock>[] = [
   // {
   //   id: 'select',
