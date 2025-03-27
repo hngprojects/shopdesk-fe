@@ -1,5 +1,4 @@
-import { api } from '@/redux/api';
-import { string } from 'zod';
+import { api } from "@/redux/api";
 
 interface StockBase {
   id: string;
@@ -49,21 +48,46 @@ export const accessControlApi = api.injectEndpoints({
       invalidatesTags: ["Stock"],
     }),
 
-    addStock: builder.mutation<StockResponse, {
-      name: string;
-      buying_price: number;
-      currency_code: string;
-      organization_id: string;
-      product_id: string;
-      date_created: string;
-    }>({
-      query: (stockData) => ({
-        url: 'stocks/create',
-        method: 'POST',
-        body: stockData
+    getWeeklySales: builder.query<
+      { product_id: string; sales: any }[],
+      {
+        organization_id: string;
+        product_ids: string[];
+        date_range_start: string;
+      }
+    >({
+      query: ({ organization_id, product_ids, date_range_start }) => ({
+        url: `stocks/weekday-sale?organization_id=${organization_id}&date_range_start=${date_range_start}`,
+        method: "POST",
+        body: { product_ids },
       }),
-      invalidatesTags: ['Stock'],
-    })
+      providesTags: (result) =>
+        result
+          ? result.map(({ product_id }) => ({
+              type: "Stock" as const,
+              id: product_id,
+            }))
+          : [{ type: "Stock" as const, id: "LIST" }],
+    }),
+
+    addStock: builder.mutation<
+      StockResponse,
+      {
+        name: string;
+        buying_price: number;
+        currency_code: string;
+        organization_id: string;
+        product_id: string;
+        date_created: string;
+      }
+    >({
+      query: (stockData) => ({
+        url: "stocks/create",
+        method: "POST",
+        body: stockData,
+      }),
+      invalidatesTags: ["Stock"],
+    }),
 
     // createStock: builder.mutation<
     //   APIResponse<StockResponse>,
@@ -100,6 +124,7 @@ export const {
   // useEditStockMutation,
   // useDeleteStockMutation,
   useAddStockMutation,
+  useGetWeeklySalesQuery,
   useEditStockMutation,
   useGetStocksMutation,
 } = accessControlApi;

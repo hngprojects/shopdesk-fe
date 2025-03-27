@@ -1,15 +1,15 @@
 "use client";
 
 import { Icons } from "@/components/ui/icons";
+import { useGetWeeklySalesQuery } from "@/redux/features/stock/stock.api";
 import {
   toggleProfitExpand,
   toggleSalesExpand,
 } from "@/redux/features/table/toggle.slice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useStore } from "@/store/useStore";
-import { WeeklySalesData } from "@/types/sale";
+import { getDateStartRange } from "@/utils";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
@@ -130,72 +130,55 @@ export const columns: ColumnDef<Stock>[] = [
         (state: RootState) => state.toggleTableState.isSalesExpanded
       );
 
-      const [loading, setLoading] = useState(false);
       const { organizationId } = useStore();
-      const dispatch = useDispatch();
-      const [error, setError] = useState<string>("");
-      const salesData = useSelector(
-        (state: RootState) => state.weeklySales.data
-      );
+      const dateRangeStart = getDateStartRange();
+      const { data: salesData, isLoading } = useGetWeeklySalesQuery({
+        organization_id: organizationId,
+        product_ids: [row.original.id],
+        date_range_start: dateRangeStart,
+      });
 
-      // useEffect(() => {
-      //   if (isExpanded) {
-      //     setLoading(true);
-      //     setError("");
-
-      //     fetchWeekdaySalesCount(organizationId, row.original.id)
-      //       .then((data) => {
-      //         if (data.error) {
-      //           throw new Error(data.error);
-      //         }
-      //         dispatch(setWeeklySalesData(data));
-      //       })
-      //       .catch((err) => {
-      //         console.error(err);
-      //         setError("Failed to fetch Weekly sales");
-      //         dispatch(
-      //           setWeeklySalesData({
-      //             monday: 0,
-      //             tuesday: 0,
-      //             wednesday: 0,
-      //             thursday: 0,
-      //             friday: 0,
-      //           })
-      //         );
-      //       })
-      //       .finally(() => setLoading(false));
-      //   }
-      // }, [isExpanded, organizationId, row.original.id]);
+      if (isLoading) {
+        return (
+          <div className="flex items-center justify-center">
+            <Icons.LoadingIcon />
+          </div>
+        );
+      }
 
       if (!isExpanded) {
-        const totalSales = Object.values(salesData || {}).reduce(
-          (acc, val) => acc + val,
-          0
-        );
-        console.log(totalSales);
+        const productSales = salesData?.find(
+          (item) => item.product_id === row.original.id
+        )?.sales;
+
+        const totalSales = productSales
+          ? ["monday", "tuesday", "wednesday", "thursday", "friday"].reduce(
+              (acc, day) => acc + (productSales[day] ?? 0),
+              0
+            )
+          : 0;
+
         return (
           <div className="flex items-center justify-center">{totalSales}</div>
         );
       }
 
-      if (!isExpanded) {
-        return (
-          <div className="flex items-center justify-center">
-            {String(row.getValue("sales") || 0)}
-          </div>
-        );
-      }
+      const productSales = salesData?.find(
+        (item) => item.product_id === row.original.id
+      )?.sales;
 
       return (
         <div className="grid grid-cols-5 w-full">
-          {["mon", "tue", "wed", "thu", "fri"].map((day) => (
-            <div
-              key={day}
-              className="border-r p-5 last:border-r-0 rounded-none text-sm w-full h-full"
-            >
-              {error ? "0" : salesData?.[day as keyof WeeklySalesData] ?? "0"}
-            </div>
-          ))}
+          {["monday", "tuesday", "wednesday", "thursday", "friday"].map(
+            (day) => (
+              <div
+                key={day}
+                className="border-r p-5 last:border-r-0 rounded-none text-sm w-full h-full text-center"
+              >
+                {productSales ? productSales[day] ?? 0 : 0}
+              </div>
+            )
+          )}
         </div>
       );
     },
