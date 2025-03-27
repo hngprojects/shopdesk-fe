@@ -28,6 +28,7 @@ import {
 import Sidebar from "@/components/functional/sidebar";
 import AddStockModal from "@/components/modal/add-item";
 import { DataTablePagination } from "./data-table-pagination";
+import { DataTableToolbar } from "./data-table-toolbar";
 import EmptyStock from "./empty-stock-state";
 
 interface DataTableProps<TData, TValue> {
@@ -85,9 +86,9 @@ export function DataTable<TData, TValue>({
     <div className="flex space-x-4 w-full h-full">
       {/* Main table container */}
       <div className="flex-1 flex flex-col min-w-[900px] border-l-0 border border-gray-200 rounded-br-lg rounded-bl-lg rounded-tr-lg overflow-x-auto">
-        {/* <div className="p-4 border-b">
+        <div className="p-4 border-b">
           <DataTableToolbar table={table} />
-        </div> */}
+        </div>
 
         {/* Table wrapper with scroll */}
         <div className="flex-1 overflow-x-auto">
@@ -183,8 +184,7 @@ export function DataTable<TData, TValue>({
 
       <AddStockModal
         isOpen={isAddStockModalOpen}
-        onClose={() => setIsAddStockModalOpen(false)}
-        onSave={() => {}}
+        onOpenChange={(open) => setIsAddStockModalOpen(open)}
       />
     </div>
   );
