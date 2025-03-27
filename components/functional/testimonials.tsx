@@ -6,6 +6,12 @@ import { useEffect, useState } from "react";
 import Avatar1 from "./../../public/testimonial-images/avatar1.png";
 import Avatar2 from "./../../public/testimonial-images/avatar2.png";
 import Avatar3 from "./../../public/testimonial-images/avatar3.png";
+import Avatar4 from "./../../public/testimonial-images/avatar4.png";
+import Avatar5 from "./../../public/testimonial-images/avatar5.png";
+import Avatar6 from "./../../public/testimonial-images/avatar6.png";
+import Avatar7 from "./../../public/testimonial-images/avatar7.png";
+import Avatar8 from "./../../public/testimonial-images/avatar8.png";
+import Avatar9 from "./../../public/testimonial-images/avatar9.png";
 
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -35,6 +41,54 @@ const testimonialsData = [
     review:
       "“I no longer worry about missing sales or running out of stock. This is the best software for managing a small retail store”",
     image: Avatar3,
+  },
+  {
+    id: 4,
+    name: "Halima Yusuf",
+    title: "Bookstore Owner",
+    review:
+      "“I sell books online and in-store, and ShopDesk syncs my inventory across both platforms. Now, I never sell a book that's out of stock!”",
+    image: Avatar4,
+  },
+  {
+    id: 5,
+    name: "Sunday Agbaje",
+    title: "Fast Food Restaurant Owner",
+    review:
+      "“ShopDesk helps me track every ingredient, ensuring we never run out of key items like chicken or rice. It has made my business run smoothly and increased my efficiency.”",
+    image: Avatar5,
+  },
+  {
+    id: 6,
+    name: "Blessing Okafor",
+    title: "Hair & Beauty Products Seller",
+    review:
+      "“I used to struggle with keeping up with my stock levels. ShopDesk now tracks everything for me, and I get alerts before I run out of popular products!”",
+    image: Avatar6,
+  },
+  {
+    id: 7,
+    name: "Tunde Adeyemi",
+    title: "Furniture Manufacturer",
+    review:
+      "“I handle bulk orders, and tracking materials used to be tough. Now, ShopDesk keeps tabs on my wood, upholstery, and sales, making production more efficient.”",
+    image: Avatar7,
+  },
+  {
+    id: 8,
+    name: "Ibrahim Musa",
+    title: "Grocery Store Owner",
+    review:
+      "“Stocking fresh produce used to be tricky, but ShopDesk's inventory tracking now helps me avoid waste and manage my supply better. My revenue has increased by 20%!”",
+    image: Avatar8,
+  },
+  {
+    id: 9,
+    name: "Ngozi Maduka",
+    title: "Cosmetics Store Owner",
+    review:
+      "“Before ShopDesk, I had no proper record of what I sold daily. Now, everything is tracked digitally, and I get reports that help me make smarter business decisions.”",
+    image: Avatar9,
   },
 ];
 
