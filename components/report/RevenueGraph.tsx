@@ -12,7 +12,8 @@ import {
   LinearScale,
   CategoryScale,
   Tooltip,
-  Legend
+  Legend,
+  ChartOptions
 } from 'chart.js';
 import { useStore } from "@/store/useStore";
 
@@ -41,7 +42,7 @@ const RevenueGraph = () => {
     ],
   };
 
-  const options = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     plugins: {
       legend: {
@@ -56,8 +57,8 @@ const RevenueGraph = () => {
         max: 250000,
         ticks: {
           stepSize: 50000,
-          callback: function (value: number) {
-            return `₦${value.toLocaleString()}`;
+          callback: function (value: number | string) {
+            return `₦${Number(value).toLocaleString()}`;
           },
         },
       },
@@ -121,8 +122,8 @@ const RevenueGraph = () => {
   const colorClass = isPositive ? "text-green-600" : "text-red-600";
 
   return (
-    <p className={`text-xs mt-2.5 lg:mt-0 ${colorClass}`}>
-      {arrow} {Math.abs(percent)}% vs. {previous} last week
+    <p className={`text-xs px-2 py-1 rounded inline-block ${isPositive ? 'bg-green-100' : 'bg-red-100'} ${colorClass}`}>
+      {arrow} {Math.abs(percent)}% vs. last week
     </p>
   );
 })()}
