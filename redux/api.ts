@@ -5,6 +5,6 @@ import { baseQueryWithReauth } from "../lib/helpers/redux-base-query";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Stock", "User", "Product"],
+  tagTypes: ["Stock", "User", "Product", "Customer", "Sale"],
   endpoints: () => ({}),
 });
