@@ -1,4 +1,4 @@
-import { api } from "@/redux/api";
+import { api } from '@/redux/api';
 
 interface StockBase {
   id: string;
@@ -26,26 +26,42 @@ interface EditStockRequest extends StockBase {
 }
 
 interface StockResponse extends StockBase {}
+interface StockRequest {
+  name: string;
+  quantity: number;
+  buying_price: number;
+  currency_code: string;
+  supplier_id: string;
+  buying_date: string;
+  product_id: string;
+  organization_id: string;
+  date_created: string;
+  timeslots: {
+    day_of_week: string;
+    start: string;
+    end: string;
+  }[];
+}
 
 export const accessControlApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getStocks: builder.mutation<StockResponse[], string>({
       query: (organizatiohn_id: string) => ({
         url: `stocks/?organization_id=${organizatiohn_id}`,
-        method: "POST",
+        method: 'POST',
       }),
-      invalidatesTags: ["Stock"],
+      invalidatesTags: ['Stock'],
     }),
     editStock: builder.mutation<StockResponse, EditStockRequest>({
       query: (data) => ({
-        url: `stocks/edit`,
-        method: "PUT",
+        url: 'stocks/edit',
+        method: 'PUT',
         body: {
           stock_id: data.id,
           ...data,
         },
       }),
-      invalidatesTags: ["Stock"],
+      invalidatesTags: ['Stock'],
     }),
 
     getWeeklySales: builder.query<
@@ -58,35 +74,25 @@ export const accessControlApi = api.injectEndpoints({
     >({
       query: ({ organization_id, product_ids, date_range_start }) => ({
         url: `stocks/weekday-sale?organization_id=${organization_id}&date_range_start=${date_range_start}`,
-        method: "POST",
+        method: 'POST',
         body: { product_ids },
       }),
       providesTags: (result) =>
         result
           ? result.map(({ product_id }) => ({
-              type: "Stock" as const,
+              type: 'Stock' as const,
               id: product_id,
             }))
-          : [{ type: "Stock" as const, id: "LIST" }],
+          : [{ type: 'Stock' as const, id: 'LIST' }],
     }),
 
-    addStock: builder.mutation<
-      StockResponse,
-      {
-        name: string;
-        buying_price: number;
-        currency_code: string;
-        organization_id: string;
-        product_id: string;
-        date_created: string;
-      }
-    >({
+    addStock: builder.mutation<StockResponse, StockRequest>({
       query: (stockData) => ({
-        url: "stocks/create",
-        method: "POST",
+        url: 'stocks/create',
+        method: 'POST',
         body: stockData,
       }),
-      invalidatesTags: ["Stock"],
+      invalidatesTags: ['Stock'],
     }),
 
     // createStock: builder.mutation<

@@ -7,7 +7,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -21,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
+import { FaMinus, FaPlus } from 'react-icons/fa';
 import { useStorage } from '@/lib/helpers/manage-store';
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
@@ -58,8 +57,6 @@ const formSchema = z.object({
       'Must be at least 1'
     ),
   currency_code: z.string().min(1, 'Currency is required'),
-  product_id: z.string().min(1, 'Product ID is required'),
-  organization_id: z.string().min(1, 'Organization ID is required'),
 });
 
 interface AddStockModalProps {
@@ -69,7 +66,6 @@ interface AddStockModalProps {
 
 function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
   const [addStock, { isLoading }] = useAddStockMutation();
-  const { getAccessToken } = useStorage();
   const { orgId } = useAppSelector((state) => state.auth);
 
   const [searchCurrency, setSearchCurrency] = useState('');
@@ -81,54 +77,31 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
       buying_price: '',
       quantity: '1',
       currency_code: 'NGN',
-      product_id: 'default-product-id',
-      organization_id: orgId || 'default-org-id',
     },
   });
 
-  // Reset form when opening or when organizationId changes
-  useEffect(() => {
-    if (isOpen) {
-      form.reset({
-        name: '',
-        buying_price: '',
-        quantity: '1',
-        currency_code: 'NGN',
-        product_id: 'default-product-id',
-        organization_id: orgId || 'default-org-id',
-      });
-    }
-  }, [isOpen, form.reset, orgId]);
-
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      // Verify authentication before proceeding
-      const accessToken = getAccessToken();
-      if (!accessToken) {
-        throw { status: 401, data: { detail: 'No access token found' } };
-      }
+    console.log(values);
 
-      const payload = {
-        ...values,
-        buying_price: Number(values.buying_price),
-        quantity: Number(values.quantity),
-        date_created: new Date().toISOString(),
-      };
+    const request = {
+      name: values.name,
+      buying_price: Number(values.buying_price),
+      selling_price: Number(values.selling_price),
+      quantity: Number(values.quantity),
+      product_id: 'default-product-id',
+      organization_id: orgId,
+    };
 
-      const response = await addStock(payload).unwrap();
-      // onSave(response);
-      form.reset();
-    } catch (error: any) {
-      console.error('Failed to add stock:', error);
-      if (error?.status === 401) {
-        toast.error('Your session has expired. Please log in again.');
-      } else {
-        toast.error(
-          (error as any)?.data?.detail ||
-            'Failed to add stock. Please try again.'
-        );
-      }
-    }
+    addStock(request)
+      .unwrap()
+      .then(() => {
+        console.log(response);
+        toast.success('Stock added successfully');
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error('An error occurred');
+      });
   }
 
   const filteredCurrencies = currencies.filter(
@@ -139,7 +112,13 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        onOpenChange(open);
+        form.reset();
+      }}
+    >
       <DialogContent className='bg-white rounded-lg shadow-lg w-full max-w-md p-6'>
         <DialogHeader className='flex flex-row gap-2.5 items-center'>
           <div className='bg-[#CCEBDB] p-4 rounded-lg flex items-center justify-center'>
