@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import appStore from "../../public/icons/App Store.png";
@@ -6,10 +7,100 @@ import twitter from "../../public/icons/twitter.svg";
 import facebook from "../../public/icons/facebook.svg";
 import instagram from "../../public/icons/instagram.svg";
 import github from "../../public/icons/github.svg";
-import { FaTiktok } from "react-icons/fa6";
 import Logo from "./logo";
+import { link } from "fs";
 
 const Footer = () => {
+  const footer = [
+    {
+      title: "Product",
+      links: [
+        {
+          name: "Overview",
+          route: "/overview",
+        },
+
+        {
+          name: "Features",
+          route: "/features",
+        },
+        {
+          name: "Pricing",
+          route: "/pricing",
+        },
+        {
+          name: "Tutorials",
+          route: "/tutorials",
+        },
+      ],
+    },
+    {
+      title: "Company",
+      links: [
+        {
+          name: "About us",
+          route: "/about-us",
+        },
+
+        {
+          name: "Careers",
+          route: "/careers",
+        },
+        {
+          name: "Blog",
+          route: "/blog",
+        },
+        {
+          name: "Contact",
+          route: "/contact",
+        },
+        {
+          name: "Newsletter",
+          route: "/newsletter",
+        },
+      ],
+    },
+    {
+      title: "Help",
+      links: [
+        {
+          name: "Customer Support",
+          route: "/customer-support",
+        },
+
+        {
+          name: "FAQ",
+          route: "/faq",
+        },
+        {
+          name: "Help Center",
+          route: "/help-center",
+        },
+        {
+          name: "Youtube Playist",
+          route: "/youtube-playist",
+        },
+      ],
+    },
+  ];
+  const links = [
+    {
+      name: twitter,
+      link: "https://x.com/shopdeskhng",
+    },
+    {
+      name: facebook,
+      link: "https://www.facebook.com/share/18weYAqtPe/",
+    },
+    {
+      name: instagram,
+      link: "https://www.instagram.com/shopdesk_?igsh=MXIybG5sNXhvazI5dg==",
+    },
+    {
+      name: github,
+      link: "https://github.com/hngprojects/shopdesk-fe",
+    },
+  ];
   return (
     <footer className="px-[clamp(16px,_4vw,_120px)]">
       {/* Newsletter Section */}
@@ -62,37 +153,25 @@ const Footer = () => {
 
             {/* Social Icons - Desktop */}
             <div className="flex gap-4 mt-8 hidden md:flex">
-              {[twitter, facebook, instagram, github].map((icon, index) => (
-                <div
+              {links.map((icon, index) => (
+                <Link
+                  href={icon.link}
                   key={index}
                   className="size-7 flex items-center justify-center border border-[#D4D4D8] rounded-full"
                 >
-                  <Image src={icon} alt={icon.toString()} />
-                </div>
+                  <Image
+                    width={10}
+                    height={10}
+                    src={icon.name}
+                    alt={icon.name.toString()}
+                  />
+                </Link>
               ))}
             </div>
           </div>
 
           {/* Footer Links Sections */}
-          {[
-            {
-              title: "Product",
-              links: ["Overview", "Features", "Pricing", "Tutorials"],
-            },
-            {
-              title: "Company",
-              links: ["About us", "Careers", "Blog", "Contact", "Newsletter"],
-            },
-            {
-              title: "Help",
-              links: [
-                "Customer Support",
-                "FAQ",
-                "Help center",
-                "Youtube Playlist",
-              ],
-            },
-          ].map((section, index) => (
+          {footer.map((section, index) => (
             <div
               key={index}
               className="flex flex-col items-center md:items-start"
@@ -101,12 +180,10 @@ const Footer = () => {
                 {section.title}
               </p>
               <ul className="text-[14px] text-[#52525B] flex flex-col gap-4 mt-4">
-                {section.links.map((link, linkIndex) => (
-                  <li key={linkIndex}>
-                    <Link href={`/${link.toLowerCase().replace(" ", "-")}`}>
-                      {link}
-                    </Link>
-                  </li>
+                {section.links.map((l, linkIndex) => (
+                  <Link key={linkIndex} href={l?.route}>
+                    {l.name}
+                  </Link>
                 ))}
               </ul>
             </div>
@@ -140,13 +217,19 @@ const Footer = () => {
 
         {/* Social Icons - Mobile */}
         <div className="flex justify-center gap-4 mb-8 md:hidden">
-          {[twitter, facebook, instagram, github].map((icon, index) => (
-            <div
+          {links.map((icon, index) => (
+            <Link
+              href={icon.link}
               key={index}
-              className="size-7 flex items-center justify-center border border-[#D4D4D8] rounded-full"
+              className="size-7 cursor-pointer flex items-center justify-center border border-[#D4D4D8] rounded-full"
             >
-              <Image src={icon} alt={icon.toString()} />
-            </div>
+              <Image
+                src={icon.name}
+                width={10}
+                height={10}
+                alt={icon.name.toString()}
+              />
+            </Link>
           ))}
         </div>
 
