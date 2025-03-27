@@ -27,6 +27,8 @@ import {
 
 import Sidebar from "@/components/functional/sidebar";
 import { DataTablePagination } from "./data-table-pagination";
+import EmptyStock from "./empty-stock-state";
+import AddStockModal from "@/components/modal/add-item";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -50,6 +52,7 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [selectedRow, setSelectedRow] = React.useState<TData | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const [isAddStockModalOpen, setIsAddStockModalOpen] = React.useState(false);
 
   const table = useReactTable({
     data,
@@ -155,7 +158,8 @@ export function DataTable<TData, TValue>({
                     colSpan={columns.length}
                     className="h-24 text-center text-gray-500 border-b border-gray-200 "
                   >
-                    No results found.
+                    {/* Empty Stock State */}
+                    <EmptyStock onClick={() => setIsAddStockModalOpen(true)} />
                   </TableCell>
                 </TableRow>
               )}
@@ -176,6 +180,12 @@ export function DataTable<TData, TValue>({
           onClose={() => setIsSidebarOpen(false)}
         />
       )}
+
+      <AddStockModal
+        isOpen={isAddStockModalOpen}
+        onClose={() => setIsAddStockModalOpen(false)}
+        onSave={() => {}}
+      />
     </div>
   );
 }
