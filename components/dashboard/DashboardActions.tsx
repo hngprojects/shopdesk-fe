@@ -17,6 +17,8 @@ const DashboardActions = () => {
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
+  console.log("stockItems", stockItems);
+
   if (!stockItems || stockItems.length === 0) {
     return null;
   }

@@ -27,6 +27,7 @@ import {
 
 import Sidebar from "@/components/functional/sidebar";
 import { DataTablePagination } from "./data-table-pagination";
+import EmptyStock from "./empty-stock-state";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -155,7 +156,8 @@ export function DataTable<TData, TValue>({
                     colSpan={columns.length}
                     className="h-24 text-center text-gray-500 border-b border-gray-200 "
                   >
-                    No results found.
+                    {/* Empty Stock State */}
+                    <EmptyStock />
                   </TableCell>
                 </TableRow>
               )}
