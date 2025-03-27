@@ -1,4 +1,5 @@
 "use client";
+import Works from "@/components/functional/Works";
 import Testimonials from "@/components/functional/testimonials";
 import airbnb from "@/public/home-images/airbnb.svg";
 import coinbase from "@/public/home-images/coinbase.svg";
@@ -326,10 +327,10 @@ export default function Home() {
           </div>
         </div>
 
-        <div
-          data-aos="fade-up"
-          data-aos-once="false" // Allow this element to re-animate
-        >
+        <div data-aos="fade-up" data-aos-once="false">
+          <Works />
+        </div>
+        <div data-aos="fade-up" data-aos-once="false">
           <Testimonials />
         </div>
       </section>
