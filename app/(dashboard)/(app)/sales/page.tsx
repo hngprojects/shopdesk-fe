@@ -1,5 +1,8 @@
 "use client";
+import SalesModal from "@/components/modal/salesmodal/sales-modal";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useGetProductsForSaleQuery } from "@/redux/features/product/product.api";
+import { useStore } from "@/store/useStore";
 import {
   type Column,
   getCoreRowModel,
@@ -19,6 +22,7 @@ export default function SalesPage() {
   const [viewType, setViewType] = React.useState<"Daily" | "Weekly" | "Flat">(
     "Daily"
   );
+  const { organizationId } = useStore();
   const [hoveredRow, setHoveredRow] = useState<{
     tableId: string;
     rowId: string;
@@ -27,10 +31,16 @@ export default function SalesPage() {
   const handleRowHover = (tableId: string, rowId: string) => {
     setHoveredRow({ tableId, rowId });
   };
-
   const handleRowLeave = () => {
     setHoveredRow(null);
   };
+  console.log("orgId", organizationId);
+  const { data, isFetching } = useGetProductsForSaleQuery({
+    organization_id: organizationId,
+  });
+
+  console.log("response:", data);
+  const stockItems = data?.items ?? [];
   useEffect(() => {
     setGroupedData(processDataIntoGroups(sampleData));
   }, []);
@@ -42,7 +52,10 @@ export default function SalesPage() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
+  const [showModal, setShowModal] = useState(false);
+  const toggleSalesModal = () => {
+    setShowModal((prev) => !prev);
+  };
   return (
     <React.Fragment>
       <div className="pl-1 bg-[#F6F8FA] rounded-tr-lg rounded-bl-lg rounded-br-lg">
@@ -75,7 +88,9 @@ export default function SalesPage() {
               </TableHeader>
             </Table>
           </div>
-
+          <div>
+            <button onClick={toggleSalesModal}>Show Modal</button>
+          </div>
           {/* Tables for each time group */}
           <div className="px-5 pt-5 space-y-6">
             {groupedData.map((group) => (
@@ -112,6 +127,13 @@ export default function SalesPage() {
           </div>
         </div>
       </div>
+
+      <SalesModal
+        isOpen={showModal}
+        onClose={toggleSalesModal}
+        onCompleteSale={toggleSalesModal}
+        stockItems={stockItems}
+      />
     </React.Fragment>
   );
 }

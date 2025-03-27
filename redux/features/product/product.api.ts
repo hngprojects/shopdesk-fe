@@ -1,35 +1,10 @@
-type Stock<T> = {
-  page: number;
-  size: number;
-  total: number;
-  previous_page: number | null;
-  next_page: number | null;
-  items: T[];
-};
+import { api } from "@/redux/api";
 
-// export type StockItem = {
-//   name: string;
-//   quantity: number;
-//   buying_price: number;
-//   currency_code: string;
-//   supplier_id: string | null;
-//   buying_date: string;
-//   id: string;
-//   product_id: string;
-//   status: string;
-//   user_id: string;
-//   date_created: string;
-//   original_quantity: number;
-//   supplier: string | null;
-//   timeslots: any[];
-//   price: number;
-//   sku: string;
-//   sell_price: string;
-//   remaining: number;
-//   photos: string;
-// };
+interface ProductPrice {
+  [currency: string]: [number, number | null];
+}
 
-export type StockItem = {
+export type Product = {
   name: string;
   description: string | null;
   unique_id: string;
@@ -59,11 +34,30 @@ export type StockItem = {
   attributes: Record<string, any>; // Adjust based on attribute structure
 };
 
-export type StockResponse = Stock<StockItem>;
-
-export interface Currency {
-  code: string;
-  symbol: string;
-  name: string;
-  flag: string;
+interface ProductsResponse {
+  page: number;
+  size: number;
+  total: number;
+  debug: unknown;
+  previous_page: number | null;
+  next_page: number | null;
+  items: Product[];
 }
+
+export const accessControlApi = api.injectEndpoints({
+  endpoints: (builder) => ({
+    getProductsForSale: builder.query<
+      ProductsResponse,
+      { organization_id: string }
+    >({
+      query: ({ organization_id }) => ({
+        url: `product/get?organization_id=${organization_id}`,
+        method: "GET",
+      }),
+      providesTags: ["Product"],
+      keepUnusedDataFor: 3600,
+    }),
+  }),
+});
+
+export const { useGetProductsForSaleQuery } = accessControlApi;

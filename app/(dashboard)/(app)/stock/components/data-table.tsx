@@ -26,9 +26,9 @@ import {
 } from "@/components/ui/table";
 
 import Sidebar from "@/components/functional/sidebar";
+import AddStockModal from "@/components/modal/add-item";
 import { DataTablePagination } from "./data-table-pagination";
 import EmptyStock from "./empty-stock-state";
-import AddStockModal from "@/components/modal/add-item";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
