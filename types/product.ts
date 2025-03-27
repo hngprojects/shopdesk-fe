@@ -1,0 +1,31 @@
+type Product = {
+  name: string;
+  description: string;
+  unique_id: string;
+  url_slug: string;
+  is_available: boolean;
+  is_service: boolean;
+  previous_url_slugs: { [key: string]: any };
+  unavailable: false;
+  unavailable_start: string;
+  unavailable_end: string;
+  status: string;
+  id: string;
+  parent_product_id: string;
+  parent: string;
+  organization_id: string;
+  categories: [];
+  date_created: string;
+  last_updated: string;
+  user_id: string;
+  current_price: string;
+  is_deleted: boolean;
+  available_quantity: number;
+  selling_price: number;
+  discounted_price: number;
+  buying_price: number;
+  photos: [];
+  attributes: {
+    [key: string]: any;
+  };
+};

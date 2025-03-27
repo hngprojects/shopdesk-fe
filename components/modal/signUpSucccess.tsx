@@ -21,7 +21,7 @@ export default function SignUpSuccess ({
   const router = useRouter()
 
   const handleRouting = () => {
-    router.push('/dashboard')
+    router.push('/stock')
     
   }
   return (

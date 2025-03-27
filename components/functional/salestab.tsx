@@ -1,242 +1,211 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useMemo } from "react";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
-import {
-  ColumnDef,
-  getCoreRowModel,
-  useReactTable,
-  flexRender,
-} from "@tanstack/react-table";
-import Image from "next/image";
-import { Loader2 } from "lucide-react";
-import PaginationFeature from "./paginationfeature";
-
-import SalesModal from "@/components/modal/sales-modal";
-
-export type SalesItem = {
-  id: string;
-  item_name: string;
-  price: number;
-  quantity: number;
-  total: number;
-  date: string;
-  customer?: string;
-  payment_method?: string;
-};
+import type { SalesItem } from '@/store/useStore';
+import type { StockItem } from '@/types/stocks';
+import { Plus, Search } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import { Label } from '../ui/label';
 
 interface SalesTabProps {
-  onAddSale: () => void;
+  onAddSale: (sale: SalesItem) => void;
   salesItems: SalesItem[];
+  stockItems: StockItem[];
 }
 
-const SalesTab = ({ onAddSale, salesItems }: SalesTabProps) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [searchText, setSearchText] = useState("");
-  const [isSearching, setIsSearching] = useState(false);
+const SalesTab: React.FC<SalesTabProps> = ({
+  onAddSale,
+  salesItems,
+  stockItems,
+}) => {
+  const [isAddSaleModalOpen, setIsAddSaleModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<StockItem | null>(
+    null
+  );
+  const [quantitySold, setQuantitySold] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 500);
-  }, []);
-
-  const filteredItems = salesItems.filter((item) =>
-    item.item_name.toLowerCase().includes(searchText.toLowerCase())
+  // Filter sales items based on search query
+  const filteredSalesItems = salesItems.filter((item) =>
+    item.product_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const totalItems = isSearching ? filteredItems.length : salesItems.length;
-  const totalPages = Math.ceil(totalItems / rowsPerPage);
-  const paginatedData = isSearching
-    ? filteredItems.slice(
-      (currentPage - 1) * rowsPerPage,
-      currentPage * rowsPerPage
-    )
-    : salesItems.slice(
-      (currentPage - 1) * rowsPerPage,
-      currentPage * rowsPerPage
-    );
-
-  const salesColumns: ColumnDef<SalesItem>[] = useMemo(
-    () => [
-      {
-        accessorKey: "item_name",
-        header: "ITEM NAME",
-        size: 200,
-        cell: ({ row }) => (
-          <div className="inline-block w-full overflow-hidden">
-            <span className="block text-balance">{row.original.item_name}</span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "price",
-        header: "PRICE",
-        cell: ({ row }) => (
-          <div className="inline-block w-full overflow-hidden">
-            <span className="block w-full overflow-x-clip">{`${row.original.price.toLocaleString()}`}</span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "quantity",
-        header: "QUANTITY",
-        cell: ({ row }) => (
-          <div className="inline-block w-full overflow-hidden">
-            {row.original.quantity}
-          </div>
-        ),
-      },
-    ],
-    []
-  );
-
-  const salesTable = useReactTable({
-    data: paginatedData,
-    columns: salesColumns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
+  const handleAddSale = () => {
+    if (!selectedProduct) {
+      return;
     }
-  };
 
-  const handleItemsPerPageChange = (count: number) => {
-    setRowsPerPage(count);
-    setCurrentPage(1);
-  };
+    const newSale: SalesItem = {
+      sale_id: uuidv4(),
+      product_id: selectedProduct.product_id,
+      product_name: selectedProduct.name,
+      quantity_sold: quantitySold,
+      price_per_unit: selectedProduct.price,
+      total_amount: selectedProduct.price * quantitySold,
+      sale_date: new Date().toISOString(),
+    };
 
-  if (isLoading) {
-    return (
-      <div className="flex h-60 items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
+    onAddSale(newSale);
+    setIsAddSaleModalOpen(false);
+    setSelectedProduct(null);
+    setQuantitySold(1);
+  };
 
   return (
-    <div className="border shadow-md rounded-b-lg rounded-tr-lg relative rounded-bl-lg flex-1 overflow-auto w-full">
-      {salesItems.length === 0 ? (
-        <div className="relative">
-          <Table className="border-collapse border-b min-w-[590px] table-fixed w-full">
-            <TableHeader>
-              <TableRow className="h-[50px]">
-                <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/3 min-w-[120px] text-left border-b border-r">
-                  ITEM NAME
-                </TableHead>
-                <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/3 min-w-[120px] text-center border-b border-r">
-                  PRICE
-                </TableHead>
-                <TableHead className="text-[#090F1C] font-circular-medium px-4 py-2 w-1/3 min-w-[120px] text-center border-b border-r">
-                  QUANTITY
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-          </Table>
-          <div className="w-full overflow-x-auto">
-            <span className="w-full h-px bg-[#DEDEDE] block"></span>
-            <div className="relative h-[80vh] w-full">
-              <div className="absolute space-y-4 right-0 left-0 top-28 w-56 mx-auto text-center">
-                <Image
-                  src="/icons/empty-note-pad.svg"
-                  alt=""
-                  width={56}
-                  height={56}
-                  className="mx-auto"
-                />
-                <p className="text-[#888888] text-sm">
-                  You have not made any sales
+    <div className='w-full'>
+      {/* Search and Add Sale Button */}
+      <div className='flex justify-between items-center mb-4'>
+        <div className='relative w-[327px] max-[800px]:w-full'>
+          <input
+            type='text'
+            placeholder='Search sales...'
+            className='h-12 border w-full rounded-md focus:outline-2 focus:outline-[#009A49] px-10'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Search className='text-[#667085] absolute top-3 left-3' />
+        </div>
+
+        <button
+          type='button'
+          onClick={() => setIsAddSaleModalOpen(true)}
+          className='btn-primary flex items-center gap-2'
+        >
+          <Plus size={16} /> Add Sale
+        </button>
+      </div>
+
+      {/* Sales Table */}
+      <div className='overflow-x-auto'>
+        <table className='min-w-full bg-white border border-gray-200 rounded-lg'>
+          <thead className='bg-gray-50'>
+            <tr>
+              <th className='py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                Product
+              </th>
+              <th className='py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                Quantity
+              </th>
+              <th className='py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                Price
+              </th>
+              <th className='py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                Total
+              </th>
+              <th className='py-3 px-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'>
+                Date
+              </th>
+            </tr>
+          </thead>
+          <tbody className='divide-y divide-gray-200'>
+            {filteredSalesItems.length > 0 ? (
+              filteredSalesItems.map((sale) => (
+                <tr key={sale.sale_id}>
+                  <td className='py-4 px-4 whitespace-nowrap'>
+                    {sale.product_name}
+                  </td>
+                  <td className='py-4 px-4 whitespace-nowrap'>
+                    {sale.quantity_sold}
+                  </td>
+                  <td className='py-4 px-4 whitespace-nowrap'>
+                    ₦{sale.price_per_unit.toLocaleString()}
+                  </td>
+                  <td className='py-4 px-4 whitespace-nowrap'>
+                    ₦{sale.total_amount.toLocaleString()}
+                  </td>
+                  <td className='py-4 px-4 whitespace-nowrap'>
+                    {new Date(sale.sale_date).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className='py-4 px-4 text-center text-gray-500'>
+                  No sales records found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Add Sale Modal */}
+      {isAddSaleModalOpen && (
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+          <div className='bg-white p-6 rounded-lg w-full max-w-md'>
+            <h2 className='text-xl font-semibold mb-4'>Add New Sale</h2>
+
+            <div className='mb-4'>
+              <Label className='block text-sm font-medium text-gray-700 mb-1'>
+                Select Product
+              </Label>
+              <select
+                className='w-full border border-gray-300 rounded-md p-2'
+                value={selectedProduct?.product_id || ''}
+                onChange={(e) => {
+                  const product = stockItems.find(
+                    (item) => item.product_id === e.target.value
+                  );
+                  setSelectedProduct(product || null);
+                }}
+              >
+                <option value=''>Select a product</option>
+                {stockItems.map((item) => (
+                  <option key={item.product_id} value={item.product_id}>
+                    {item.name} (Available: {item.quantity})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className='mb-4'>
+              <Label className='block text-sm font-medium text-gray-700 mb-1'>
+                Quantity
+              </Label>
+              <input
+                type='number'
+                min='1'
+                max={selectedProduct?.quantity || 1}
+                value={quantitySold}
+                onChange={(e) =>
+                  setQuantitySold(Number.parseInt(e.target.value))
+                }
+                className='w-full border border-gray-300 rounded-md p-2'
+              />
+            </div>
+
+            {selectedProduct && (
+              <div className='mb-4'>
+                <p className='text-sm text-gray-600'>
+                  Price per unit: ₦{selectedProduct.price.toLocaleString()}
                 </p>
-                <button
-                  type="button"
-                  onClick={onAddSale}
-                  className="shadow-[4px_4px_4px_0px_rgba(77,95,113,0.12)] border border-[#DEDEDE] rounded-lg px-5 py-2 hover:cursor-pointer font-circular-normal text-[#2A2A2A]"
-                >
-                  + Record a Sale
-                </button>
+                <p className='text-sm font-semibold'>
+                  Total: ₦
+                  {(selectedProduct.price * quantitySold).toLocaleString()}
+                </p>
               </div>
+            )}
+
+            <div className='flex justify-end gap-2 mt-6'>
+              <button
+                type='button'
+                onClick={() => setIsAddSaleModalOpen(false)}
+                className='px-4 py-2 border border-gray-300 rounded-md text-gray-700'
+              >
+                Cancel
+              </button>
+              <button
+                type='button'
+                onClick={handleAddSale}
+                disabled={!selectedProduct}
+                className='px-4 py-2 bg-[#009A49] text-white rounded-md disabled:opacity-50'
+              >
+                Add Sale
+              </button>
             </div>
           </div>
         </div>
-      ) : (
-        <>
-          <Table className="border-collapse border-b min-w-[590px] table-fixed">
-            <TableHeader>
-              {salesTable.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="h-[50px]">
-                  {headerGroup.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className="text-[#090F1C] font-circular-medium px-4 py-2 text-center border-b border-r min-w-[100px]"
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: rowsPerPage }).map((_, index) => {
-                const row = salesTable.getRowModel().rows[index] || null;
-
-                return (
-                  <TableRow key={index} className="h-[50px]">
-                    {row
-                      ? row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className="px-4 py-3 text-center border-r"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))
-                      : salesColumns.map((column) => (
-                        <TableCell
-                          key={column.id}
-                          className="px-4 py-3 text-center border-r text-gray-400"
-                        >
-                          {""}
-                        </TableCell>
-                      ))}
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-          <Table>
-            <TableBody>
-              <TableRow>
-                <TableCell colSpan={salesColumns.length} className="py-4">
-                  <PaginationFeature
-                    totalItems={totalItems}
-                    currentPage={currentPage}
-                    itemsPerPage={rowsPerPage}
-                    totalPages={totalPages}
-                    onPageChange={handlePageChange}
-                    onItemsPerPageChange={handleItemsPerPageChange}
-                  />
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </>
       )}
     </div>
   );

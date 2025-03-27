@@ -1,63 +1,67 @@
-import { useState, useRef, useEffect } from "react";
-import Image from "next/image";
+'use client';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import {
-  FaChevronDown,
-  FaSearch,
-  FaMinus,
-  FaPlus,
-  FaTimes,
-} from "react-icons/fa";
-import { AddStock } from "@/services/stock"; // Import the AddStock function
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useAddStockMutation } from '@/redux/features/stock/stock.api';
+import { useAppSelector } from '@/redux/hooks';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { FaMinus, FaPlus } from 'react-icons/fa';
+import { useStorage } from '@/lib/helpers/manage-store';
+import { useEffect, useState } from 'react';
+import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
+import { toast } from 'sonner';
+import { DialogClose } from '@radix-ui/react-dialog';
+import Image from 'next/image';
+import { currencies } from '@/app/(auth)/create-organization/_components/CreateOrganization';
+import { Search } from 'lucide-react';
 
-export const currencies = [
-  {
-    name: "Nigerian Naira",
-    code: "NGN",
-    symbol: "₦",
-    flag: "/modal-images/nigeria-flag.svg",
-  },
-  {
-    name: "Egyptian Pound",
-    code: "EGP",
-    symbol: "ج.م",
-    flag: "/modal-images/egypt-flag.svg",
-  },
-  {
-    name: "Ethiopian Birr",
-    code: "ETB",
-    symbol: "Br",
-    flag: "/modal-images/ethiopia-flag.svg",
-  },
-  {
-    name: "Ghanaian Cedi",
-    code: "GHS",
-    symbol: "₵",
-    flag: "/modal-images/ghana-flag.svg",
-  },
-  {
-    name: "Indian Rupee",
-    code: "INR",
-    symbol: "₹",
-    flag: "/modal-images/india-flag.svg",
-  },
-  {
-    name: "Kenyan Shilling",
-    code: "KES",
-    symbol: "KSh",
-    flag: "/modal-images/kenya-flag.svg",
-  },
-];
+interface StockResponse {
+  id: string;
+  name: string;
+  buying_price: number;
+  quantity: number;
+  currency_code: string;
+  date_created: string;
+}
+
+const formSchema = z.object({
+  name: z.string().min(1, 'Product name is required'),
+  buying_price: z
+    .string()
+    .min(1, 'Price is required')
+    .refine((val) => !Number.isNaN(Number(val)), 'Must be a number'),
+  selling_price: z
+    .string()
+    .min(1, 'Price is required')
+    .refine((val) => !Number.isNaN(Number(val)), 'Must be a number'),
+  quantity: z
+    .string()
+    .min(1, 'Quantity is required')
+    .refine(
+      (val) => !Number.isNaN(Number(val)) && Number(val) >= 1,
+      'Must be at least 1'
+    ),
+  currency_code: z.string().min(1, 'Currency is required'),
+});
 
 interface AddStockModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  onSave: (item: {
-    id: string; // Changed from number to string
-    name: string;
-    buying_price: number; // Changed from price to buying_price
-    quantity: number;
-    currency_code: string; // Added currency_code
-  }) => void;
+  onOpenChange: (open: boolean) => void;
 }
 
 export default function AddStockModal({
@@ -74,17 +78,11 @@ export default function AddStockModal({
   const [productName, setProductName] = useState("");
   const [skuCode, setSkuCode] = useState("");
   const [sellingPrice, setSellingPrice] = useState("");
-  const [costPrice, setCostPrice] = useState('')
   const [quantity, setQuantity] = useState(0);
   const [selectedSellingCurrency, setSelectedSellingCurrency] = useState(
-    currencies[0],
-  )
-  const [selectedCostCurrency, setSelectedCostCurrency] = useState(
-    currencies[0],
-  )
-  const [activeDropdown, setActiveDropdown] = useState<
-  'cost' | 'selling' | null
->(null)
+    currencies[0]
+  );
+
  
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -98,9 +96,9 @@ export default function AddStockModal({
 
     if (quantity === 0) newErrors.quantity = "Quantity must be greater than 0.";
 
-    //if (skuCode.trim() && !/^[a-zA-Z0-9-]+$/.test(skuCode)) {
-    //  newErrors.skuCode = "SKU Code must be alphanumeric.";
-   // }
+    if (skuCode.trim() && !/^[a-zA-Z0-9-]+$/.test(skuCode)) {
+      newErrors.skuCode = "SKU Code must be alphanumeric.";
+    }
 
     setErrors(newErrors);
 
@@ -154,7 +152,7 @@ export default function AddStockModal({
       setSellingPrice("");
       setQuantity(0);
       setSelectedSellingCurrency(currencies[0]);
-      //setSkuCode("");
+      setSkuCode("");
 
       onClose(); // Close the modal
     } catch (error) {
@@ -165,19 +163,14 @@ export default function AddStockModal({
     }
   };
 
-  const toggleCurrencyModal = (dropdown: 'cost' | 'selling') => {
-    setActiveDropdown(dropdown)
-    setCurrencyModalOpen(!isCurrencyModalOpen)
-  }
+  const toggleCurrencyModal = () => {
+    setCurrencyModalOpen((prev) => !prev);
+  };
 
-  const handleCurrencySelect = (currency: typeof currencies[0]) => {
-    if (activeDropdown === 'cost') {
-      setSelectedCostCurrency(currency)
-    } else if (activeDropdown === 'selling') {
-      setSelectedSellingCurrency(currency)
-    }
-    setCurrencyModalOpen(false)
-  }
+  const handleCurrencySelect = (currency: (typeof currencies)[0]) => {
+    setSelectedSellingCurrency(currency);
+    setCurrencyModalOpen(false);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -221,7 +214,7 @@ export default function AddStockModal({
                 Always know the items you have available.
               </p>
             </div>
-            <div className=" flex-shrink-0">
+            <div className="hidden sm:block flex-shrink-0">
               <button
                 type="button"
                 aria-label="Close"
@@ -232,189 +225,143 @@ export default function AddStockModal({
               </button>
             </div>
           </div>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-[28px]">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-[20px]">
             <div className="flex flex-col gap-2">
-             {/*} <label
+              <label
                 htmlFor="item-name"
                 className="block text-left font-medium text-[#717171] text-[14px]"
               >
                 Product Name <span className="text-red-600">*</span>
               </label>
-              */}
               <input
                 type="text"
                 name="item-name"
-                className="w-full h-[48px] md:h-[62px] rounded-[9px] p-[12px] outline-none border border-[#DEDEDE] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB] focus:border-[#009A49] hover:ring-2 hover:ring-[#CCEBDB] transition-all placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[18px] font-circular-normal bg-white"
+                className="w-full h-[48px] md:h-[62px] rounded-[9px] p-[12px] outline-none border border-[#DEDEDE] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB] focus:border-[#009A49] hover:ring-2 hover:ring-[#CCEBDB] transition-all placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal bg-white"
                 placeholder="Item Name"
                 onChange={(e) => setProductName(e.target.value)}
                 required
               />
             </div>
-            
- 
-  <div className="flex flex-col md:flex-row gap-[18px] justify-between">
-   {/* this is the cost */}
-  <div className="flex-1">
-    <div className="flex border rounded-[9px] relative">
-      <div
-        className="p-2 flex gap-[8px] items-center cursor-pointer"
-        onClick={() => toggleCurrencyModal('cost')}
-      >
-        <Image
-          src={selectedCostCurrency.flag}
-          alt={`${selectedCostCurrency.name} Flag`}
-          className=""
-          width={20}
-          height={18}
-        />
-        <span className="text-[20px] text-center text-[#595959]">
-          {selectedCostCurrency.symbol}
-        </span>
-        <FaChevronDown className="w-[20px] h-[20px] text-[#888888]" />
-      </div>
-      <div className="h-6 border border-gray self-center mx-2"></div>
-      <div className="flex-1">
-        <input
-          type="text"
-          name="cost-price"
-          className="w-full px-[3px] py-[16px] outline-none placeholder:text-[#B8B8B8] text-[18px] font-circular-normal"
-          placeholder="Cost price / unit"
-          value={costPrice}
-          onChange={(e) => setCostPrice(e.target.value)}
-        />
-      </div>
-
-      {isCurrencyModalOpen && activeDropdown === 'cost' && (
-        <div className="absolute top-full left-0 mt-2 w-[300px] bg-white rounded-lg backdrop-blur-sm border z-50">
-          <div className="relative w-full p-4">
-            <input
-              type="text"
-              name="search"
-              className="w-full rounded-[10px] p-2 pl-[48px] outline-none placeholder:text-[#B8B8B8] text-[16px] border bg-white"
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              required
-            />
-            <FaSearch className="absolute left-[32px] top-1/2 transform -translate-y-1/2 text-[#B8B8B8] w-[20px] h-[20px]" />
-          </div>
-
-          <div className="h-[200px] overflow-y-auto px-4 bg-[#FFFFFF]">
-            {filteredCurrencies.map((currency) => (
-              <div
-                key={currency.code}
-                className="flex items-center p-2 hover:bg-gray-200 cursor-pointer border-b-1 px-2"
-                onClick={() => handleCurrencySelect(currency)}
-              >
-                <img
-                  src={currency.flag}
-                  alt={`${currency.name} Flag`}
-                  className="w-8 h-8 rounded-full object-cover mr-3"
+            <div className="flex  gap-5 flex-1 max-[640px]:flex-col">
+              <div className="flex flex-col gap-[12px] flex-1 relative group">
+              {/* <div className="absolute left-0 bottom-[-30px] bg-[#2A2A2A] text-white text-[12px] py-1 px-3 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                
+              </div> */}
+                <label className="font-circular-normal text-[14px] text-[#717171] text-left">
+                Cost Price
+                </label>
+                <input
+                  type="text"
+                  name="Cost Price"
+                  className="w-full h-[48px] md:h-[62px] rounded-[9px] p-4 outline-none border border-[#DEDEDE] placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal"
+                  placeholder="Cost Price"
+                  value={skuCode}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow only alphanumeric characters and hyphens
+                    if (/^[a-zA-Z0-9-]*$/.test(value)) {
+                      setSkuCode(value);
+                    }
+                  }}
+                  
                 />
-                <div>
-                  <p className="text-[14px] font-circular-normal">
-                    {currency.name} ({currency.code}){' '}
-                    <span className="ml-2">{currency.symbol}</span>
+                {errors.skuCode && (
+                  <p className="text-[#FF1925] text-sm font-circular-normal">
+                    {errors.skuCode}
                   </p>
-                </div>
+                )}
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-    {/* Error message for Cost Price
-    {errors.costPrice && (
-      <p className="text-[#FF1925] text-[14px] font-circular-normal text-left mt-1">
-        {errors.costPrice}
-      </p>
-    )}
-       */}
-  </div>
 
-  {/* THIS is the selling seciton */}
-  <div className="flex-1">
-    <div className="flex border rounded-[9px] relative">
-      <div
-        className="p-2 flex gap-[8px] items-center cursor-pointer"
-        onClick={() => toggleCurrencyModal('selling')}
-      >
-        <Image
-          src={selectedSellingCurrency.flag}
-          alt={`${selectedSellingCurrency.name} Flag`}
-          className=""
-          width={20}
-          height={18}
-        />
-        <span className="text-[20px] text-center text-[#595959]">
-          {selectedSellingCurrency.symbol}
-        </span>
-        <FaChevronDown className="w-[20px] h-[20px] text-[#888888]" />
-      </div>
-      <div className="h-6 border border-gray self-center mx-2"></div>
-      <div className="flex-1">
-        <input
-          type="text"
-          name="selling-price"
-          className="w-full px-[3px] py-[16px] outline-none placeholder:text-[#B8B8B8] text-[18px] font-circular-normal"
-          placeholder="Selling price / unit"
-          value={sellingPrice}
-          onChange={(e) => setSellingPrice(e.target.value)}
-          required
-        />
-      </div>
+              <div className="flex flex-col gap-[8px] flex-1 ">
+                <label className="font-circular-normal text-[14px] text-[#717171] text-left">
+                  Selling Price <span className="text-[#FF1925]">*</span>
+                </label>
+                <div
+                  ref={sellingPriceDivRef}
+                  className="flex border gap-[8px] rounded-[9px] m-1 relative h-[48px] md:h-[62px]"
+                >
+                  <div
+                    className="p-2 flex gap-[8px] items-center cursor-pointer"
+                    onClick={toggleCurrencyModal}
+                  >
+                    <Image
+                      src={selectedSellingCurrency.flag}
+                      alt={`${selectedSellingCurrency.name} Flag`}
+                      className="w-5 h-5 md:w-6 md:h-6"
+                      width={20}
+                      height={20}
+                    />
+                    <span className="text-[20px] text-center text-[#595959]">
+                      {selectedSellingCurrency.symbol}
+                    </span>
+                    <FaChevronDown className="w-[10px] h-[10px] text-[#888888]" />
+                  </div>
+                  <div className="h-8 border border-gray self-center"></div>
+                  <div className="w-full">
+                    <input
+                      type="number"
+                      name="selling-price"
+                      className="w-full h-full p-3 outline-none placeholder:text-[#B8B8B8] text-[#2A2A2A] text-base font-circular-normal"
+                      placeholder="Amount"
+                      value={sellingPrice}
+                      onChange={(e) => setSellingPrice(e.target.value)}
+                      required
+                    />
+                  </div>
 
-      {isCurrencyModalOpen && activeDropdown === 'selling' && (
-        <div className="absolute top-full left-0 mt-2 w-[300px] bg-white rounded-lg backdrop-blur-sm border z-50">
-          <div className="relative w-full p-4">
-            <input
-              type="text"
-              name="quesry"
-              className="w-full rounded-[10px] p-2 pl-[48px] outline-none placeholder:text-[#B8B8B8] text-[16px] border bg-white"
-              placeholder="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              required
-            />
-            <FaSearch className="absolute left-[32px] top-1/2 transform -translate-y-1/2 text-[#B8B8B8] w-[20px] h-[20px]" />
-          </div>
+                  {isCurrencyModalOpen && (
+                    <div
+                      ref={dropdownRef}
+                      className="absolute top-full left-0 w-[298px] bg-white rounded-lg backdrop-blur-sm border shadow-lg z-10"
+                    >
+                      <div className="relative w-full p-4">
+                        <input
+                          type="text"
+                          name="item-name"
+                          className="w-full rounded-[10px] p-2 pl-[48px] outline-none placeholder:text-[#B8B8B8] text-[16px] border bg-white"
+                          placeholder="Search"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          required
+                        />
+                        <FaSearch className="absolute left-[32px] top-1/2 transform -translate-y-1/2 text-[#B8B8B8] w-[20px] h-[20px]" />
+                      </div>
 
-          <div className="h-[200px] overflow-y-auto custom-scrollbar px-[20px] hover:bg-gray-200 bg-[#FFFFFF]">
-            {filteredCurrencies.map((currency) => (
-              <div
-                key={currency.code}
-                className="flex items-center p-2 hover:bg-gray-100 rounded-md cursor-pointer"
-                onClick={() => handleCurrencySelect(currency)}
-              >
-                <img
-                  src={currency.flag}
-                  alt={`${currency.name} Flag`}
-                  className="w-8 h-8 rounded-full object-cover mr-3"
-                />
-                <div>
-                  <p className="text-[14px] font-circular-normal">
-                    {currency.name} ({currency.code})
-                    <span className="ml-2">{currency.symbol}</span>
+                      <div className="h-[200px] overflow-y-auto custom-scrollbar px-[20px] py-3 ">
+                        {filteredCurrencies.map((currency) => (
+                          <div
+                            key={currency.code}
+                            className="flex items-center p-2 hover:bg-gray-100 w-full cursor-pointer"
+                            onClick={() => handleCurrencySelect(currency)}
+                          >
+                            <img
+                              src={currency.flag}
+                              alt={`${currency.name} Flag`}
+                              className="w-8 h-8 rounded-full object-cover mr-3"
+                            />
+                            <div>
+                              <p className="text-[14px] font-circular-normal">
+                                {currency.name} ({currency.code}){" "}
+                                <span className="ml-2">{currency.symbol}</span>
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {errors.sellingPrice && (
+                  <p className="text-[#FF1925] text-sm font-circular-normal">
+                    {errors.sellingPrice}
                   </p>
-                </div>
+                )}
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-    {errors.sellingPrice && (
-      <p className="text-[#FF1925] text-[14px] font-circular-normal text-left mt-1">
-        {errors.sellingPrice}
-      </p>
-    )}
-  </div>
-</div>
-  
+            </div>
             <div className="flex flex-col gap-[8px]">
-            {/* <label className="font-circular-normal text-[14px] text-[#1B1B1B] text-left">
+              <label className="font-circular-normal text-[14px] text-[#1B1B1B] text-left">
                 Quantity <span className="text-[#FF1925]">*</span>
-              </label>*/}
+              </label>
               <div className="flex items-center gap-[8px]">
                 <button
                   type="button"
@@ -429,8 +376,8 @@ export default function AddStockModal({
                   <input
                     type="number"
                     inputMode="numeric"
-                    className="w-full h-[48px] md:h-[62px] rounded-[9px] p-[12px] outline-none border border-[#DEDEDE] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB] focus:border-[#009A49] hover:ring-2 hover:ring-[#CCEBDB] transition-all placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[18px] font-circular-normal text-center"
-                    placeholder="Quantity Available"
+                    className="w-full h-[48px] md:h-[62px] rounded-[9px] p-[12px] outline-none border border-[#DEDEDE] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB] focus:border-[#009A49] hover:ring-2 hover:ring-[#CCEBDB] transition-all placeholder:text-[#B8B8B8] text-[#2A2A2A] text-[16px] font-circular-normal text-center"
+                    placeholder="Quantity"
                     value={quantity === 0 ? "" : quantity}
                     onChange={(e) => {
                       const value = e.target.value;
@@ -463,37 +410,30 @@ export default function AddStockModal({
                   {errors.quantity}
                 </p>
               )}
-            </div>
+            />
 
-            <div className="md:bg-[#F6F8FA] md:border md:border-[#DEE5ED] rounded-bl-[12px] rounded-br-[12px] w-full p-4">
-              <div className="flex flex-col-reverse md:flex-row justify-end gap-4 w-full">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="w-full md:w-auto bg-white border md:border-[#1B1B1B] border-[#E50000] md:text-black text-[#FF000D] px-[24px] py-[12px] rounded-[12px] hover:bg-[#D0D0D0]"
+            <div className='flex justify-end gap-2 pt-4'>
+              <DialogClose asChild>
+                <Button
+                  variant='outline'
+                  className='w-full h-auto md:w-auto bg-white border md:border-[#1B1B1B] border-[#E50000] md:text-black text-[#FF000D] px-[24px] py-[12px] rounded-[12px] hover:bg-[#D0D0D0]'
                 >
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  className={`w-full md:w-auto px-[24px] py-[12px] rounded-[12px] border ${
-                    isFormValid()
-                      ? "bg-black text-white border-black"
-                      : "bg-[#D0D0D0] text-[#F1F1F1] border-[#B8B8B8]"
-                  }`}
-                  disabled={!isFormValid() || isLoading}
-                >
-                  <span className="md:hidden">Save</span>
-
-                  <span className="hidden md:inline">
-                    {isLoading ? "Adding..." : "Add Stock"}
-                  </span>
-                </button>
-              </div>
+                </Button>
+              </DialogClose>
+              <Button
+                type='submit'
+                className='w-full h-auto md:w-auto px-[24px] py-[12px] rounded-[12px] border bg-black text-white border-black'
+                disabled={isLoading}
+              >
+                {isLoading ? 'Adding...' : 'Add Stock'}
+              </Button>
             </div>
           </form>
-        </div>
-      </div>
-    </div>
+        </Form>
+      </DialogContent>
+    </Dialog>
   );
 }
+
+export default AddStockModal;

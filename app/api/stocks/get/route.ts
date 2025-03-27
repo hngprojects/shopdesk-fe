@@ -1,30 +1,31 @@
-import { NextResponse } from "next/server";
+import axiosRequest from '@/lib/axios';
+import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
+export async function POST(req: Request) {
   try {
     const url = new URL(req.url);
-    const token = req.headers.get("authorization");
-    const organization_id = url.searchParams.get("organization_id");
-    const product_id = url.searchParams.get("product_id");
+    const organization_id = url.searchParams.get('organization_id');
 
+    const productResponse = await axiosRequest.get(
+      `/products?organization_id=${organization_id}`
+    );
 
-    const response = await fetch(
-      `https://api.timbu.cloud/stocks?product_id=${product_id}&organization_id=${organization_id}`,
-      { 
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `${token}`,
-        },
+    const productData = await productResponse.data;
+
+    const productIds = productData.map((product: Product) => product.id);
+
+    const response = await axiosRequest.post(
+      `/stocks/by-products?organization_id=${organization_id}`,
+      {
+        product_ids: productIds,
       }
     );
 
-    const data = await response.json();
+    const data = await response.data;
     return NextResponse.json(data, { status: response.status });
   } catch (error) {
     return NextResponse.json(
-      { message: "Internal Server Error", error },
+      { message: 'Internal Server Error', error },
       { status: 500 }
     );
   }

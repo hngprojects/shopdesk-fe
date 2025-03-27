@@ -73,4 +73,8 @@ jobs:
             --data-binary @- <<EOF
           # TYPE ci_failure gauge
           ci_failure{workflow="ci"} $([ "${{ env.CI_STATUS }}" == "failure" ] && echo 1 || echo 0)
+<<<<<<< HEAD
           EOF
+=======
+          EOF
+>>>>>>> upstream/dev

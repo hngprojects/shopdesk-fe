@@ -1,15 +1,30 @@
 "use client";
 import closeIcon from "@/public/icons/close.svg";
 import logo from "@/public/shopdesk-logo.svg";
-import { createOrg } from "@/services/auth";
-import { getOrganization } from "@/services/getOrganization";
-import { useStore } from "@/store/useStore";
+import { useCreateOrgMutation } from "@/redux/features/auth/auth.api";
+//import { createOrg } from "@/services/auth";
+import { RootState } from "@/redux/store";
+import { OrgType as OriginalOrgType } from "@/types/org";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
+import {
+  TypedUseSelectorHook,
+  useSelector as useReduxSelector,
+} from "react-redux";
+import { z } from "zod";
+
+interface OrgType extends OriginalOrgType {
+  orgName?: string;
+  businessType?: string;
+  currency?: string;
+  country?: string;
+  state?: string;
+  address?: string;
+}
 
 export const currencies = [
   {
@@ -102,6 +117,29 @@ export const states = [
     name: "Benue",
   },
 ];
+interface Currency {
+  name: string;
+  code: string;
+  symbol: string;
+  flag: string;
+}
+interface Country {
+  id: number;
+  name: string;
+}
+interface State {
+  id: number;
+  name: string;
+}
+
+const formSchema = z.object({
+  orgName: z.string().nonempty("Organization name is required."),
+  businessType: z.string().nonempty("Business type is required."),
+  currency: z.string().nonempty("Currency is required."),
+  country: z.string().nonempty("Country is required."),
+  state: z.string().nonempty("State is required."),
+  address: z.string().nonempty("Full address is required."),
+});
 
 const CreateOrganization = () => {
   const [isCurrencyModalOpen, setIsCurrencyModalOpen] = useState(false);
@@ -129,20 +167,8 @@ const CreateOrganization = () => {
   const filteredStates = states.filter((state) =>
     state.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  interface Currency {
-    name: string;
-    code: string;
-    symbol: string;
-    flag: string;
-  }
-  interface Country {
-    id: number;
-    name: string;
-  }
-  interface State {
-    id: number;
-    name: string;
-  }
+
+  const [createOrg, { isLoading: isSignupLoading }] = useCreateOrgMutation();
 
   const handleCurrencySelect = useCallback((currency: Currency) => {
     setFormData((prev) => ({
@@ -190,7 +216,7 @@ const CreateOrganization = () => {
     id: number;
   } | null>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<Partial<OrgType>>({
     orgName: "",
     businessType: "",
     currency: "",
@@ -209,9 +235,6 @@ const CreateOrganization = () => {
     state: false,
     address: false,
   });
-  const { setOrganizationId, setOrganizationName } = useStore();
-
-  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -225,35 +248,20 @@ const CreateOrganization = () => {
     setTouched((prev) => ({ ...prev, [field]: true }));
   };
 
+  const router = useRouter();
+  const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector;
+  const accessToken = useSelector((state: RootState) => state.auth.token) || "";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
-    setTouched({
-      orgName: true,
-      businessType: true,
-      currency: true,
-      country: true,
-      state: true,
-      address: true,
-    });
-
-    const requiredFields = [
-      "currency",
-      "country",
-      "state",
-      "orgName",
-      "businessType",
-    ];
-    const emptyFields = requiredFields.filter(
-      (field) => !formData[field as keyof typeof formData].trim()
-    );
-
-    if (emptyFields.length > 0) {
-      setError("Please fill in all required fields.");
+    const result = formSchema.safeParse(formData);
+    if (!result.success) {
+      // setErrorMessages(result.error.flatten().fieldErrors);
       return;
     }
 
+<<<<<<< HEAD
     setLoading(true);
 
     const orgData = {
@@ -285,6 +293,23 @@ const CreateOrganization = () => {
       setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
+=======
+    const response = await createOrg({
+      ...formData,
+      accessToken,
+    });
+    if ("data" in response) {
+      router.push("/stock");
+    } else {
+      if (response.error && "data" in response.error) {
+        setError(
+          (response.error.data as { message: string }).message ||
+            "An unknown error occurred."
+        );
+      } else {
+        setError("An unknown error occurred.");
+      }
+>>>>>>> upstream/dev
     }
   };
 
@@ -424,7 +449,7 @@ const CreateOrganization = () => {
                     id="orgName"
                     className={`w-full p-4 border rounded-[9px] outline-none text-[#b8b8b8] md:text-xl text-base
                       ${
-                        touched.orgName && !formData.orgName
+                        error && !formData.orgName
                           ? "border-red-500"
                           : "border-gray-300"
                       }
@@ -440,7 +465,7 @@ const CreateOrganization = () => {
                     whileFocus={{ scale: 1.01 }}
                     transition={{ type: "spring", stiffness: 400 }}
                   />
-                  {touched.orgName && !formData.orgName && (
+                  {error && !formData.orgName && (
                     <motion.p
                       className="text-red-500 text-xs"
                       initial={{ opacity: 0, y: -10 }}
@@ -468,7 +493,7 @@ const CreateOrganization = () => {
                     id="businessType"
                     className={`w-full p-4 border rounded-[9px] outline-none text-[#b8b8b8] md:text-xl text-base
                       ${
-                        touched.businessType && !formData.businessType
+                        error && !formData.businessType
                           ? "border-red-500"
                           : "border-gray-300"
                       }
@@ -484,7 +509,7 @@ const CreateOrganization = () => {
                     whileFocus={{ scale: 1.01 }}
                     transition={{ type: "spring", stiffness: 400 }}
                   />
-                  {touched.businessType && !formData.businessType && (
+                  {error && !formData.businessType && (
                     <motion.p
                       className="text-red-500 text-xs"
                       initial={{ opacity: 0, y: -10 }}
@@ -508,11 +533,7 @@ const CreateOrganization = () => {
 
                     <motion.div
                       className={`flex items-center w-full p-4 border rounded-[9px] text-xl cursor-pointer
-          ${
-            touched.currency && !formData.currency
-              ? "border-red-500"
-              : "border-gray-300"
-          }
+          ${error && !formData.currency ? "border-red-500" : "border-gray-300"}
                       ${
                         formData.currency
                           ? "border focus:border-[#009A49] focus:outline-none focus:ring-2 focus:ring-[#CCEBDB]"

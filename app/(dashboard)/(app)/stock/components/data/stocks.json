@@ -1,0 +1,602 @@
+[
+  {
+    "id": "STOCK-7883",
+    "name": "Handcrafted Granite Tuna",
+    "sell_price": "₦280,721",
+    "available": "11"
+  },
+  {
+    "id": "STOCK-3178",
+    "name": "Recycled Ceramic Sausages",
+    "sell_price": "₦346,617",
+    "available": "81"
+  },
+  {
+    "id": "STOCK-2030",
+    "name": "Electronic Bamboo Shirt",
+    "sell_price": "₦202,028",
+    "available": "74"
+  },
+  {
+    "id": "STOCK-1694",
+    "name": "Incredible Bronze Table",
+    "sell_price": "₦354,408",
+    "available": "28"
+  },
+  {
+    "id": "STOCK-6466",
+    "name": "Intelligent Plastic Chicken",
+    "sell_price": "₦342,114",
+    "available": "33"
+  },
+  {
+    "id": "STOCK-1089",
+    "name": "Rustic Marble Chips",
+    "sell_price": "₦285,778",
+    "available": "41"
+  },
+  {
+    "id": "STOCK-4140",
+    "name": "Handmade Concrete Soap",
+    "sell_price": "₦337,724",
+    "available": "22"
+  },
+  {
+    "id": "STOCK-1785",
+    "name": "Tasty Bamboo Pants",
+    "sell_price": "₦17,297",
+    "available": "91"
+  },
+  {
+    "id": "STOCK-5566",
+    "name": "Gorgeous Silk Chair",
+    "sell_price": "₦421,419",
+    "available": "82"
+  },
+  {
+    "id": "STOCK-5556",
+    "name": "Soft Aluminum Tuna",
+    "sell_price": "₦51,466",
+    "available": "56"
+  },
+  {
+    "id": "STOCK-8299",
+    "name": "Fantastic Silk Ball",
+    "sell_price": "₦52,365",
+    "available": "51"
+  },
+  {
+    "id": "STOCK-5873",
+    "name": "Luxurious Bronze Towels",
+    "sell_price": "₦453,945",
+    "available": "10"
+  },
+  {
+    "id": "STOCK-4373",
+    "name": "Luxurious Silk Fish",
+    "sell_price": "₦398,621",
+    "available": "67"
+  },
+  {
+    "id": "STOCK-3532",
+    "name": "Small Silk Car",
+    "sell_price": "₦82,548",
+    "available": "29"
+  },
+  {
+    "id": "STOCK-1832",
+    "name": "Ergonomic Ceramic Bacon",
+    "sell_price": "₦425,005",
+    "available": "85"
+  },
+  {
+    "id": "STOCK-8244",
+    "name": "Elegant Gold Gloves",
+    "sell_price": "₦27,935",
+    "available": "69"
+  },
+  {
+    "id": "STOCK-5663",
+    "name": "Fresh Rubber Keyboard",
+    "sell_price": "₦97,736",
+    "available": "59"
+  },
+  {
+    "id": "STOCK-6345",
+    "name": "Electronic Bamboo Fish",
+    "sell_price": "₦220,620",
+    "available": "10"
+  },
+  {
+    "id": "STOCK-1060",
+    "name": "Small Ceramic Bacon",
+    "sell_price": "₦267,305",
+    "available": "87"
+  },
+  {
+    "id": "STOCK-5643",
+    "name": "Luxurious Granite Bacon",
+    "sell_price": "₦147,031",
+    "available": "45"
+  },
+  {
+    "id": "STOCK-7690",
+    "name": "Fantastic Aluminum Shoes",
+    "sell_price": "₦54,235",
+    "available": "58"
+  },
+  {
+    "id": "STOCK-3459",
+    "name": "Incredible Gold Salad",
+    "sell_price": "₦116,926",
+    "available": "87"
+  },
+  {
+    "id": "STOCK-1793",
+    "name": "Handcrafted Gold Computer",
+    "sell_price": "₦496,310",
+    "available": "26"
+  },
+  {
+    "id": "STOCK-4350",
+    "name": "Practical Marble Towels",
+    "sell_price": "₦152,068",
+    "available": "41"
+  },
+  {
+    "id": "STOCK-7171",
+    "name": "Fresh Cotton Gloves",
+    "sell_price": "₦434,823",
+    "available": "62"
+  },
+  {
+    "id": "STOCK-6016",
+    "name": "Oriental Wooden Shoes",
+    "sell_price": "₦82,600",
+    "available": "24"
+  },
+  {
+    "id": "STOCK-2077",
+    "name": "Handcrafted Metal Table",
+    "sell_price": "₦43,171",
+    "available": "4"
+  },
+  {
+    "id": "STOCK-9863",
+    "name": "Oriental Granite Fish",
+    "sell_price": "₦416,308",
+    "available": "38"
+  },
+  {
+    "id": "STOCK-9031",
+    "name": "Refined Wooden Table",
+    "sell_price": "₦409,218",
+    "available": "88"
+  },
+  {
+    "id": "STOCK-8284",
+    "name": "Elegant Aluminum Pizza",
+    "sell_price": "₦481,776",
+    "available": "58"
+  },
+  {
+    "id": "STOCK-8421",
+    "name": "Soft Steel Chips",
+    "sell_price": "₦114,683",
+    "available": "11"
+  },
+  {
+    "id": "STOCK-8966",
+    "name": "Intelligent Gold Pizza",
+    "sell_price": "₦95,714",
+    "available": "29"
+  },
+  {
+    "id": "STOCK-8993",
+    "name": "Sleek Wooden Chicken",
+    "sell_price": "₦375,814",
+    "available": "94"
+  },
+  {
+    "id": "STOCK-5128",
+    "name": "Practical Plastic Shoes",
+    "sell_price": "₦398,420",
+    "available": "60"
+  },
+  {
+    "id": "STOCK-7535",
+    "name": "Luxurious Cotton Mouse",
+    "sell_price": "₦491,914",
+    "available": "22"
+  },
+  {
+    "id": "STOCK-4527",
+    "name": "Ergonomic Bronze Gloves",
+    "sell_price": "₦54,839",
+    "available": "70"
+  },
+  {
+    "id": "STOCK-8561",
+    "name": "Licensed Marble Pizza",
+    "sell_price": "₦46,830",
+    "available": "5"
+  },
+  {
+    "id": "STOCK-4005",
+    "name": "Ergonomic Plastic Hat",
+    "sell_price": "₦401,240",
+    "available": "49"
+  },
+  {
+    "id": "STOCK-4525",
+    "name": "Generic Granite Pizza",
+    "sell_price": "₦124,558",
+    "available": "24"
+  },
+  {
+    "id": "STOCK-4168",
+    "name": "Handmade Steel Gloves",
+    "sell_price": "₦67,209",
+    "available": "35"
+  },
+  {
+    "id": "STOCK-6584",
+    "name": "Modern Bronze Chicken",
+    "sell_price": "₦456,968",
+    "available": "46"
+  },
+  {
+    "id": "STOCK-6810",
+    "name": "Small Cotton Chicken",
+    "sell_price": "₦356,612",
+    "available": "51"
+  },
+  {
+    "id": "STOCK-9949",
+    "name": "Modern Plastic Pants",
+    "sell_price": "₦499,405",
+    "available": "74"
+  },
+  {
+    "id": "STOCK-7368",
+    "name": "Small Granite Chips",
+    "sell_price": "₦154,306",
+    "available": "5"
+  },
+  {
+    "id": "STOCK-8787",
+    "name": "Generic Bamboo Bike",
+    "sell_price": "₦420,530",
+    "available": "48"
+  },
+  {
+    "id": "STOCK-9077",
+    "name": "Refined Granite Salad",
+    "sell_price": "₦257,472",
+    "available": "94"
+  },
+  {
+    "id": "STOCK-4207",
+    "name": "Bespoke Wooden Keyboard",
+    "sell_price": "₦128,520",
+    "available": "62"
+  },
+  {
+    "id": "STOCK-4079",
+    "name": "Handmade Bamboo Pizza",
+    "sell_price": "₦397,492",
+    "available": "20"
+  },
+  {
+    "id": "STOCK-9792",
+    "name": "Gorgeous Gold Pizza",
+    "sell_price": "₦349,093",
+    "available": "49"
+  },
+  {
+    "id": "STOCK-3370",
+    "name": "Elegant Cotton Ball",
+    "sell_price": "₦45,399",
+    "available": "59"
+  },
+  {
+    "id": "STOCK-1582",
+    "name": "Elegant Bronze Shoes",
+    "sell_price": "₦187,057",
+    "available": "21"
+  },
+  {
+    "id": "STOCK-8393",
+    "name": "Frozen Steel Keyboard",
+    "sell_price": "₦462,813",
+    "available": "35"
+  },
+  {
+    "id": "STOCK-6667",
+    "name": "Generic Steel Shoes",
+    "sell_price": "₦475,604",
+    "available": "85"
+  },
+  {
+    "id": "STOCK-8751",
+    "name": "Recycled Silk Sausages",
+    "sell_price": "₦322,773",
+    "available": "11"
+  },
+  {
+    "id": "STOCK-9806",
+    "name": "Fresh Bronze Hat",
+    "sell_price": "₦37,197",
+    "available": "90"
+  },
+  {
+    "id": "STOCK-9736",
+    "name": "Luxurious Plastic Tuna",
+    "sell_price": "₦486,652",
+    "available": "69"
+  },
+  {
+    "id": "STOCK-5355",
+    "name": "Gorgeous Marble Bike",
+    "sell_price": "₦14,397",
+    "available": "20"
+  },
+  {
+    "id": "STOCK-8110",
+    "name": "Electronic Concrete Car",
+    "sell_price": "₦199,834",
+    "available": "48"
+  },
+  {
+    "id": "STOCK-7258",
+    "name": "Elegant Wooden Table",
+    "sell_price": "₦146,929",
+    "available": "11"
+  },
+  {
+    "id": "STOCK-4031",
+    "name": "Refined Gold Chair",
+    "sell_price": "₦271,148",
+    "available": "30"
+  },
+  {
+    "id": "STOCK-4215",
+    "name": "Generic Concrete Hat",
+    "sell_price": "₦272,321",
+    "available": "18"
+  },
+  {
+    "id": "STOCK-5981",
+    "name": "Fantastic Bronze Table",
+    "sell_price": "₦356,261",
+    "available": "92"
+  },
+  {
+    "id": "STOCK-8082",
+    "name": "Electronic Granite Bike",
+    "sell_price": "₦496,702",
+    "available": "65"
+  },
+  {
+    "id": "STOCK-7232",
+    "name": "Sleek Steel Bacon",
+    "sell_price": "₦170,064",
+    "available": "21"
+  },
+  {
+    "id": "STOCK-9798",
+    "name": "Modern Granite Keyboard",
+    "sell_price": "₦28,045",
+    "available": "99"
+  },
+  {
+    "id": "STOCK-3706",
+    "name": "Soft Aluminum Keyboard",
+    "sell_price": "₦438,147",
+    "available": "85"
+  },
+  {
+    "id": "STOCK-6245",
+    "name": "Small Wooden Sausages",
+    "sell_price": "₦378,072",
+    "available": "11"
+  },
+  {
+    "id": "STOCK-9340",
+    "name": "Licensed Rubber Car",
+    "sell_price": "₦202,461",
+    "available": "94"
+  },
+  {
+    "id": "STOCK-9993",
+    "name": "Tasty Steel Chicken",
+    "sell_price": "₦358,565",
+    "available": "31"
+  },
+  {
+    "id": "STOCK-8887",
+    "name": "Refined Gold Cheese",
+    "sell_price": "₦444,681",
+    "available": "25"
+  },
+  {
+    "id": "STOCK-1663",
+    "name": "Rustic Rubber Ball",
+    "sell_price": "₦372,957",
+    "available": "30"
+  },
+  {
+    "id": "STOCK-3598",
+    "name": "Fantastic Granite Bike",
+    "sell_price": "₦6,683",
+    "available": "29"
+  },
+  {
+    "id": "STOCK-2427",
+    "name": "Bespoke Cotton Gloves",
+    "sell_price": "₦468,605",
+    "available": "58"
+  },
+  {
+    "id": "STOCK-1090",
+    "name": "Refined Steel Soap",
+    "sell_price": "₦129,829",
+    "available": "33"
+  },
+  {
+    "id": "STOCK-9846",
+    "name": "Licensed Ceramic Soap",
+    "sell_price": "₦223,684",
+    "available": "80"
+  },
+  {
+    "id": "STOCK-4148",
+    "name": "Incredible Silk Pizza",
+    "sell_price": "₦251,160",
+    "available": "29"
+  },
+  {
+    "id": "STOCK-9511",
+    "name": "Tasty Steel Pizza",
+    "sell_price": "₦190,023",
+    "available": "74"
+  },
+  {
+    "id": "STOCK-8740",
+    "name": "Rustic Rubber Tuna",
+    "sell_price": "₦347,664",
+    "available": "69"
+  },
+  {
+    "id": "STOCK-3048",
+    "name": "Small Marble Hat",
+    "sell_price": "₦476,019",
+    "available": "49"
+  },
+  {
+    "id": "STOCK-3953",
+    "name": "Incredible Steel Mouse",
+    "sell_price": "₦211,698",
+    "available": "74"
+  },
+  {
+    "id": "STOCK-1807",
+    "name": "Intelligent Bamboo Shirt",
+    "sell_price": "₦83,393",
+    "available": "80"
+  },
+  {
+    "id": "STOCK-7654",
+    "name": "Fantastic Granite Shoes",
+    "sell_price": "₦182,466",
+    "available": "43"
+  },
+  {
+    "id": "STOCK-5580",
+    "name": "Frozen Bronze Chair",
+    "sell_price": "₦372,414",
+    "available": "77"
+  },
+  {
+    "id": "STOCK-5302",
+    "name": "Handmade Marble Shoes",
+    "sell_price": "₦462,558",
+    "available": "39"
+  },
+  {
+    "id": "STOCK-9918",
+    "name": "Generic Rubber Table",
+    "sell_price": "₦271,511",
+    "available": "66"
+  },
+  {
+    "id": "STOCK-4188",
+    "name": "Tasty Silk Hat",
+    "sell_price": "₦262,197",
+    "available": "94"
+  },
+  {
+    "id": "STOCK-5382",
+    "name": "Licensed Wooden Bacon",
+    "sell_price": "₦133,303",
+    "available": "52"
+  },
+  {
+    "id": "STOCK-5256",
+    "name": "Oriental Rubber Chips",
+    "sell_price": "₦463,397",
+    "available": "83"
+  },
+  {
+    "id": "STOCK-3049",
+    "name": "Sleek Gold Sausages",
+    "sell_price": "₦360,337",
+    "available": "78"
+  },
+  {
+    "id": "STOCK-7083",
+    "name": "Licensed Cotton Bike",
+    "sell_price": "₦136,639",
+    "available": "89"
+  },
+  {
+    "id": "STOCK-6380",
+    "name": "Oriental Plastic Bacon",
+    "sell_price": "₦196,528",
+    "available": "64"
+  },
+  {
+    "id": "STOCK-3123",
+    "name": "Practical Silk Pizza",
+    "sell_price": "₦104,510",
+    "available": "27"
+  },
+  {
+    "id": "STOCK-1189",
+    "name": "Licensed Ceramic Cheese",
+    "sell_price": "₦428,918",
+    "available": "6"
+  },
+  {
+    "id": "STOCK-8130",
+    "name": "Handcrafted Aluminum Tuna",
+    "sell_price": "₦8,634",
+    "available": "8"
+  },
+  {
+    "id": "STOCK-5636",
+    "name": "Gorgeous Metal Chicken",
+    "sell_price": "₦469,438",
+    "available": "89"
+  },
+  {
+    "id": "STOCK-4624",
+    "name": "Luxurious Rubber Salad",
+    "sell_price": "₦276,828",
+    "available": "32"
+  },
+  {
+    "id": "STOCK-3266",
+    "name": "Modern Granite Towels",
+    "sell_price": "₦174,062",
+    "available": "23"
+  },
+  {
+    "id": "STOCK-9645",
+    "name": "Tasty Gold Chips",
+    "sell_price": "₦274,482",
+    "available": "16"
+  },
+  {
+    "id": "STOCK-2454",
+    "name": "Rustic Metal Shirt",
+    "sell_price": "₦349,935",
+    "available": "42"
+  },
+  {
+    "id": "STOCK-9218",
+    "name": "Unbranded Steel Salad",
+    "sell_price": "₦344,811",
+    "available": "33"
+  }
+]

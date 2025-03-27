@@ -1,21 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import Logo from "@/components/functional/logo";
+import Cube from "@/public/auth/cube.svg";
+import Illustration from "@/public/auth/illustration.svg";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import Illustration from "@/public/auth/illustration.svg";
-import Cube from "@/public/auth/cube.svg";
-import Logo from "@/components/functional/logo";
+import { useState } from "react";
 // import { useStore } from "@/store/useStore";
-import { signUpUser } from "@/services/auth";
+import SignUpSuccess from "@/components/modal/signUpSucccess";
+import { useSignupMutation } from "@/redux/features/auth/auth.api";
+import { useDispatch, UseDispatch, useSelector } from "react-redux";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import SignUpSuccess from "@/components/modal/signUpSucccess";
+import { RootState } from "@/redux/store"; // Add this line to import RootState
+//import { signUpUser } from "@/services/auth";
 
 const countryCodes = [
   { code: "+234", name: "Nigeria", flag: "/modal-images/nigeria-flag.svg" },
@@ -27,7 +30,12 @@ const countryCodes = [
 ];
 
 export default function SignUp() {
+  const { user, isLoading, error } = useSelector(
+    (state: RootState) => state.auth
+  );
 
+  const dispatch = useDispatch();
+  const [signup, { isLoading: isSignupLoading }] = useSignupMutation();
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -40,7 +48,7 @@ export default function SignUp() {
     confirmPassword: "",
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState({
     email: "",
     password: "",
@@ -89,16 +97,16 @@ export default function SignUp() {
 
     if (field === "password") {
       if (!value) error = "Password is required";
-      else if (value.length < 8)
-        error = "Password must be at least 8 characters";
-      else if (!/[A-Z]/.test(value))
-        error = "Password must contain at least one uppercase letter";
-      else if (!/[a-z]/.test(value))
-        error = "Password must contain at least one lowercase letter";
-      else if (!/[0-9]/.test(value))
-        error = "Password must contain at least one number";
-      else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value))
-        error = "Password must contain at least one special character";
+      // else if (value.length < 8)
+      //   error = "Password must be at least 8 characters";
+      // else if (!/[A-Z]/.test(value))
+      //   error = "Password must contain at least one uppercase letter";
+      // else if (!/[a-z]/.test(value))
+      //   error = "Password must contain at least one lowercase letter";
+      // else if (!/[0-9]/.test(value))
+      //   error = "Password must contain at least one number";
+      // else if (!/[!@#$%^&*(),.?":{}|<>]/.test(value))
+      //   error = "Password must contain at least one special character";
     }
 
     if (field === "phoneNumber") {
@@ -114,7 +122,7 @@ export default function SignUp() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    // setError(null);
 
     setTouched({
       firstName: true,
@@ -149,12 +157,12 @@ export default function SignUp() {
     );
 
     if (emptyFields.length > 0) {
-      setError("Please fill in all required fields.");
+      // setError("Please fill in all required fields.");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
+      //  setError("Passwords do not match.");
       return;
     }
 
@@ -169,13 +177,20 @@ export default function SignUp() {
         phone_number: formData.phoneNumber,
         phone_country_code: formData.phoneCountryCode,
       };
-      await signUpUser(formattedData);
+      //await signUpUser(formattedData);
 
-    
+      const result = await signup(formattedData).unwrap();
+      if (result) {
+        setIsModalOpen(true);
+        router.push("/create-organization");
+      }
+
+      console.log(result);
+
       setIsModalOpen(true);
-       router.push("/create-organization");
+      router.push("/create-organization");
     } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
+      //   setError(err.message || "Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -707,10 +722,10 @@ export default function SignUp() {
         </motion.div>
       </main>
       {isModalOpen && (
-        <SignUpSuccess 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)} 
-          email={formData.email} 
+        <SignUpSuccess
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          email={formData.email}
         />
       )}
       <motion.div
