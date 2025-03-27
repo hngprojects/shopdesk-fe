@@ -3,8 +3,8 @@ import Image from 'next/image';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { FaChevronDown, FaSearch, FaTimes } from 'react-icons/fa';
-import { currencies } from '../add-item';
 import type { Currency, StockItem } from '@/types/stocks';
+import { currencies } from '@/app/(auth)/create-organization/_components/CreateOrganization';
 //import { editPrice } from '@/services/stock'
 
 interface EditPriceModalProps {
