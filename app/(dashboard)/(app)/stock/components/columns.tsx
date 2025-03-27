@@ -1,13 +1,15 @@
 "use client";
 
-import { fetchWeekdaySalesCount } from "@/actions/sales";
 import { Icons } from "@/components/ui/icons";
-import { setWeeklySalesData } from "@/redux/features/sale/sale.slice";
-import { RootState } from "@/redux/store";
+import { useGetWeeklySalesQuery } from "@/redux/features/stock/stock.api";
+import {
+  toggleProfitExpand,
+  toggleSalesExpand,
+} from "@/redux/features/table/toggle.slice";
+import { AppDispatch, RootState } from "@/redux/store";
 import { useStore } from "@/store/useStore";
-import { WeeklySalesData } from "@/types/sale";
+import { getDateStartRange } from "@/utils";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
@@ -110,76 +112,70 @@ export const columns: ColumnDef<Stock>[] = [
   },
   {
     accessorKey: "sales",
-    header: ({ table }) => <SalesColumnHeader table={table} />,
-    cell: ({ row, table }) => {
-      const isExpanded =
-        (table.options.meta as { isSalesExpanded?: boolean })
-          ?.isSalesExpanded || false;
-
-      const [loading, setLoading] = useState(false);
-      const { organizationId } = useStore();
-      const dispatch = useDispatch();
-      const [error, setError] = useState<string>("");
-      const salesData = useSelector(
-        (state: RootState) => state.weeklySales.data
+    header: ({ table }) => {
+      const dispatch: AppDispatch = useDispatch();
+      const isSalesExpanded = useSelector(
+        (state: RootState) => state.toggleTableState.isSalesExpanded
       );
-      useEffect(() => {
-        if (isExpanded) {
-          setLoading(true);
-          setError("");
+      return (
+        <SalesColumnHeader
+          table={table}
+          isExpanded={isSalesExpanded}
+          toggleExpand={() => dispatch(toggleSalesExpand())}
+        />
+      );
+    },
+    cell: ({ row, table }) => {
+      const isExpanded = useSelector(
+        (state: RootState) => state.toggleTableState.isSalesExpanded
+      );
 
-          fetchWeekdaySalesCount(organizationId, row.original.id)
-            .then((data) => {
-              if (data.error) {
-                throw new Error(data.error);
-              }
-              dispatch(setWeeklySalesData(data));
-            })
-            .catch((err) => {
-              console.error(err);
-              setError("Failed to fetch Weekly sales");
-              dispatch(
-                setWeeklySalesData({
-                  monday: 0,
-                  tuesday: 0,
-                  wednesday: 0,
-                  thursday: 0,
-                  friday: 0,
-                })
-              );
-            })
-            .finally(() => setLoading(false));
-        }
-      }, [isExpanded, organizationId, row.original.id]);
+      const { organizationId } = useStore();
+      const dateRangeStart = getDateStartRange();
+      const { data: salesData, isLoading } = useGetWeeklySalesQuery({
+        organization_id: organizationId,
+        product_ids: [row.original.id],
+        date_range_start: dateRangeStart,
+      });
+
+      if (isLoading) {
+        return (
+          <div className="flex items-center justify-center">
+            <Icons.LoadingIcon />
+          </div>
+        );
+      }
 
       if (!isExpanded) {
-        const totalSales = Object.values(salesData || {}).reduce(
-          (acc, val) => acc + val,
-          0
-        );
-        console.log(totalSales);
+        const productSales = salesData?.find(
+          (item) => item.product_id === row.original.id
+        )?.sales;
+
+        const totalSales = productSales
+          ? ["monday", "tuesday", "wednesday", "thursday", "friday"].reduce(
+              (acc, day) => acc + (productSales[day] ?? 0),
+              0
+            )
+          : 0;
+
         return (
           <div className="flex items-center justify-center">{totalSales}</div>
         );
       }
 
-      if (!isExpanded) {
-        return (
-          <div className="flex items-center justify-center">
-            {String(row.getValue("sales") || 0)}
-          </div>
-        );
-      }
+      const productSales = salesData?.find(
+        (item) => item.product_id === row.original.id
+      )?.sales;
 
       return (
-        <div className="grid grid-cols-5 gap-2 w-full">
+        <div className="grid grid-cols-5 w-full">
           {["monday", "tuesday", "wednesday", "thursday", "friday"].map(
             (day) => (
               <div
                 key={day}
-                className="border-r p-5 last:pr-5 rounded-none text-sm w-full h-full"
+                className="border-r p-5 last:border-r-0 rounded-none text-sm w-full h-full text-center"
               >
-                {error ? "0" : salesData?.[day as keyof WeeklySalesData] ?? "0"}
+                {productSales ? productSales[day] ?? 0 : 0}
               </div>
             )
           )}
@@ -190,23 +186,39 @@ export const columns: ColumnDef<Stock>[] = [
   },
   {
     accessorKey: "profitGroup",
-    header: ({ table }) => <ProfitColumnHeader table={table} />,
+    header: ({ table }) => {
+      const dispatch: AppDispatch = useDispatch();
+      const isProfitExpanded = useSelector(
+        (state: RootState) => state.toggleTableState.isProfitExpanded
+      );
+
+      const toggleExpand = () => {
+        dispatch(toggleProfitExpand());
+
+        table.reset();
+      };
+      return (
+        <ProfitColumnHeader
+          table={table}
+          isExpanded={isProfitExpanded}
+          toggleExpand={toggleExpand}
+        />
+      );
+    },
     cell: ({ row, table }) => {
-      const isExpanded =
-        (table.options.meta as { isProfitExpanded?: boolean })
-          ?.isProfitExpanded || false;
-      // const calculatedProfit =
-      //   Number(row.original.buying_price) - Number(row.original.cost_price);
+      const isExpanded = useSelector(
+        (state: RootState) => state.toggleTableState.isProfitExpanded
+      );
       if (!isExpanded) {
         return <div className="flex items-center justify-center">{0}</div>;
       }
 
       return (
-        <div className="grid grid-cols-2 gap-2">
-          <div className="border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative">
+        <div className="grid grid-cols-2">
+          <div className="p-5 border-r border-solid border-gray-200   rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
             {0}
           </div>
-          <div className="border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative">
+          <div className="border-none p-5  rounded-none text-sm w-full h-full focus-visible:outline-none focus-visible:border-2 focus-visible:ring-[#B2E1C8] focus-visible:z-10 relative text-center">
             {0}
           </div>
         </div>
