@@ -35,7 +35,10 @@ const Footer = () => {
 
           <div className="flex justify-center gap-1 text-[14px] mt-4 text-[#717171]">
             <p>We protect your data in our</p>
-            <Link href="/privacy" className="italic underline underline-offset-4">
+            <Link
+              href="/privacy"
+              className="italic underline underline-offset-4"
+            >
               privacy policy
             </Link>
           </div>
@@ -60,7 +63,10 @@ const Footer = () => {
             {/* Social Icons - Desktop */}
             <div className="flex gap-4 mt-8 hidden md:flex">
               {[twitter, facebook, instagram, github].map((icon, index) => (
-                <div key={index} className="size-7 flex items-center justify-center border border-[#D4D4D8] rounded-full">
+                <div
+                  key={index}
+                  className="size-7 flex items-center justify-center border border-[#D4D4D8] rounded-full"
+                >
                   <Image src={icon} alt={icon.toString()} />
                 </div>
               ))}
@@ -71,25 +77,33 @@ const Footer = () => {
           {[
             {
               title: "Product",
-              links: ["Overview", "Features", "Pricing", "Tutorials"]
+              links: ["Overview", "Features", "Pricing", "Tutorials"],
             },
             {
               title: "Company",
-              links: ["About us", "Careers", "Blog", "Contact", "Newsletter"]
+              links: ["About us", "Careers", "Blog", "Contact", "Newsletter"],
             },
             {
               title: "Help",
-              links: ["Customer Support", "FAQ", "Help center", "Youtube Playlist"]
-            }
+              links: [
+                "Customer Support",
+                "FAQ",
+                "Help center",
+                "Youtube Playlist",
+              ],
+            },
           ].map((section, index) => (
-            <div key={index} className="flex flex-col items-center md:items-start">
+            <div
+              key={index}
+              className="flex flex-col items-center md:items-start"
+            >
               <p className="uppercase text-[14px] font-circular-bold text-[#19A45B]">
                 {section.title}
               </p>
               <ul className="text-[14px] text-[#52525B] flex flex-col gap-4 mt-4">
                 {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
-                    <Link href={`/${link.toLowerCase().replace(' ', '-')}`}>
+                    <Link href={`/${link.toLowerCase().replace(" ", "-")}`}>
                       {link}
                     </Link>
                   </li>
@@ -105,10 +119,18 @@ const Footer = () => {
             </p>
             <div className="flex flex-col gap-3 items-center md:items-start">
               <Link href="#">
-                <Image src={appStore} alt="app store" className="w-full max-w-[160px]" />
+                <Image
+                  src={appStore}
+                  alt="app store"
+                  className="w-full max-w-[160px]"
+                />
               </Link>
               <Link href="#">
-                <Image src={playStore} alt="play store" className="w-full max-w-[160px]" />
+                <Image
+                  src={playStore}
+                  alt="play store"
+                  className="w-full max-w-[160px]"
+                />
               </Link>
             </div>
           </div>
@@ -119,7 +141,10 @@ const Footer = () => {
         {/* Social Icons - Mobile */}
         <div className="flex justify-center gap-4 mb-8 md:hidden">
           {[twitter, facebook, instagram, github].map((icon, index) => (
-            <div key={index} className="size-7 flex items-center justify-center border border-[#D4D4D8] rounded-full">
+            <div
+              key={index}
+              className="size-7 flex items-center justify-center border border-[#D4D4D8] rounded-full"
+            >
               <Image src={icon} alt={icon.toString()} />
             </div>
           ))}
@@ -128,11 +153,16 @@ const Footer = () => {
         {/* Copyright and Legal Links */}
         <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 text-[14px] text-[#71717A] mb-8 text-center md:text-left">
           <p>© Copyright 2024, Powered by Timbu Business</p>
-          
+
           <ul className="flex flex-wrap justify-center gap-4">
-            {["Cookies", "Terms of service", "Privacy Policy", "Manage Policy"].map((item, index) => (
+            {[
+              "Cookies",
+              "Terms of service",
+              "Privacy Policy",
+              "Manage Policy",
+            ].map((item, index) => (
               <li key={index}>
-                <Link href={`/${item.toLowerCase().replace(' ', '-')}`}>
+                <Link href={`/${item.toLowerCase().replace(" ", "-")}`}>
                   {item}
                 </Link>
               </li>

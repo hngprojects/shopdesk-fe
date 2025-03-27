@@ -10,7 +10,7 @@ export default function StockPage() {
   const { data, isLoading, isError } = useGetStocksQuery(organizationId);
 
   return (
-    <div className="container mx-auto pl-1 bg-[#F6F8FA] border-l border-solid rounded-bl-[12px]">
+    <div className="container mx-auto">
       <DataTable
         data={data ?? []}
         columns={columns}
