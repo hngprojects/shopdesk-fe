@@ -9,8 +9,8 @@ export const stockSchema = z.object({
 
 const StockSchema = z.object({
   name: z.string().optional(),
-  quantity: z.string().optional(),
-  buying_price: z.string().optional(),
+  quantity: z.number().optional(),
+  buying_price: z.number().optional(),
   currency_code: z.string().optional(),
   supplier_id: z.string().nullable().optional(),
   buying_date: z.string().optional(),

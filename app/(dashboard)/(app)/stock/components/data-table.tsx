@@ -32,7 +32,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   loading?: boolean;
-  error?: string | null;
+  error?: boolean | null;
 }
 
 export function DataTable<TData, TValue>({

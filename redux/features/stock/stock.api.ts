@@ -13,7 +13,7 @@ interface StockBase {
   user_id: string;
   date_created: string;
   original_quantity: number;
-  supplier: string | null;
+  supplier: null | undefined;
   timeslots: string[];
 }
 
@@ -29,12 +29,13 @@ interface StockResponse extends StockBase {}
 
 export const accessControlApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getStocks: builder.mutation<StockResponse[], string>({
+    getStocks: builder.query<StockResponse[], string>({
       query: (organizatiohn_id: string) => ({
         url: `stocks/?organization_id=${organizatiohn_id}`,
         method: "POST",
       }),
-      invalidatesTags: ["Stock"],
+      providesTags: ["Stock"],
+      keepUnusedDataFor: 3600,
     }),
     editStock: builder.mutation<StockResponse, EditStockRequest>({
       query: (data) => ({
@@ -126,5 +127,5 @@ export const {
   useAddStockMutation,
   useGetWeeklySalesQuery,
   useEditStockMutation,
-  useGetStocksMutation,
+  useGetStocksQuery,
 } = accessControlApi;
