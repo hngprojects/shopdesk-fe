@@ -8,25 +8,16 @@ import { useState } from "react";
 
 interface SalesColumnHeaderProps<TData> {
   table: Table<TData>;
+  isExpanded: boolean;
+  toggleExpand: () => void;
 }
 
 export function SalesColumnHeader<TData>({
   table,
+  isExpanded,
+  toggleExpand,
 }: SalesColumnHeaderProps<TData>) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [activeSortDay, setActiveSortDay] = useState<string | null>(null);
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-    table.setOptions((prev) => ({
-      ...prev,
-      meta: {
-        ...prev.meta,
-        isSalesExpanded: !isExpanded,
-      },
-    }));
-    table.reset();
-  };
 
   const handleDaySort = (day: string) => {
     setActiveSortDay(day);
@@ -46,7 +37,11 @@ export function SalesColumnHeader<TData>({
         isExpanded ? "min-w-[250px]" : ""
       }`}
     >
-      <div className="w-full relative flex justify-center items-center h-6/10 px-2">
+      <div
+        className={`w-full relative flex justify-center items-center px-2 ${
+          isExpanded ? "h-61/100" : "h-6/10"
+        }`}
+      >
         <Button
           variant="ghost"
           onClick={toggleExpand}
@@ -68,20 +63,18 @@ export function SalesColumnHeader<TData>({
       </div>
 
       {isExpanded && (
-        <div className="h-38/100 w-full grid grid-cols-5 border-t place-items-center items-center justify-center text-xs">
+        <div className="h-39/100 w-full grid grid-cols-5 border-t place-items-center items-center justify-center text-xs overflow-hidden">
           {days.map((day) => (
             <div
               key={day}
-              className="w-full relative flex items-center justify-center h-full border-r border-solid border-[#E9EEF3]"
+              className="w-full relative flex items-center justify-center h-full border-r border-solid border-[#E9EEF3] last:border-r-0"
             >
               <Button
                 key={day}
                 variant="ghost"
                 onClick={() => handleDaySort(day.toLowerCase())}
                 className={cn(
-                  "h-8 w-full font-medium px-0 py-0 rounded-none",
-                  "flex items-center justify-center gap-0 px-1",
-                  "hover:bg-transparent transition-colors",
+                  "h-8 w-full font-medium py-0 rounded-none flex items-center justify-center gap-0 px-1 hover:bg-transparent transition-colors ",
                   activeSortDay === day.toLowerCase() && "bg-muted"
                 )}
               >

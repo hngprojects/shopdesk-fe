@@ -84,13 +84,13 @@ export function DataTable<TData, TValue>({
   return (
     <div className="flex space-x-4 w-full h-full">
       {/* Main table container */}
-      <div className="flex-1 flex flex-col min-w-[900px] border border-gray-200 rounded-br-lg rounded-bl-lg rounded-tr-lg overflow-x-auto">
+      <div className="flex-1 flex flex-col min-w-[900px] border-l-0 border border-gray-200 rounded-br-lg rounded-bl-lg rounded-tr-lg overflow-x-auto">
         {/* <div className="p-4 border-b">
           <DataTableToolbar table={table} />
         </div> */}
 
         {/* Table wrapper with scroll */}
-        <div className="flex-1 overflow-x-auto pb-2">
+        <div className="flex-1 overflow-x-auto">
           <Table className="min-w-full">
             <TableHeader className="bg-white min-w-full">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -112,7 +112,7 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody>
+            <TableBody className="bg-white">
               {loading ? (
                 <TableRow>
                   <TableCell
@@ -142,7 +142,7 @@ export function DataTable<TData, TValue>({
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className="px-4 py-3 text-sm text-gray-800 border-b border-r border-gray-200 last:border-r-0 last:border-b-0 last:border-white"
+                        className="px-4 py-3 text-sm text-gray-800 border-b border-r border-gray-200 last:border-r-0 "
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -168,7 +168,7 @@ export function DataTable<TData, TValue>({
         </div>
 
         {/* Pagination */}
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 px-4 py-3">
+        <div className="sticky bottom-0 bg-white px-4 py-3">
           <DataTablePagination table={table} />
         </div>
       </div>
