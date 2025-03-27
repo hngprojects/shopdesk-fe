@@ -55,17 +55,21 @@ export default function layout({ children }: { children: React.ReactNode }) {
           >
             <div className="gap-4 items-center hidden lg:flex justify-between">
               <TabsList className="rounded-b-none border-[1px] flex justify-evenly ] border-b-0 w-full border-[#e9eaeb] ">
-                {tabs.map((tab) => (
-                  // <div className="h-[16px] w-[1px] bg-[#83838b] mx-1" />
-                  <TabsTrigger
-                    value={tab.value}
-                    key={tab.value}
-                    className="lg:text-[16px] text-sm px-2 rounded-none cursor-pointer"
-                  >
-                    <Link className="cursor-pointer" href={tab.link}>
-                      {tab.name}
-                    </Link>
-                  </TabsTrigger>
+                {tabs.map((tab, i) => (
+                  <div key={tab.value} className="flex gap-3">
+                    {i > 0 && (
+                      <div className="h-[16px] w-[1px] bg-[#83838B] mx-1 relative top-3" />
+                    )}
+                    <TabsTrigger
+                      value={tab.value}
+                      key={tab.value}
+                      className="lg:text-[16px] text-sm px-2 rounded-none cursor-pointer"
+                    >
+                      <Link className="cursor-pointer" href={tab.link}>
+                        {tab.name}
+                      </Link>
+                    </TabsTrigger>
+                  </div>
                 ))}
               </TabsList>
 
