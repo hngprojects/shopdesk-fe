@@ -62,7 +62,9 @@ const ItemCard: React.FC<ItemCardProps> = ({
       </div>
       <div className="flex flex-col items-center justify-center h-full text-center px-4">
         <p className="text-3xl font-medium mb-2">{item.name}</p>
-        <p className="text-3xl font-normal">{item.selling_price || "N/A"}</p>
+        <p className="text-3xl font-normal">
+          {item.current_price[0]?.NGN[0] || "N/A"}
+        </p>
       </div>
     </div>
   );

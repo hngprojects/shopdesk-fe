@@ -1,7 +1,7 @@
 "use client";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { currencies } from "@/app/(auth)/create-organization/_components/CreateOrganization";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -10,10 +10,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useAddStockMutation } from "@/redux/features/stock/stock.api";
-import { useAppSelector } from "@/redux/hooks";
-import { useCreatePriceMutation } from "@/redux/features/price/price.api";
 import {
   Select,
   SelectContent,
@@ -21,17 +17,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FaMinus, FaPlus } from "react-icons/fa";
-import { useStorage } from "@/lib/helpers/manage-store";
-import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { DialogClose } from "@radix-ui/react-dialog";
-import Image from "next/image";
-import { currencies } from "@/app/(auth)/create-organization/_components/CreateOrganization";
-import { Search } from "lucide-react";
+import { useCreatePriceMutation } from "@/redux/features/price/price.api";
 import { useCreateProductMutation } from "@/redux/features/product/product.api";
+import { useAddStockMutation } from "@/redux/features/stock/stock.api";
 import { useStore } from "@/store/useStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { Search } from "lucide-react";
+import Image from "next/image";
+import { SetStateAction, useState } from "react";
+import { useForm } from "react-hook-form";
+import { FaMinus, FaPlus } from "react-icons/fa";
+import { toast } from "sonner";
+import { z } from "zod";
 
 interface StockResponse {
   id: string;
@@ -65,9 +63,14 @@ const formSchema = z.object({
 interface AddStockModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  setIsAddStockModalOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
-function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
+function AddStockModal({
+  isOpen,
+  onOpenChange,
+  setIsAddStockModalOpen,
+}: AddStockModalProps) {
   const [addStock, { isLoading }] = useAddStockMutation();
   const { organizationId } = useStore();
   const [createProduct] = useCreateProductMutation();
@@ -120,6 +123,7 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
           .then((response) => {
             console.log(response);
             toast.success("Stock added successfully");
+            setIsAddStockModalOpen(false);
           })
           .catch((error) => {
             console.error(error);

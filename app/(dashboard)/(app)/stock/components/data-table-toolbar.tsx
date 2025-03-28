@@ -18,8 +18,8 @@ export function DataTableToolbar<TData>({
   const [isAddStockModalOpen, setIsAddStockModalOpen] = useState(false);
 
   return (
-    <div className="flex items-center justify-between gap-5">
-      <div className="flex flex-1 items-center space-x-2">
+    <div className="flex items-center justify-between gap-5 lg:gap-0 xl:gap-5">
+      <div className="flex items-center space-x-2">
         <div className="relative ">
           <Search
             className="text-[#667085] absolute top-3 left-3 text-lg"
@@ -32,7 +32,7 @@ export function DataTableToolbar<TData>({
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
-            className="h-10 border w-[327px] max-[800px]:w-full rounded-md focus:outline-2 focus:outline-[#009A49] pl-10 text-lg placeholder:text-[#DEDEDE]"
+            className="h-10 border w-[327px] max-[800px]:w-full rounded-md focus:outline-2 focus:outline-[#009A49] pl-10 text-lg placeholder:text-[#DEDEDE] lg:w-9/10 xl:w-[327px]"
           />
         </div>
         {/* {table.getColumn('status') && (
@@ -71,6 +71,7 @@ export function DataTableToolbar<TData>({
 
       <AddStockModal
         isOpen={isAddStockModalOpen}
+        setIsAddStockModalOpen={setIsAddStockModalOpen}
         onOpenChange={(open) => setIsAddStockModalOpen(open)}
       />
     </div>
