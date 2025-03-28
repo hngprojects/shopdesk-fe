@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   type ColumnDef,
@@ -13,8 +13,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
-import * as React from 'react';
+} from "@tanstack/react-table";
+import * as React from "react";
 
 import {
   Table,
@@ -23,19 +23,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
-import Sidebar from '@/components/functional/sidebar';
-import { DataTablePagination } from './data-table-pagination';
-import EmptyStock from './empty-stock-state';
-import AddStockModal from '@/components/modal/add-item';
-import { DataTableToolbar } from './data-table-toolbar';
+import Sidebar from "@/components/functional/sidebar";
+import AddStockModal from "@/components/modal/add-item";
+import { X } from "lucide-react";
+import { DataTablePagination } from "./data-table-pagination";
+import { DataTableToolbar } from "./data-table-toolbar";
+import EmptyStock from "./empty-stock-state";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   loading?: boolean;
-  error?: string | null;
+  error?: boolean | null;
 }
 
 export function DataTable<TData, TValue>({
@@ -83,92 +84,94 @@ export function DataTable<TData, TValue>({
   };
 
   return (
-    <div className="flex w-full h-full gap-6">
-      <div className={`transition-all duration-200 ${isSidebarOpen ? 'w-[calc(100%-365px)]' : 'w-full'}`}>
-        <div className="flex flex-col border border-gray-200 rounded-lg h-full overflow-hidden">
-          <div className="p-4 border-b">
-            <DataTableToolbar table={table} />
-          </div>
+    <div className='flex space-x-4 w-full h-full'>
+      {/* Main table container */}
+      <div className='flex-1 flex flex-col min-w-[900px] border-l-0 border border-gray-200 rounded-br-lg rounded-bl-lg rounded-tr-lg overflow-x-auto'>
+        <div className='p-4 border-b'>
+          <DataTableToolbar table={table} />
+        </div>
 
-          <div className="flex-1 overflow-x-auto">
-            <Table className="min-w-full">
-              <TableHeader className="bg-white">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b border-r border-gray-200 last:border-r-0"
+        {/* Table wrapper with scroll */}
+        <div className='flex-1 overflow-x-auto'>
+          <Table className='min-w-full'>
+            <TableHeader className='bg-white min-w-full'>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      colSpan={header.colSpan}
+                      className='px-4 py-3 text-left min-w-full text-sm font-medium text-gray-700 border-b border-r border-gray-200 last:border-r-0'
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody className='bg-white'>
+              {loading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className='h-24 text-center'
+                  >
+                    Loading stocks...
+                  </TableCell>
+                </TableRow>
+              ) : error ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className='h-24 text-center text-red-500 oveflow-x-auto'
+                  >
+                    {error}
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                    onClick={() => handleRowClick(row.original)}
+                    className='hover:bg-gray-50 cursor-pointer oveflow-x-auto last:border-b-0 last:border-white'
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        className='px-4 py-3 text-sm text-gray-800 border-b border-r border-gray-200 last:border-r-0 '
                       >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
                     ))}
                   </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody className="bg-white">
-                {loading ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      Loading stocks...
-                    </TableCell>
-                  </TableRow>
-                ) : error ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center text-red-500"
-                    >
-                      {error}
-                    </TableCell>
-                  </TableRow>
-                ) : table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
-                      onClick={() => handleRowClick(row.original)}
-                      className="hover:bg-gray-50 cursor-pointer"
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className="px-4 py-3 text-sm text-gray-800 border-b border-r border-gray-200 last:border-r-0"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center text-gray-500 border-b border-gray-200"
-                    >
-                      <EmptyStock onClick={() => setIsAddStockModalOpen(true)} />
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className='h-24 text-center text-gray-500 border-b border-gray-200 '
+                  >
+                    {/* Empty Stock State */}
+                    <EmptyStock onClick={() => setIsAddStockModalOpen(true)} />
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-          <div className="sticky bottom-0 bg-white px-4 py-3 border-t border-gray-200">
-            <DataTablePagination table={table} />
-          </div>
+        {/* Pagination */}
+        <div className='sticky bottom-0 bg-white px-4 py-3'>
+          <DataTablePagination table={table} />
         </div>
       </div>
 
