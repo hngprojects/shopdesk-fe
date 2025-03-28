@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAddStockMutation } from "@/redux/features/stock/stock.api";
 import { useAppSelector } from "@/redux/hooks";
+import { useCreatePriceMutation } from "@/redux/features/price/price.api";
 import {
   Select,
   SelectContent,
@@ -70,6 +71,7 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
   const [addStock, { isLoading }] = useAddStockMutation();
   const { organizationId } = useStore();
   const [createProduct] = useCreateProductMutation();
+  const [createPrice] = useCreatePriceMutation();
 
   const [searchCurrency, setSearchCurrency] = useState("");
   console.log("organization id", organizationId);
@@ -85,14 +87,7 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    const request = {
-      name: values.name,
-      buying_price: Number(values.buying_price),
-      selling_price: Number(values.selling_price),
-      quantity: Number(values.quantity),
-      product_id: "default-product-id",
-      organization_id: orgId,
-    };
+
     const createProductData = new FormData();
     createProductData.append("organization_id", organizationId);
     createProductData.append("name", values.name);
@@ -100,9 +95,32 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
       .unwrap()
       .then((response) => {
         console.log(response.id);
+        const request = {
+          name: values.name,
+          buying_price: Number(values.buying_price),
+          selling_price: Number(values.selling_price),
+          quantity: Number(values.quantity),
+          product_id: response.id,
+          organization_id: organizationId,
+          currency_code: values.currency_code,
+        };
+        const priceRequest = {
+          name: values.name,
+          price: +values.selling_price,
+          product_id: response.id,
+          organization_id: organizationId,
+          currency_code: values.currency_code,
+          discounted_price: +values.selling_price,
+        };
+        createPrice(priceRequest)
+          .unwrap()
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => console.error(error));
         addStock(request)
           .unwrap()
-          .then(() => {
+          .then((response) => {
             console.log(response);
             toast.success("Stock added successfully");
           })
