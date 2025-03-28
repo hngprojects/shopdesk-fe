@@ -1,10 +1,10 @@
-import { StockItem } from '@/types/stocks';
+import { StockItem, StockItemResponse } from '@/types/stocks';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface SalesState {
   activeItem: number | null;
   searchText: string;
-  selectedItems: StockItem[];
+  selectedItems: StockItemResponse[];
   currentTime: string;
 }
 
@@ -25,7 +25,7 @@ const salesSlice = createSlice({
     setSearchText: (state, action: PayloadAction<string>) => {
       state.searchText = action.payload;
     },
-    setSelectedItems: (state, action: PayloadAction<StockItem[]>) => {
+    setSelectedItems: (state, action: PayloadAction<StockItemResponse[]>) => {
       state.selectedItems = action.payload;
     },
     updateCurrentTime: (state) => {

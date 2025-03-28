@@ -13,13 +13,13 @@ import {
   setSelectedItems,
   updateCurrentTime,
 } from "@/redux/slicer";
-import type { StockItem } from "@/types/stocks";
+import type { StockItemResponse } from "@/types/stocks";
 
 interface RecordSalesModalProps {
   isOpen: boolean;
   onClose: () => void;
-  stockItems: StockItem[];
-  onCompleteSale: (selectedItems: StockItem[]) => void;
+  stockItems: StockItemResponse[];
+  onCompleteSale: (selectedItems: StockItemResponse[]) => void;
 }
 
 const getRandomColor = () => {
@@ -311,7 +311,7 @@ const SalesModal: React.FC<RecordSalesModalProps> = ({
           <button
             type="button"
             disabled={selectedItems.length === 0}
-            className={`w-full h-[48px] pt-3 pr-6 pb-3 pl-4 gap-1.5 rounded-lg border border-gray-300 flex items-center justify-center font-medium text-white transition-colors ${
+            className={`w-full h-[48px] pt-3 pr-6 pb-3 mb-3 pl-4 gap-1.5 rounded-lg border border-gray-300 flex items-center justify-center font-medium text-white transition-colors ${
               selectedItems.length === 0
                 ? "bg-gray-300 cursor-not-allowed opacity-50"
                 : "bg-black hover:bg-[#BDE0CE]"
