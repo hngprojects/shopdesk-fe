@@ -1,17 +1,19 @@
 'use client';
 
-import type { SalesItem } from '@/store/useStore';
 import type { StockItem } from '@/types/stocks';
 import { Plus, Search } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Label } from '../ui/label';
+import type { Sale } from '@/types/sale';
 
+
+// Todo please fix types
 interface SalesTabProps {
-  onAddSale: (sale: SalesItem) => void;
-  salesItems: SalesItem[];
-  stockItems: StockItem[];
+  onAddSale: (sale: any) => void;
+  salesItems: any[];
+  stockItems: any[];
 }
 
 const SalesTab: React.FC<SalesTabProps> = ({
@@ -20,9 +22,7 @@ const SalesTab: React.FC<SalesTabProps> = ({
   stockItems,
 }) => {
   const [isAddSaleModalOpen, setIsAddSaleModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<StockItem | null>(
-    null
-  );
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [quantitySold, setQuantitySold] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
