@@ -57,9 +57,9 @@ export const columns: ColumnDef<Stock>[] = [
           value={value}
           accessorKey="name"
           stockId={row.original.id}
+          rowData={row.original}
           onChange={(val) => {
             row.original.name = val;
-            // Optional: sync this update to local state or backend
           }}
         />
       );
@@ -79,6 +79,7 @@ export const columns: ColumnDef<Stock>[] = [
           accessorKey="buying_price"
           currency={row.original.currency_code}
           stockId={row.original.id}
+          rowData={row.original}
           onChange={(val) => {
             row.original.buying_price = Number(val);
           }}
@@ -95,13 +96,12 @@ export const columns: ColumnDef<Stock>[] = [
     cell: ({ row }) => {
       const value = row.original.quantity;
 
-      // console.log(value, "value");
-
       return (
         <EditableCell
           value={String(value) || "0"}
           accessorKey="quantity"
           stockId={row.original.id}
+          rowData={row.original}
           onChange={(val) => {
             row.original.quantity = Number(val);
           }}

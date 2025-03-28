@@ -6,7 +6,7 @@ import { columns } from "./components/columns";
 import { DataTable } from "./components/data-table";
 
 export default function StockPage() {
-  const { organizationId } = useStore();
+  const organizationId = useStore((state) => state.organizationId);
   const { data, isFetching, isError } = useGetStocksQuery(organizationId, {
     refetchOnMountOrArgChange: true,
   });

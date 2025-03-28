@@ -41,7 +41,7 @@ export default function SalesPage() {
     tableId: string;
     rowId: string;
   } | null>(null);
-  const { organizationId } = useStore();
+  const organizationId = useStore((state) => state.organizationId);
   const [showModal, setShowModal] = useState(false);
 
   // Create a table instance for pagination
@@ -92,7 +92,6 @@ export default function SalesPage() {
   const [createCustomer, { isLoading: isCreatingCustomer }] =
     useCreateCustomerMutation();
   const [createSale, { isLoading: isCreatingSale }] = useCreateSaleMutation();
-
   const stockItems = ProductsData?.items ?? [];
 
   const table = useReactTable({
@@ -146,7 +145,6 @@ export default function SalesPage() {
 
     if (!customer) return;
 
-    // Example products_sold - replace with actual data
     const products_sold = [
       {
         product_id: firstSelectedItemId,
@@ -169,7 +167,7 @@ export default function SalesPage() {
       console.error("Error creating sale:", error);
     }
 
-    toggleSalesModal();
+    setShowModal(false);
   };
 
   const groupedData = React.useMemo(() => {

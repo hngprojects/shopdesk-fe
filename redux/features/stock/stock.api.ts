@@ -21,8 +21,13 @@ interface CreateStockRequest extends StockBase {
   // Types
 }
 
-interface EditStockRequest extends StockBase {
-  // Types
+interface EditStockRequest {
+  id: string;
+  organization_id: string;
+  name: string;
+  quantity: number;
+  buying_price: number;
+  currency_code: string;
 }
 
 interface StockResponse extends StockBase {}
@@ -53,17 +58,17 @@ export const accessControlApi = api.injectEndpoints({
       providesTags: ["Stock"],
       keepUnusedDataFor: 3600,
     }),
-    editStock: builder.mutation<StockResponse, EditStockRequest>({
-      query: (data) => ({
-        url: "stocks/edit",
-        method: "PUT",
-        body: {
-          stock_id: data.id,
-          ...data,
-        },
-      }),
-      invalidatesTags: ["Stock"],
-    }),
+    // editStock: builder.mutation<StockResponse, EditStockRequest>({
+    //   query: (data) => ({
+    //     url: "stocks/edit",
+    //     method: "PUT",
+    //     body: {
+    //       stock_id: data.id,
+    //       ...data,
+    //     },
+    //   }),
+    //   invalidatesTags: ["Stock"],
+    // }),
 
     getWeeklySales: builder.query<
       { product_id: string; sales: any }[],
@@ -94,6 +99,22 @@ export const accessControlApi = api.injectEndpoints({
         body: stockData,
       }),
       invalidatesTags: ["Stock"],
+    }),
+
+    editStock: builder.mutation<StockResponse, EditStockRequest>({
+      query: (data) => ({
+        url: `stocks/edit`,
+        method: "PUT",
+        body: {
+          stock_id: data.id,
+          name: data.name,
+          buying_price: data.buying_price,
+          quantity: data.quantity,
+          currency_code: data.currency_code,
+          organization_id: data.organization_id,
+        },
+      }),
+      invalidatesTags: (result) => [{ type: "Stock", id: result?.id }],
     }),
 
     // createStock: builder.mutation<
