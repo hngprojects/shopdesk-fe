@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   type ColumnDef,
@@ -13,9 +13,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
-import * as React from 'react';
-
+} from "@tanstack/react-table";
+import * as React from "react";
 import {
   Table,
   TableBody,
@@ -23,19 +22,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-
-import Sidebar from '@/components/functional/sidebar';
-import { DataTablePagination } from './data-table-pagination';
-import EmptyStock from './empty-stock-state';
-import AddStockModal from '@/components/modal/add-item';
-import { DataTableToolbar } from './data-table-toolbar';
+} from "@/components/ui/table";
+import Sidebar from "@/components/functional/sidebar";
+import AddStockModal from "@/components/modal/add-item";
+import { X } from "lucide-react";
+import { DataTablePagination } from "./data-table-pagination";
+import { DataTableToolbar } from "./data-table-toolbar";
+import EmptyStock from "./empty-stock-state";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   loading?: boolean;
-  error?: string | null;
+  error?: boolean | null;
 }
 
 export function DataTable<TData, TValue>({
@@ -126,9 +125,9 @@ export function DataTable<TData, TValue>({
                   <TableRow>
                     <TableCell
                       colSpan={columns.length}
-                      className="h-24 text-center text-red-500"
+                      className="h-24 text-center text-red-500 flex gap-4"
                     >
-                      {error}
+                      <X /> <span>Error Fetching Stocks</span>
                     </TableCell>
                   </TableRow>
                 ) : table.getRowModel().rows?.length ? (
@@ -172,9 +171,9 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
-      {/* Sidebar - matches table height */}
+      {/* Sidebar */}
       {isSidebarOpen && selectedRow && (
-        <div className={`w-[365px] flex-shrink-0`}>
+        <div className="w-[365px] flex-shrink-0">
           <Sidebar
             selectedItem={selectedRow}
             onClose={() => setIsSidebarOpen(false)}

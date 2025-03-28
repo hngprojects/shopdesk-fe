@@ -80,7 +80,7 @@ export const columns: ColumnDef<Stock>[] = [
           currency={row.original.currency_code}
           stockId={row.original.id}
           onChange={(val) => {
-            row.original.buying_price = val;
+            row.original.buying_price = Number(val);
           }}
         />
       );
@@ -99,11 +99,11 @@ export const columns: ColumnDef<Stock>[] = [
 
       return (
         <EditableCell
-          value={value || "0"}
+          value={String(value) || "0"}
           accessorKey="quantity"
           stockId={row.original.id}
           onChange={(val) => {
-            row.original.quantity = val;
+            row.original.quantity = Number(val);
           }}
         />
       );
