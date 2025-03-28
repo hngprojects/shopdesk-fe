@@ -15,10 +15,10 @@ export async function POST(req: Request) {
     });
 
     if (!response.ok) {
-      return NextResponse.json(
-        { message: "Signup failed", error: await response.json() },
-        { status: response.status }
-      );
+      const errorData = await response.json();
+      return NextResponse.json({
+        message: errorData.detail ? errorData.detail : "Signup failed",
+      });
     }
 
     const data = await response.json();
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(data, { status: response.status });
-  } catch (error :any) {
+  } catch (error: any) {
     return NextResponse.json(
       { message: "Internal Server Error", error: error.message },
       { status: 500 }

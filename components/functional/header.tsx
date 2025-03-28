@@ -62,9 +62,11 @@ const Header = () => {
 
         <div className='flex items-center gap-4 max-[900px]:hidden'>
           <button
-            type='button'
-            onClick={() => router.push('/stock')}
-            className='btn-outline'
+
+            type="button"
+            onClick={() => router.push("/sign-in")}
+            className="btn-outline"
+
           >
             Sign in
           </button>
@@ -145,13 +147,13 @@ const Header = () => {
             className='btn-outline mb-2 hover:bg-gray-100 transition w-full'
             onClick={() => setIsOpen(false)}
           >
-            Sign In
+            <Link href="/sign-in">Sign In</Link>
           </button>
           <button
             className='btn-primary hover:bg-gray-800 transition w-full'
             onClick={() => setIsOpen(false)}
           >
-            Start for free
+            <Link href="/sign-up">Start for free</Link>
           </button>
         </div>
       )}
