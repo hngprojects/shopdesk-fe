@@ -44,6 +44,19 @@ interface ProductsResponse {
   items: Product[];
 }
 
+interface ProductsRequest {
+  organization_id: string;
+  name: string;
+  description?: string;
+  product_image?: File;
+  parent_product_id?: string;
+  url_slug?: string;
+  category_id?: [];
+  is_service?: boolean;
+}
+
+interface CreateProductResponse extends Product {}
+
 export const accessControlApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getProductsForSale: builder.query<
@@ -57,7 +70,16 @@ export const accessControlApi = api.injectEndpoints({
       providesTags: ["Product"],
       keepUnusedDataFor: 3600,
     }),
+    createProduct: builder.mutation<CreateProductResponse, any>({
+      query: (productData) => ({
+        url: `product/create`,
+        method: "POST",
+        body: productData,
+      }),
+      invalidatesTags: ["Product"],
+    }),
   }),
 });
 
-export const { useGetProductsForSaleQuery } = accessControlApi;
+export const { useGetProductsForSaleQuery, useCreateProductMutation } =
+  accessControlApi;

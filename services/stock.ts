@@ -1,5 +1,6 @@
-import { getAccessToken } from '@/app/api/token';
-import { useStore } from '@/store/useStore';
+import { getAccessToken } from "@/app/api/token";
+import { useStore } from "@/store/useStore";
+import { StockItem } from "@/types/stocks";
 
 type Stock = {
   unique_id: any;
@@ -71,16 +72,16 @@ export async function CreateProduct(
   const organization_id = useStore.getState().organizationId;
   try {
     const formData = new FormData();
-    formData.append('organization_id', organization_id);
-    formData.append('name', productName);
-    if (unique_id !== '') {
-      formData.append('unique_id', unique_id);
+    formData.append("organization_id", organization_id);
+    formData.append("name", productName);
+    if (unique_id !== "") {
+      formData.append("unique_id", unique_id);
     }
 
-    const response = await fetch('/api/product/create', {
-      method: 'POST',
+    const response = await fetch("/api/product/create", {
+      method: "POST",
       headers: {
-        Accept: 'application/json',
+        Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: formData,
@@ -89,12 +90,12 @@ export async function CreateProduct(
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to add stock');
+      throw new Error(data.message || "Failed to add stock");
     }
 
     return data.id;
   } catch (error) {
-    console.error('Error adding stock:', error);
+    console.error("Error adding stock:", error);
     throw error;
   }
 }
@@ -112,13 +113,13 @@ export async function AddStock(
   const organization_id = useStore.getState().organizationId;
   try {
     const token = await getAccessToken();
-    const product_id = await CreateProduct(productName, '', token);
+    const product_id = await CreateProduct(productName, "", token);
 
-    const response = await fetch('/api/stocks/create', {
-      method: 'POST',
+    const response = await fetch("/api/stocks/create", {
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -135,12 +136,12 @@ export async function AddStock(
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to add stock');
+      throw new Error(data.message || "Failed to add stock");
     }
 
     return data;
   } catch (error) {
-    console.error('Error adding stock:', error);
+    console.error("Error adding stock:", error);
     throw error;
   }
 }
@@ -150,10 +151,10 @@ export async function GetProduct(): Promise<StockResponse> {
     const response = await fetch(
       `/api/product/get?organization_id=${organization_id}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       }
@@ -161,12 +162,12 @@ export async function GetProduct(): Promise<StockResponse> {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to fetch stock');
+      throw new Error(errorData.message || "Failed to fetch stock");
     }
 
     return response.json();
   } catch (error) {
-    console.error('Error fetching stock:', error);
+    console.error("Error fetching stock:", error);
     throw error;
   }
 }
@@ -177,10 +178,10 @@ export async function GetStock(product_id: string): Promise<StockResponse> {
     const response = await fetch(
       `/api/stocks/get?organization_id=${organization_id}&product_id=${product_id}`,
       {
-        method: 'GET',
+        method: "GET",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       }
@@ -188,12 +189,12 @@ export async function GetStock(product_id: string): Promise<StockResponse> {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to fetch stock');
+      throw new Error(errorData.message || "Failed to fetch stock");
     }
 
     return response.json();
   } catch (error) {
-    console.error('Error fetching stock:', error);
+    console.error("Error fetching stock:", error);
     throw error;
   }
 }
@@ -206,10 +207,10 @@ export async function deleteStock(productId: string): Promise<void> {
     const response = await fetch(
       `/api/product/delete?product_id=${product_id}&organization_id=${organization_id}`,
       {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       }
@@ -217,10 +218,10 @@ export async function deleteStock(productId: string): Promise<void> {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to delete stock');
+      throw new Error(errorData.message || "Failed to delete stock");
     }
   } catch (error) {
-    console.error('Error deleting stock:', error);
+    console.error("Error deleting stock:", error);
     throw error;
   }
 }
@@ -239,9 +240,9 @@ export async function editStock(
     const token = await getAccessToken();
 
     const response = await fetch(`/api/stocks/edit`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -253,10 +254,10 @@ export async function editStock(
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update stock');
+      throw new Error(errorData.message || "Failed to update stock");
     }
   } catch (error) {
-    console.error('Error updating stock:', error);
+    console.error("Error updating stock:", error);
     throw error;
   }
 }
@@ -272,9 +273,9 @@ export async function editStockv3(
     const token = await getAccessToken();
 
     const response = await fetch(`/api/stocks/edit`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -286,10 +287,10 @@ export async function editStockv3(
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update stock');
+      throw new Error(errorData.message || "Failed to update stock");
     }
   } catch (error) {
-    console.error('Error updating stock:', error);
+    console.error("Error updating stock:", error);
     throw error;
   }
 }
@@ -305,9 +306,9 @@ export async function editPrice(
     const token = await getAccessToken();
 
     const response = await fetch(`/api/stocks/edit`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -319,10 +320,10 @@ export async function editPrice(
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update price');
+      throw new Error(errorData.message || "Failed to update price");
     }
   } catch (error) {
-    console.error('Error updating price:', error);
+    console.error("Error updating price:", error);
     throw error;
   }
 }
@@ -337,9 +338,9 @@ export async function editQuantity(
     const token = await getAccessToken();
 
     const response = await fetch(`/api/stocks/edit`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -351,10 +352,10 @@ export async function editQuantity(
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update stock');
+      throw new Error(errorData.message || "Failed to update stock");
     }
   } catch (error) {
-    console.error('Error updating stock:', error);
+    console.error("Error updating stock:", error);
     throw error;
   }
 }
@@ -364,15 +365,15 @@ export async function editName(
   stockData: {
     name: string;
   }
-): Promise<void> {
+): Promise<StockItem> {
   const organization_id = useStore.getState().organizationId;
   try {
     const token = await getAccessToken();
 
     const response = await fetch(`/api/stocks/edit`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
@@ -384,10 +385,13 @@ export async function editName(
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to update stock');
+      throw new Error(errorData.message || "Failed to update stock");
     }
+
+    const updatedItem: StockItem = await response.json();
+    return updatedItem;
   } catch (error) {
-    console.error('Error updating stock:', error);
+    console.error("Error updating stock:", error);
     throw error;
   }
 }
