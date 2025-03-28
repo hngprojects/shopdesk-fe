@@ -55,6 +55,8 @@ interface ProductsRequest {
   is_service?: boolean;
 }
 
+interface CreateProductResponse extends Product {}
+
 export const accessControlApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getProductsForSale: builder.query<
@@ -68,7 +70,7 @@ export const accessControlApi = api.injectEndpoints({
       providesTags: ["Product"],
       keepUnusedDataFor: 3600,
     }),
-    createProduct: builder.mutation<ProductsResponse, any>({
+    createProduct: builder.mutation<CreateProductResponse, any>({
       query: (productData) => ({
         url: `product/create`,
         method: "POST",
