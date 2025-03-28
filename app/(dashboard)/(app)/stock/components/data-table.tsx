@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   type ColumnDef,
@@ -13,8 +13,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from '@tanstack/react-table';
-import * as React from 'react';
+} from "@tanstack/react-table";
+import * as React from "react";
 
 import {
   Table,
@@ -23,19 +23,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 
-import Sidebar from '@/components/functional/sidebar';
-import { DataTablePagination } from './data-table-pagination';
-import EmptyStock from './empty-stock-state';
-import AddStockModal from '@/components/modal/add-item';
-import { DataTableToolbar } from './data-table-toolbar';
+import Sidebar from "@/components/functional/sidebar";
+import AddStockModal from "@/components/modal/add-item";
+import { X } from "lucide-react";
+import { DataTablePagination } from "./data-table-pagination";
+import { DataTableToolbar } from "./data-table-toolbar";
+import EmptyStock from "./empty-stock-state";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   loading?: boolean;
-  error?: string | null;
+  error?: boolean | null;
 }
 
 export function DataTable<TData, TValue>({
@@ -83,24 +84,24 @@ export function DataTable<TData, TValue>({
   };
 
   return (
-    <div className='flex space-x-4 w-full h-full'>
+    <div className="flex space-x-4 w-full h-full">
       {/* Main table container */}
-      <div className='flex-1 flex flex-col min-w-[900px] border-l-0 border border-gray-200 rounded-br-lg rounded-bl-lg rounded-tr-lg overflow-x-auto'>
-        <div className='p-4 border-b'>
+      <div className="flex-1 flex flex-col min-w-[900px] border-l-0 border border-gray-200 rounded-br-lg rounded-bl-lg rounded-tr-lg overflow-x-auto">
+        <div className="absolute top-40 right-14">
           <DataTableToolbar table={table} />
         </div>
 
         {/* Table wrapper with scroll */}
-        <div className='flex-1 overflow-x-auto'>
-          <Table className='min-w-full'>
-            <TableHeader className='bg-white min-w-full'>
+        <div className="flex-1 overflow-x-auto">
+          <Table className="min-w-full">
+            <TableHeader className="bg-white min-w-full">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
                       colSpan={header.colSpan}
-                      className='px-4 py-3 text-left min-w-full text-sm font-medium text-gray-700 border-b border-r border-gray-200 last:border-r-0'
+                      className="px-4 py-3 text-left min-w-full text-sm font-medium text-gray-700 border-b border-r border-gray-200 last:border-r-0"
                     >
                       {header.isPlaceholder
                         ? null
@@ -113,12 +114,12 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))}
             </TableHeader>
-            <TableBody className='bg-white'>
+            <TableBody className="bg-white">
               {loading ? (
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className='h-24 text-center'
+                    className="h-24 text-center"
                   >
                     Loading stocks...
                   </TableCell>
@@ -127,23 +128,23 @@ export function DataTable<TData, TValue>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className='h-24 text-center text-red-500 oveflow-x-auto'
+                    className="h-24 text-center text-red-500 oveflow-x-auto flex gap-4"
                   >
-                    {error}
+                    <X /> <span>Error Fetching Stocks</span>
                   </TableCell>
                 </TableRow>
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
-                    data-state={row.getIsSelected() && 'selected'}
+                    data-state={row.getIsSelected() && "selected"}
                     onClick={() => handleRowClick(row.original)}
-                    className='hover:bg-gray-50 cursor-pointer oveflow-x-auto last:border-b-0 last:border-white'
+                    className="hover:bg-gray-50 cursor-pointer oveflow-x-auto last:border-b-0 last:border-white"
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell
                         key={cell.id}
-                        className='px-4 py-3 text-sm text-gray-800 border-b border-r border-gray-200 last:border-r-0 '
+                        className="px-4 py-3 text-sm text-gray-800 border-b border-r border-gray-200 last:border-r-0 "
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -157,7 +158,7 @@ export function DataTable<TData, TValue>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className='h-24 text-center text-gray-500 border-b border-gray-200 '
+                    className="h-24 text-center text-gray-500 border-b border-gray-200 "
                   >
                     {/* Empty Stock State */}
                     <EmptyStock onClick={() => setIsAddStockModalOpen(true)} />
@@ -169,7 +170,7 @@ export function DataTable<TData, TValue>({
         </div>
 
         {/* Pagination */}
-        <div className='sticky bottom-0 bg-white px-4 py-3'>
+        <div className="sticky bottom-0 bg-white px-4 py-3">
           <DataTablePagination table={table} />
         </div>
       </div>
