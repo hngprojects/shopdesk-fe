@@ -81,8 +81,6 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-
     const request = {
       name: values.name,
       buying_price: Number(values.buying_price),
@@ -92,16 +90,16 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
       organization_id: orgId,
     };
 
-    addStock(request)
-      .unwrap()
-      .then(() => {
-        console.log(response);
-        toast.success('Stock added successfully');
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error('An error occurred');
-      });
+    // addStock(request)
+    //   .unwrap()
+    //   .then(() => {
+    //     console.log(response);
+    //     toast.success('Stock added successfully');
+    //   })
+    //   .catch((error) => {
+    //     console.error(error);
+    //     toast.error('An error occurred');
+    //   });
   }
 
   const filteredCurrencies = currencies.filter(
