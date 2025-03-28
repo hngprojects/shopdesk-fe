@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setActiveItem, setSelectedItems } from "@/redux/slicer";
-import type { StockItemResponse } from '@/types/stocks';
+import type { StockItemResponse } from "@/types/stocks";
 import type React from "react";
 
 interface ItemCardProps {
