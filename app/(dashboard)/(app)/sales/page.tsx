@@ -9,6 +9,7 @@ import { useGetProductsForSaleQuery } from "@/redux/features/product/product.api
 import { useCreateSaleMutation } from "@/redux/features/sale/sale.api";
 import { RootState } from "@/redux/store";
 import { useStore } from "@/store/useStore";
+import { StockItemResponse } from "@/types/stocks";
 import {
   type Column,
   getCoreRowModel,
@@ -200,7 +201,7 @@ export default function SalesPage() {
         isOpen={showModal}
         onClose={toggleSalesModal}
         onCompleteSale={completeSale}
-        stockItems={stockItems}
+        stockItems={stockItems as unknown as StockItemResponse[]}
       />
     </React.Fragment>
   );

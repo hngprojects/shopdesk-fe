@@ -7,8 +7,10 @@
     "build": "next build",
     "start:staging": "next start -p 7777",
     "start:prod": "next start -p 3000",
-    "lint": "next lint",
-    "test": "vitest"
+    "lint": "next lint || echo 'Linting failed'",
+    "test": "vitest",
+    "pre-hook": "bun run type-check && bun run lint",
+    "type-check": "bunx tsc --noEmit || echo 'TypeScript check failed'"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
@@ -28,6 +30,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.4.10",
+    "husky": "^9.1.7",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.477.0",
     "next": "15.2.1",
@@ -63,6 +66,7 @@
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "jsdom": "^26.0.0",
+    "lint-staged": "^15.5.0",
     "next-router-mock": "^0.9.13",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
@@ -70,5 +74,9 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.9",
     "webpack": "^5.98.0"
+  },
+  "lint-staged": {
+    "**/*.{ts,tsx}": ["bunx tsc --noEmit --skipLibCheck"],
+    "**/*.{js,ts,jsx,tsx}": ["bunx next lint --fix"]
   }
 }

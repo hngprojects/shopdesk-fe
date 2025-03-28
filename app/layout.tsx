@@ -1,4 +1,5 @@
 import ReduxProvider from "@/components/providers/ReduxProvider";
+import { Toaster } from "@/components/ui/sonner";
 // import { Toaster } from '@/components/ui/sonner';
 import "@/styles/globals.css";
 import type { Metadata } from "next";
@@ -78,8 +79,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <ReduxProvider>
-        {/* <Toaster /> */}
-        <body>{children}</body>
+        <body>
+          <Toaster />
+          {children}
+        </body>
       </ReduxProvider>
     </html>
   );
