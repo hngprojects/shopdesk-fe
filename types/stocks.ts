@@ -7,29 +7,29 @@ type Stock<T> = {
   items: T[];
 };
 
-// export type StockItem = {
-//   name: string;
-//   quantity: number;
-//   buying_price: number;
-//   currency_code: string;
-//   supplier_id: string | null;
-//   buying_date: string;
-//   id: string;
-//   product_id: string;
-//   status: string;
-//   user_id: string;
-//   date_created: string;
-//   original_quantity: number;
-//   supplier: string | null;
-//   timeslots: any[];
-//   price: number;
-//   sku: string;
-//   sell_price: string;
-//   remaining: number;
-//   photos: string;
-// };
-
 export type StockItem = {
+  name: string;
+  quantity: number;
+  buying_price: number;
+  currency_code: string;
+  supplier_id: string | null;
+  buying_date: string;
+  id: string;
+  product_id: string;
+  status: string;
+  user_id: string;
+  date_created: string;
+  original_quantity: number;
+  supplier: string | null;
+  timeslots: any[];
+  price: number;
+  sku: string;
+  sell_price: string;
+  remaining: number;
+  photos: string;
+};
+
+export type StockItemResponse = {
   name: string;
   description: string | null;
   unique_id: string;
@@ -59,7 +59,7 @@ export type StockItem = {
   attributes: Record<string, any>; // Adjust based on attribute structure
 };
 
-export type StockResponse = Stock<StockItem>;
+export type StockResponse = Stock<StockItemResponse>;
 
 export interface Currency {
   code: string;
