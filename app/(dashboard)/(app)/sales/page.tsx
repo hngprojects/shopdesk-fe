@@ -15,12 +15,12 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { columns, type Sale } from "./components/columns";
 import { DataTable } from "./components/data-table";
 import { DataTablePagination } from "./components/data-table-pagination";
-import { processDataIntoGroups, sampleData } from "./data/data";
+import EmptySalePage from "./components/empty-sale-page";
 
 export default function SalesPage() {
   const [groupedData, setGroupedData] = useState<
@@ -38,7 +38,7 @@ export default function SalesPage() {
 
   // Create a table instance for pagination
   const table = useReactTable({
-    data: sampleData,
+    data: [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -118,9 +118,9 @@ export default function SalesPage() {
     }
   };
 
-  useEffect(() => {
-    setGroupedData(processDataIntoGroups(sampleData));
-  }, []);
+  // useEffect(() => {
+  //   setGroupedData(processDataIntoGroups([]));
+  // }, []);
 
   return (
     <React.Fragment>
@@ -154,6 +154,11 @@ export default function SalesPage() {
               </TableHeader>
             </Table>
           </div>
+
+          {groupedData.length === 0 && (
+            <EmptySalePage toggleSalesModal={toggleSalesModal} />
+          )}
+
           {/* Tables for each time group */}
           <div className="px-5 pt-5 space-y-6">
             {groupedData.map((group) => (
