@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Search } from 'lucide-react';
-import AddItemModal from '@/components/modal/add-item';
+import AddStockModal from '@/components/modal/add-item';
 import { useStore } from '@/store/useStore';
 
 const DashboardActions = () => {
@@ -61,12 +61,9 @@ const DashboardActions = () => {
       </div>
 
       <div className='z-10'>
-        <AddItemModal
+        <AddStockModal
           isOpen={isOpen}
           onOpenChange={(open) => setIsOpen(open)}
-          // onSave={(newItem) => {
-          //   setStockItems((prev: any) => [newItem, ...prev]); // Inserts new items at the top
-          // }}
         />
       </div>
     </div>
