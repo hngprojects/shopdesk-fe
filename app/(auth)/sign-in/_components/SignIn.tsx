@@ -51,6 +51,9 @@ function SignInContent() {
     try {
       const data = await loginUser(email, password);
       // console.log(data);
+      if (!data || data.error) {
+        throw new Error(data?.message || "Invalid email or password.");
+      }
       dispatch(authenticationSuccess(data));
       // const { first_name, last_name } = data.data;
       // const organization = await getOrganization();
@@ -59,10 +62,8 @@ function SignInContent() {
 
       // sendLoginEmail(email, first_name, last_name);
 
-      if (!data || data.error) {
-        throw new Error(data?.message || "Invalid email or password.");
-      }
-      router.refresh();
+      // router.refresh();
+
       router.push(redirectTo);
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");

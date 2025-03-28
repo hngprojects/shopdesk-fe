@@ -213,12 +213,12 @@ export default function SignUp() {
         }
         return;
       } else {
-        setIsModalOpen(true);
         router.push("/create-organization");
+        setIsModalOpen(true);
       }
 
-      setIsModalOpen(true);
       router.push("/create-organization");
+      setIsModalOpen(false);
     } catch (err: any) {
       //   setError(err.message || "Something went wrong. Please try again.");
     } finally {
