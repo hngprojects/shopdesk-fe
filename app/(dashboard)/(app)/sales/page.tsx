@@ -22,7 +22,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { columns, type Sale } from "./components/columns";
 import { DataTable } from "./components/data-table";
@@ -46,9 +46,14 @@ export default function SalesPage() {
 
   // Create a table instance for pagination
 
-  const { data: salesData, isFetching: FetchingSalesData } = useGetSalesQuery({
-    organization_id: organizationId,
-  });
+  const { data: salesData, isFetching: FetchingSalesData } = useGetSalesQuery(
+    {
+      organization_id: organizationId,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const formattedSales = salesData?.items?.flatMap((sale) =>
     sale.products_sold.map((product) => {
@@ -66,13 +71,23 @@ export default function SalesPage() {
     })
   );
 
-  const { data: ProductsData, isFetching } = useGetProductsForSaleQuery({
-    organization_id: organizationId,
-  });
-  const { data: customersData, isFetching: isFetchingCustomers } =
-    useGetCustomersQuery({
+  const { data: ProductsData, isFetching } = useGetProductsForSaleQuery(
+    {
       organization_id: organizationId,
-    });
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+  const { data: customersData, isFetching: isFetchingCustomers } =
+    useGetCustomersQuery(
+      {
+        organization_id: organizationId,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
   const [createCustomer, { isLoading: isCreatingCustomer }] =
     useCreateCustomerMutation();
@@ -85,6 +100,14 @@ export default function SalesPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 5,
+        pageIndex: 0,
+      },
+    },
+    manualPagination: true,
+    pageCount: Math.ceil((formattedSales?.length || 0) / 5),
   });
 
   const selectedItems = useSelector(
@@ -127,7 +150,7 @@ export default function SalesPage() {
     const products_sold = [
       {
         product_id: firstSelectedItemId,
-        amount: 100,
+        amount: 1,
         quantity: 1,
         currency_code: "NGN",
       },
@@ -137,7 +160,7 @@ export default function SalesPage() {
       const saleResponse = await createSale({
         organization_id: organizationId,
         customer_id: customer.id,
-        currency_code: customer.default_currency_code || "USD",
+        currency_code: customer.default_currency_code || "NGN",
         products_sold,
       }).unwrap();
 
@@ -149,13 +172,16 @@ export default function SalesPage() {
     toggleSalesModal();
   };
 
-  const processedSales = useMemo(() => {
-    return formattedSales ? processDataIntoGroups(formattedSales) : [];
-  }, [formattedSales]);
+  const groupedData = React.useMemo(() => {
+    if (!formattedSales) return [];
 
-  const groupedData = useMemo(() => {
-    return formattedSales ? processDataIntoGroups(formattedSales) : [];
-  }, [formattedSales]);
+    // Get current page data
+    const { pageSize, pageIndex } = table.getState().pagination;
+    const start = pageIndex * pageSize;
+    const paginatedData = formattedSales.slice(start, start + pageSize);
+
+    return processDataIntoGroups(paginatedData);
+  }, [formattedSales, table.getState().pagination]);
 
   return (
     <React.Fragment>
@@ -204,7 +230,7 @@ export default function SalesPage() {
           )}
 
           {FetchingSalesData && (
-            <div className="text-xl text-center w-full flex justify-center gap-3 items-center mt-20">
+            <div className="text-xl text-center w-full flex justify-center gap-3 items-center mt-10">
               <Icons.LoadingIcon /> Getting your sales. Please Wait!
             </div>
           )}
@@ -233,8 +259,8 @@ export default function SalesPage() {
             ))}
           </div>
 
-          {groupedData.length > 5 && (
-            <div className="min-w-[900px] border-t border-b  border-gray-200 rounded-br-lg rounded-bl-lg mt-4">
+          {groupedData.length > 0 && (
+            <div className="min-w-[900px] border-t border-b border-gray-200 rounded-br-lg rounded-bl-lg mt-4">
               <div className="px-4 py-3">
                 <DataTablePagination
                   table={table}
