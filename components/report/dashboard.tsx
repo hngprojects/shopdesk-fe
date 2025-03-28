@@ -55,10 +55,10 @@ function ReportDashboard() {
   });
 
   return (
-    <div className="p-6 bg-white min-h-screen">
-      <div className="flex bg-gray-100 rounded-[12px]">
+    <div className="pb-6 bg-white">
+      <div className=" lg:bg-gray-100 rounded-[12px]">
         <div className="mb-6">
-        <div className="flex items-center justify-end">
+        <div className="flex items-center  lg:justify-end">
       <div className="px-2 py-4 gap-[19px] bg-white rounded-bl-2xl flex justify-center items-center">
         <div className="flex h-[48px] items-center justify-start gap-2 rounded-md border border-neutral-75 bg-white px-2 py-[0.875rem]">
           <Search className="size-4 flex-shrink-0 text-neutral-400" />
