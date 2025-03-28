@@ -78,8 +78,10 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <ReduxProvider>
-        <Toaster />
-        <body>{children}</body>
+        <body>
+          <Toaster />
+          {children}
+        </body>
       </ReduxProvider>
     </html>
   );
