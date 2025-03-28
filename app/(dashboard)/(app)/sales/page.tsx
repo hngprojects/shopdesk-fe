@@ -22,7 +22,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { columns, type Sale } from "./components/columns";
 import { DataTable } from "./components/data-table";
@@ -31,9 +31,9 @@ import EmptySalePage from "./components/empty-sale-page";
 import { processDataIntoGroups } from "./data/data";
 
 export default function SalesPage() {
-  const [groupedData, setGroupedData] = useState<
-    { timeKey: string; items: Sale[]; total: Sale }[]
-  >([]);
+  // const [groupedData, setGroupedData] = useState<
+  //   { timeKey: string; items: Sale[]; total: Sale }[]
+  // >([]);
   const [viewType, setViewType] = React.useState<"Daily" | "Weekly" | "Flat">(
     "Daily"
   );
@@ -153,9 +153,9 @@ export default function SalesPage() {
     return formattedSales ? processDataIntoGroups(formattedSales) : [];
   }, [formattedSales]);
 
-  useEffect(() => {
-    setGroupedData(processedSales);
-  }, [processedSales]);
+  const groupedData = useMemo(() => {
+    return formattedSales ? processDataIntoGroups(formattedSales) : [];
+  }, [formattedSales]);
 
   return (
     <React.Fragment>
