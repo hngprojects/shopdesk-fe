@@ -12,7 +12,8 @@ import { AuthFooter } from "./footer";
 import Logo from "@/components/functional/logo";
 import { loginUser } from "@/services/auth";
 import { useStore } from "@/store/useStore";
-
+import { useDispatch } from "react-redux";
+import { authenticationSuccess } from "@/redux/features/auth/auth.slice";
 export default function SignIn() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -22,6 +23,7 @@ export default function SignIn() {
 }
 
 function SignInContent() {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -48,11 +50,12 @@ function SignInContent() {
 
     try {
       const data = await loginUser(email, password);
+      // console.log(data);
+      dispatch(authenticationSuccess(data));
       // const { first_name, last_name } = data.data;
       // const organization = await getOrganization();
       // await setOrganizationId(organization?.[0].id || "");
       // await setOrganizationName(organization?.[0].name || "");
-      
 
       // sendLoginEmail(email, first_name, last_name);
 
@@ -60,7 +63,7 @@ function SignInContent() {
         throw new Error(data?.message || "Invalid email or password.");
       }
       router.refresh();
-      router.push(redirectTo); 
+      router.push(redirectTo);
     } catch (err: any) {
       setError(err.message || "Something went wrong. Please try again.");
       setLoading(false);
@@ -325,15 +328,15 @@ function SignInContent() {
                   "Sign in"
                 )}
               </motion.button>
-               <motion.p
-                  className="text-center text-xs text-gray-600"
-                  variants={itemVariants}
-                >
-                  Don't have an account?{" "}
-                  <a href="/sign-up" className="text-[#009A49] hover:underline">
-                    Sign up
-                  </a>
-                </motion.p>
+              <motion.p
+                className="text-center text-xs text-gray-600"
+                variants={itemVariants}
+              >
+                Don't have an account?{" "}
+                <a href="/sign-up" className="text-[#009A49] hover:underline">
+                  Sign up
+                </a>
+              </motion.p>
             </motion.form>
           </motion.div>
         </motion.div>

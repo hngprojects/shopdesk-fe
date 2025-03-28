@@ -65,11 +65,34 @@ export const authApi = api.injectEndpoints({
       }),
     }),
 
+    // createOrg: builder.mutation<OrgType, Partial<OrgType>>({
+    //   query: (values) => {
+    //     const token = (store.getState() as RootState).auth.token;
+    //     return {
+    //       url: "/organization/create/",
+    //       method: "POST",
+    //       body: values,
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     };
+    //   },
+    // }),
+
     createOrg: builder.mutation<OrgType, Partial<OrgType>>({
       query: (values) => {
         const token = (store.getState() as RootState).auth.token;
+
+        // 🔍 Debugging: Log token and body
+        console.log("🟢 Token Sent from Frontend:", token);
+        console.log("📝 Body Sent:", values);
+
+        if (!token) {
+          throw new Error("Authorization token is missing");
+        }
+
         return {
-          url: "/organizations/",
+          url: "/organization/create/",
           method: "POST",
           body: values,
           headers: {
@@ -78,6 +101,7 @@ export const authApi = api.injectEndpoints({
         };
       },
     }),
+
     // // NOTE: This is not exactly correct look into the docs and figure out if it's needed
     // verifyOtp: builder.mutation({
     //   query: ({ email, otp_token }) => ({
