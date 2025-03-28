@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/select";
 import type { Table } from "@tanstack/react-table";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { getPageNumbers } from "./data/paginationUtils";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
@@ -20,23 +19,16 @@ export function DataTablePagination<TData>({
   viewType,
   setViewType,
 }: DataTablePaginationProps<TData>) {
-  const pageIndex = table.getState().pagination.pageIndex;
-  const pageCount = table.getPageCount();
-  const pages = getPageNumbers(pageIndex + 1, pageCount);
+  const { pageIndex, pageSize } = table.getState().pagination;
+  const totalPages = table.getPageCount();
 
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">
-        You have made{" "}
-        <span className="text-[#2A2A2A]">
-          {table.getFilteredRowModel().rows.length}
-        </span>{" "}
-        {table.getFilteredRowModel().rows.length > 1 ? "sales" : "sale"}{" "}
         <span className="inline-flex items-center">
-          (Displaying{" "}
           <Select
             value={viewType}
-            onValueChange={(value) => {
+            onValueChange={(value: string) => {
               setViewType(value as "Daily" | "Weekly" | "Flat");
             }}
           >
@@ -51,68 +43,43 @@ export function DataTablePagination<TData>({
               </span>
             </SelectTrigger>
             <SelectContent side="top">
-              <SelectItem value="Daily" className="text-[#2A2A2A]">
-                Daily
-              </SelectItem>
-              <SelectItem value="Weekly" className="text-[#2A2A2A]">
-                Weekly
-              </SelectItem>
-              <SelectItem value="Flat" className="text-[#2A2A2A]">
-                Flat / All Time
-              </SelectItem>
+              <SelectItem value="Daily">Daily</SelectItem>
+              <SelectItem value="Weekly">Weekly</SelectItem>
+              <SelectItem value="Flat">Flat / All Time</SelectItem>
             </SelectContent>
           </Select>
-          )
+          View
         </span>
       </div>
-      <div className="flex items-center">
-        {/* Previous button */}
-        {pageIndex > 0 && (
-          <Button
-            variant="outline"
-            className="h-8 px-2.5 border border-[#E2E8F0] bg-white hover:bg-[#E2E8F0]"
-            onClick={() => table.previousPage()}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="ml-2">Previous</span>
-          </Button>
-        )}
 
-        {/* Page numbers */}
-        {pages.map((page, index) =>
-          page === "..." ? (
-            <span key={index} className="px-2 text-sm">
-              ...
-            </span>
-          ) : (
-            <Button
-              key={page}
-              variant="outline"
-              className={`h-8 px-3 border ${
-                pageIndex + 1 === page
-                  ? "bg-white text-[#2A2A2A] border-[#E2E8F0] font-bold"
-                  : "border-[#E2E8F0] bg-white hover:bg-[#E2E8F0]"
-              }`}
-              onClick={() =>
-                table.setPageIndex(typeof page === "number" ? page - 1 : 0)
-              }
-            >
-              {page}
-            </Button>
-          )
-        )}
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+          className="h-8 px-2.5 border border-[#E2E8F0] bg-white hover:bg-[#E2E8F0]"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          <span className="ml-2">Previous</span>
+        </Button>
 
-        {/* Next button */}
-        {pageIndex < pageCount - 1 && (
-          <Button
-            variant="outline"
-            className="h-8 px-2.5 border border-[#E2E8F0] bg-white hover:bg-[#E2E8F0]"
-            onClick={() => table.nextPage()}
-          >
-            <span className="mr-2">Next</span>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        )}
+        <span className="flex items-center gap-1">
+          <strong>
+            {pageIndex + 1} of {totalPages}
+          </strong>
+        </span>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+          className="h-8 px-2.5 border border-[#E2E8F0] bg-white hover:bg-[#E2E8F0]"
+        >
+          <span className="mr-2">Next</span>
+          <ArrowRight className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );

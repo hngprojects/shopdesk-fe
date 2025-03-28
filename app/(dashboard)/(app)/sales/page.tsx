@@ -26,6 +26,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { columns, type Sale } from "./components/columns";
 import { DataTable } from "./components/data-table";
+import { DataTablePagination } from "./components/data-table-pagination";
 import EmptySalePage from "./components/empty-sale-page";
 import { processDataIntoGroups } from "./data/data";
 
@@ -99,6 +100,14 @@ export default function SalesPage() {
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 5,
+        pageIndex: 0,
+      },
+    },
+    manualPagination: true,
+    pageCount: Math.ceil((formattedSales?.length || 0) / 5),
   });
 
   const selectedItems = useSelector(
@@ -163,9 +172,16 @@ export default function SalesPage() {
     toggleSalesModal();
   };
 
-  const groupedData = formattedSales
-    ? processDataIntoGroups(formattedSales)
-    : [];
+  const groupedData = React.useMemo(() => {
+    if (!formattedSales) return [];
+
+    // Get current page data
+    const { pageSize, pageIndex } = table.getState().pagination;
+    const start = pageIndex * pageSize;
+    const paginatedData = formattedSales.slice(start, start + pageSize);
+
+    return processDataIntoGroups(paginatedData);
+  }, [formattedSales, table.getState().pagination]);
 
   return (
     <React.Fragment>
@@ -173,7 +189,6 @@ export default function SalesPage() {
         <Button
           variant="outline"
           onClick={toggleSalesModal}
-          disabled={groupedData.length >= 5}
           className="absolute top-35 right-13 max-[400px]:text-sm text-nowrap max-[1000px]:hidden mr-2 disabled:opacity-50 text-black border-black"
         >
           + Add New Sale
@@ -244,8 +259,8 @@ export default function SalesPage() {
             ))}
           </div>
 
-          {/* {groupedData && (
-            <div className="min-w-[900px] border-t border-b  border-gray-200 rounded-br-lg rounded-bl-lg mt-4">
+          {groupedData.length > 0 && (
+            <div className="min-w-[900px] border-t border-b border-gray-200 rounded-br-lg rounded-bl-lg mt-4">
               <div className="px-4 py-3">
                 <DataTablePagination
                   table={table}
@@ -254,7 +269,7 @@ export default function SalesPage() {
                 />
               </div>
             </div>
-          )} */}
+          )}
         </div>
       </div>
 
