@@ -1,7 +1,9 @@
 "use client";
 
-import { editStock } from "@/actions/stocks";
+// import { editStock } from "@/actions/stocks";
 import { Input } from "@/components/ui/input";
+import { useEditStockMutation } from "@/redux/features/stock/stock.api";
+import { useStore } from "@/store/useStore";
 // import { useEditStockMutation } from "@/redux/features/stock/stock.api";
 import { useEffect, useRef, useState, useTransition } from "react";
 
@@ -11,6 +13,7 @@ type EditableCellProps = {
   onChange: (newValue: string) => void;
   stockId: string;
   accessorKey: string;
+  rowData: Record<string, any>;
 };
 
 export function EditableCell({
@@ -19,11 +22,14 @@ export function EditableCell({
   onChange,
   stockId,
   accessorKey,
+  rowData,
 }: EditableCellProps) {
   const [editing, setEditing] = useState(false);
   const [internalValue, setInternalValue] = useState<string>(value);
   const inputRef = useRef<HTMLInputElement>(null);
-  // const [editStock] = useEditStockMutation();
+  const [editStock, { isLoading, error }] = useEditStockMutation();
+  const organization_id = useStore((state) => state.organizationId);
+
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -37,18 +43,25 @@ export function EditableCell({
     if (internalValue !== value) {
       startTransition(async () => {
         try {
-          const response = await editStock({
+          await editStock({
             id: stockId,
-            [accessorKey]: internalValue,
-          });
+            organization_id: organization_id,
+            name: accessorKey === "name" ? internalValue : rowData.name,
+            quantity:
+              accessorKey === "quantity"
+                ? parseInt(internalValue)
+                : rowData.quantity,
+            buying_price:
+              accessorKey === "buying_price"
+                ? parseFloat(internalValue)
+                : rowData.buying_price,
+            currency_code: currency || rowData.currency_code,
+          }).unwrap();
 
-          if (response.error) {
-            console.error("Error updating stock:", response.error);
-          } else {
-            console.log("Stock updated successfully", response);
-          }
-        } catch (error) {
-          console.error("Error updating stock:", error);
+          console.log("Stock updated successfully");
+        } catch (err) {
+          console.error("Error updating stock:", err);
+          setInternalValue(value); // Revert on failure
         }
       });
     }

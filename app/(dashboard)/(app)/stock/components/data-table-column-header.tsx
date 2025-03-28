@@ -28,7 +28,7 @@ export function DataTableColumnHeader<TData, TValue>({
         className=" h-auto p-5 data-[state=open]:bg-accent w-full rounded-none"
         onClick={() => column.toggleSorting()}
       >
-        <span className="uppercase md:text-lg font-medium text-[#090F1C]">
+        <span className="uppercase md:text-lg font-bold text-[#090F1C]">
           {children ? children : title}
         </span>
         {column.getIsSorted() === "desc" ? (
