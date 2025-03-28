@@ -24,6 +24,7 @@ import {
 } from "@tanstack/react-table";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
 import { columns, type Sale } from "./components/columns";
 import { DataTable } from "./components/data-table";
 import { DataTablePagination } from "./components/data-table-pagination";
@@ -160,14 +161,14 @@ export default function SalesPage() {
         customer_id: customer.id,
         currency_code: customer.default_currency_code || "NGN",
         products_sold,
-      }).unwrap();
-
+      })
+        .unwrap()
+        .then(() => setShowModal(false));
       console.log("Sale created:", saleResponse);
+      toast.success("Sale created. Please wait to view it.");
     } catch (error) {
       console.error("Error creating sale:", error);
     }
-
-    setShowModal(false);
   };
 
   const groupedData = React.useMemo(() => {
@@ -187,7 +188,7 @@ export default function SalesPage() {
         <Button
           variant="outline"
           onClick={toggleSalesModal}
-          className="absolute top-35 right-13 max-[400px]:text-sm text-nowrap max-[1000px]:hidden mr-2 disabled:opacity-50 text-black border-black"
+          className="absolute top-14 right-0 max-[400px]:text-sm text-nowrap max-[1000px]:hidden mr-2 disabled:opacity-50 text-black border-black"
         >
           + Add New Sale
         </Button>
@@ -275,6 +276,9 @@ export default function SalesPage() {
         isOpen={showModal}
         onClose={toggleSalesModal}
         onCompleteSale={completeSale}
+        isCreatingSale={isCreatingSale}
+        isCreatingCustomer={isCreatingCustomer}
+        isFetchingCustomers={isFetchingCustomers}
         stockItems={stockItems as unknown as StockItemResponse[]}
       />
     </React.Fragment>

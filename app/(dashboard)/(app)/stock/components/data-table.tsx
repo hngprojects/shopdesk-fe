@@ -189,6 +189,7 @@ export function DataTable<TData, TValue>({
 
       <AddStockModal
         isOpen={isAddStockModalOpen}
+        setIsAddStockModalOpen={setIsAddStockModalOpen}
         onOpenChange={(open) => setIsAddStockModalOpen(open)}
       />
     </div>

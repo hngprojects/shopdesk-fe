@@ -7,6 +7,7 @@ import { useEffect, useMemo } from "react";
 import ReceiptItem from "@/components/modal/salesmodal/receipt-item";
 import SearchBar from "@/components/modal/salesmodal/search-bar";
 import ItemCard from "@/components/modal/salesmodal/stock-item-card";
+import { Icons } from "@/components/ui/icons";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
   setActiveItem,
@@ -20,6 +21,9 @@ interface RecordSalesModalProps {
   onClose: () => void;
   stockItems: StockItemResponse[];
   onCompleteSale: (selectedItems: StockItemResponse[]) => void;
+  isCreatingSale: boolean;
+  isCreatingCustomer: boolean;
+  isFetchingCustomers: boolean;
 }
 
 const getRandomColor = () => {
@@ -54,6 +58,9 @@ const SalesModal: React.FC<RecordSalesModalProps> = ({
   onClose,
   stockItems,
   onCompleteSale,
+  isCreatingSale,
+  isCreatingCustomer,
+  isFetchingCustomers,
 }) => {
   const dispatch = useAppDispatch();
   const { selectedItems, currentTime, searchText } = useAppSelector(
@@ -310,8 +317,13 @@ const SalesModal: React.FC<RecordSalesModalProps> = ({
 
           <button
             type="button"
-            disabled={selectedItems.length === 0}
-            className={`w-full h-[48px] pt-3 pr-6 pb-3 mb-3 pl-4 gap-1.5 rounded-lg border border-gray-300 flex items-center justify-center font-medium text-white transition-colors ${
+            disabled={
+              selectedItems.length === 0 ||
+              isFetchingCustomers ||
+              isCreatingCustomer ||
+              isCreatingSale
+            }
+            className={`w-full h-[48px] pt-3 pr-6 pb-3 mb-3 pl-4 rounded-lg border border-gray-300 flex items-center justify-center gap-2 font-medium text-white transition-colors ${
               selectedItems.length === 0
                 ? "bg-gray-300 cursor-not-allowed opacity-50"
                 : "bg-black hover:bg-[#BDE0CE]"
@@ -321,7 +333,10 @@ const SalesModal: React.FC<RecordSalesModalProps> = ({
               onClose();
             }}
           >
-            ✕ Complete Sale
+            {(isFetchingCustomers || isCreatingCustomer || isCreatingSale) && (
+              <Icons.LoadingIcon />
+            )}
+            <span>✕ Complete Sale</span>
           </button>
         </div>
       </div>
