@@ -86,7 +86,6 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     const createProductData = new FormData();
     createProductData.append("organization_id", organizationId);
     createProductData.append("name", values.name);
