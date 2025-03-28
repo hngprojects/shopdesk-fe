@@ -54,7 +54,7 @@ jobs:
           echo "$SSH_KEY" > deploy_key.pem
           chmod 600 deploy_key.pem
           ssh -o StrictHostKeyChecking=no -i deploy_key.pem "$SSH_USERNAME@$SSH_IP" "
-            cd shopdesk-fe &&  # Navigate to the repository directory
+            cd shopdesk-fe-staging &&  # Navigate to the repository directory
             git fetch origin &&  # Fetch the latest changes
             git checkout ${{ github.ref_name }} &&  # Switch to the correct branch
             git reset --hard origin/${{ github.ref_name }} &&  # Reset to the latest commit

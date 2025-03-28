@@ -1,11 +1,11 @@
-import type React from 'react';
-import { Minus, Plus } from 'lucide-react';
-import { setSelectedItems } from '@/redux/slicer';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
-import type { StockItem } from '@/types/stocks';
+import { setSelectedItems } from '@/redux/slicer';
+import type { StockItemResponse } from '@/types/stocks';
+import { Minus, Plus } from 'lucide-react';
+import type React from 'react';
 
 interface ReceiptItemProps {
-  stockItem: StockItem;
+  stockItem: StockItemResponse;
 }
 
 const ReceiptItem: React.FC<ReceiptItemProps> = ({ stockItem }) => {
@@ -46,23 +46,27 @@ const ReceiptItem: React.FC<ReceiptItemProps> = ({ stockItem }) => {
       </span>
       <div className='flex items-center gap-4'>
         <span className='font-sans text-lg font-medium leading-7 tracking-normal'>
-          {stockItem.sell_price || 'N/A'}
+          {stockItem.selling_price || 'N/A'}
         </span>
         <div className='flex items-center gap-1.5'>
           <button
             type='button'
-            onClick={() => handleQuantityChange(selectedItem.quantity - 1)}
-            disabled={selectedItem.quantity === 0}
+            onClick={() =>
+              handleQuantityChange(selectedItem.available_quantity - 1)
+            }
+            disabled={selectedItem.available_quantity === 0}
             className='w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center p-[15px] hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
           >
             <Minus size={16} />
           </button>
           <span className='w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center p-[15px] font-sans text-lg font-medium leading-7 tracking-normal'>
-            {selectedItem.quantity}
+            {selectedItem.available_quantity}
           </span>
           <button
             type='button'
-            onClick={() => handleQuantityChange(selectedItem.quantity + 1)}
+            onClick={() =>
+              handleQuantityChange(selectedItem.available_quantity + 1)
+            }
             className='w-10 h-10 rounded-lg border border-gray-300 flex items-center justify-center p-[15px] hover:bg-gray-100 transition-colors'
           >
             <Plus size={16} />

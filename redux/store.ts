@@ -9,13 +9,14 @@ import authSliceReducer from "./features/auth/auth.slice";
 import weeklySalesDataReducer from "./features/sale/sale.slice";
 import { sidebarReducer } from "./features/sidebar";
 import stocksSliceReducer from "./features/stock/stock.slice";
+import toggleTableReducer from "./features/table/toggle.slice";
 import notificationsReducer from "./notificationlslice";
 
 const persistConfig = {
   key: "root",
   storage,
   whitelist: ["auth", "sidebar", "sales", "notification"],
-  blacklist: ["stocks", "weeklySales"],
+  blacklist: ["stocks", "weeklySales", ""],
 };
 
 type RootAction =
@@ -27,6 +28,7 @@ const appReducer = combineReducers({
   stocks: stocksSliceReducer,
   sidebar: sidebarReducer,
   sales: salesReducer,
+  toggleTableState: toggleTableReducer,
   weeklySales: weeklySalesDataReducer,
   notification: notificationsReducer,
   [api.reducerPath]: api.reducer,

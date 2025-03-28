@@ -7,25 +7,16 @@ import { useState } from "react";
 
 interface ProfitColumnHeaderProps<TData> {
   table: Table<TData>;
+  isExpanded: boolean;
+  toggleExpand: () => void;
 }
 
 export function ProfitColumnHeader<TData>({
   table,
+  isExpanded,
+  toggleExpand,
 }: ProfitColumnHeaderProps<TData>) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [activeSortKey, setActiveSortKey] = useState<string | null>(null);
-
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
-    table.setOptions((prev) => ({
-      ...prev,
-      meta: {
-        ...prev.meta,
-        isProfitExpanded: !isExpanded,
-      },
-    }));
-    table.reset();
-  };
 
   const handleSort = (key: string) => {
     setActiveSortKey(key);
@@ -72,15 +63,13 @@ export function ProfitColumnHeader<TData>({
           {profitColumns.map(({ key, label }) => (
             <div
               key={key}
-              className="w-full relative flex items-center justify-center border-r border-solid border-[#E9EEF3]"
+              className="w-full relative flex items-center justify-center border-r last:border-r-0 border-solid border-[#E9EEF3]"
             >
               <Button
                 variant="ghost"
                 onClick={() => handleSort(key)}
                 className={cn(
-                  "h-8 w-fit font-medium px-0 py-0 rounded-none",
-                  "flex items-center justify-center gap-0 text-center ",
-                  "hover:bg-transparent transition-colors",
+                  "h-8 w-fit font-medium px-0 py-0 rounded-none flex items-center justify-center gap-0 text-center hover:bg-transparent transition-colors",
                   activeSortKey === key && "bg-muted "
                 )}
               >

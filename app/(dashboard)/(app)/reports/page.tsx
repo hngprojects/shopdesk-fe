@@ -1,7 +1,12 @@
-import React from "react";
+import React from 'react';
+import Report from '@/components/report/dashboard';
 
 const ReportPage = () => {
-  return <div>ReportPage</div>;
+  return (
+    <div className=''>
+      <Report />
+    </div>
+  );
 };
 
 export default ReportPage;
