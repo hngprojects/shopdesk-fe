@@ -8,10 +8,11 @@ import {
   FaPlus,
   FaTimes,
 } from 'react-icons/fa';
-import { currencies } from './add-item';
+
 import { editStock } from '@/services/stock';
 import { Label } from '../ui/label';
 import type { Currency } from '@/types/stocks';
+import { currencies } from '@/app/(auth)/create-organization/_components/CreateOrganization';
 //import { editStock } from "@/services/stock";
 
 interface EditItemModal {
@@ -330,7 +331,9 @@ export default function EditItemModal({
                       const value = e.target.value;
 
                       if (/^\d*$/.test(value)) {
-                        setQuantity(value === '' ? 0 : Number.parseInt(value, 10));
+                        setQuantity(
+                          value === '' ? 0 : Number.parseInt(value, 10)
+                        );
                         setErrors((prev) => ({ ...prev, quantity: '' }));
                       } else {
                         setErrors((prev) => ({

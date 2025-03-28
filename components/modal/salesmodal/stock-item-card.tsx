@@ -1,10 +1,10 @@
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setActiveItem, setSelectedItems } from "@/redux/slicer";
-import type { StockItem } from "@/types/stocks";
+import type { StockItemResponse } from '@/types/stocks';
 import type React from "react";
 
 interface ItemCardProps {
-  item: StockItem;
+  item: StockItemResponse;
   index: number;
   cardColors: { [key: number]: string };
   textColors: { [key: number]: string };
