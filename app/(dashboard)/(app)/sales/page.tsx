@@ -22,11 +22,10 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { columns, type Sale } from "./components/columns";
 import { DataTable } from "./components/data-table";
-import { DataTablePagination } from "./components/data-table-pagination";
 import EmptySalePage from "./components/empty-sale-page";
 import { processDataIntoGroups } from "./data/data";
 
@@ -46,9 +45,14 @@ export default function SalesPage() {
 
   // Create a table instance for pagination
 
-  const { data: salesData, isFetching: FetchingSalesData } = useGetSalesQuery({
-    organization_id: organizationId,
-  });
+  const { data: salesData, isFetching: FetchingSalesData } = useGetSalesQuery(
+    {
+      organization_id: organizationId,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const formattedSales = salesData?.items?.flatMap((sale) =>
     sale.products_sold.map((product) => {
@@ -66,13 +70,23 @@ export default function SalesPage() {
     })
   );
 
-  const { data: ProductsData, isFetching } = useGetProductsForSaleQuery({
-    organization_id: organizationId,
-  });
-  const { data: customersData, isFetching: isFetchingCustomers } =
-    useGetCustomersQuery({
+  const { data: ProductsData, isFetching } = useGetProductsForSaleQuery(
+    {
       organization_id: organizationId,
-    });
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
+  const { data: customersData, isFetching: isFetchingCustomers } =
+    useGetCustomersQuery(
+      {
+        organization_id: organizationId,
+      },
+      {
+        refetchOnMountOrArgChange: true,
+      }
+    );
 
   const [createCustomer, { isLoading: isCreatingCustomer }] =
     useCreateCustomerMutation();
@@ -149,13 +163,9 @@ export default function SalesPage() {
     toggleSalesModal();
   };
 
-  const processedSales = useMemo(() => {
-    return formattedSales ? processDataIntoGroups(formattedSales) : [];
-  }, [formattedSales]);
-
-  const groupedData = useMemo(() => {
-    return formattedSales ? processDataIntoGroups(formattedSales) : [];
-  }, [formattedSales]);
+  const groupedData = formattedSales
+    ? processDataIntoGroups(formattedSales)
+    : [];
 
   return (
     <React.Fragment>
@@ -163,6 +173,7 @@ export default function SalesPage() {
         <Button
           variant="outline"
           onClick={toggleSalesModal}
+          disabled={groupedData.length >= 5}
           className="absolute top-35 right-13 max-[400px]:text-sm text-nowrap max-[1000px]:hidden mr-2 disabled:opacity-50 text-black border-black"
         >
           + Add New Sale
@@ -204,7 +215,7 @@ export default function SalesPage() {
           )}
 
           {FetchingSalesData && (
-            <div className="text-xl text-center w-full flex justify-center gap-3 items-center mt-20">
+            <div className="text-xl text-center w-full flex justify-center gap-3 items-center mt-10">
               <Icons.LoadingIcon /> Getting your sales. Please Wait!
             </div>
           )}
@@ -233,7 +244,7 @@ export default function SalesPage() {
             ))}
           </div>
 
-          {groupedData.length > 5 && (
+          {/* {groupedData && (
             <div className="min-w-[900px] border-t border-b  border-gray-200 rounded-br-lg rounded-bl-lg mt-4">
               <div className="px-4 py-3">
                 <DataTablePagination
@@ -243,7 +254,7 @@ export default function SalesPage() {
                 />
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
 
