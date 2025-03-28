@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Label } from '../ui/label';
 import type { Sale } from '@/types/sale';
 
-
 // Todo please fix types
 interface SalesTabProps {
   onAddSale: (sale: any) => void;
@@ -36,7 +35,7 @@ const SalesTab: React.FC<SalesTabProps> = ({
       return;
     }
 
-    const newSale: SalesItem = {
+    const newSale = {
       sale_id: uuidv4(),
       product_id: selectedProduct.product_id,
       product_name: selectedProduct.name,
