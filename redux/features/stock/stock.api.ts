@@ -31,12 +31,12 @@ interface StockRequest {
   quantity: number;
   buying_price: number;
   currency_code: string;
-  supplier_id: string;
-  buying_date: string;
+  supplier_id?: string;
+  buying_date?: string;
   product_id: string;
   organization_id: string;
-  date_created: string;
-  timeslots: {
+  date_created?: string;
+  timeslots?: {
     day_of_week: string;
     start: string;
     end: string;
