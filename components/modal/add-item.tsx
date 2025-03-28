@@ -74,7 +74,6 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
   const [createPrice] = useCreatePriceMutation();
 
   const [searchCurrency, setSearchCurrency] = useState("");
-  console.log("organization id", organizationId);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
