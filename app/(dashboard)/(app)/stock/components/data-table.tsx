@@ -1,5 +1,15 @@
 "use client";
 
+import Sidebar from "@/components/functional/sidebar";
+import AddStockModal from "@/components/modal/add-item";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -14,18 +24,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import * as React from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import Sidebar from "@/components/functional/sidebar";
-import AddStockModal from "@/components/modal/add-item";
 import { X } from "lucide-react";
+import * as React from "react";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import EmptyStock from "./empty-stock-state";
@@ -83,9 +83,13 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="flex w-full h-full gap-6">
-      <div className={`transition-all duration-200 ${isSidebarOpen ? 'w-[calc(100%-365px)]' : 'w-full'}`}>
+      <div
+        className={`transition-all duration-200 ${
+          isSidebarOpen ? "w-[calc(100%-365px)]" : "w-full"
+        }`}
+      >
         <div className="flex flex-col border border-gray-200 rounded-lg h-full overflow-hidden">
-          <div className="p-4 border-b">
+          <div className="p-4 border-b lg:border-0 lg:absolute lg:top-9 lg:-right-2">
             <DataTableToolbar table={table} />
           </div>
 
@@ -134,7 +138,7 @@ export function DataTable<TData, TValue>({
                   table.getRowModel().rows.map((row) => (
                     <TableRow
                       key={row.id}
-                      data-state={row.getIsSelected() && 'selected'}
+                      data-state={row.getIsSelected() && "selected"}
                       onClick={() => handleRowClick(row.original)}
                       className="hover:bg-gray-50 cursor-pointer"
                     >
@@ -157,7 +161,9 @@ export function DataTable<TData, TValue>({
                       colSpan={columns.length}
                       className="h-24 text-center text-gray-500 border-b border-gray-200"
                     >
-                      <EmptyStock onClick={() => setIsAddStockModalOpen(true)} />
+                      <EmptyStock
+                        onClick={() => setIsAddStockModalOpen(true)}
+                      />
                     </TableCell>
                   </TableRow>
                 )}
