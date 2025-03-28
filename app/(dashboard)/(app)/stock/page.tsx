@@ -13,7 +13,7 @@ export default function StockPage() {
 
   return (
     <div className="container mx-auto">
-      <div className="container mx-auto pl-1 bg-[#F6F8FA] border-l border-solid rounded-bl-[12px]">
+      <div className="container mx-auto pl-1 bg-[#F6F8FA] rounded-tr-[12px] rounded-br-[12px] border-l border-solid rounded-bl-[12px]">
         <DataTable
           data={data ?? []}
           columns={columns}

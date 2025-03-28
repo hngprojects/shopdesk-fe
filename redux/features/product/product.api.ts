@@ -15,14 +15,14 @@ export type Product = {
   unavailable: boolean;
   unavailable_start: string | null;
   unavailable_end: string | null;
-  status: string; // Assuming possible statuses
+  status: string;
   id: string;
   parent_product_id: string | null;
-  parent: any | null; // Adjust type if parent has a defined structure
+  parent: any | null;
   organization_id: string;
   categories: string[];
-  date_created: string; // ISO date format
-  last_updated: string; // ISO date format
+  date_created: string;
+  last_updated: string;
   user_id: string;
   current_price: { [currency: string]: [number, number | null] }[];
   is_deleted: boolean;
@@ -30,8 +30,8 @@ export type Product = {
   selling_price: string | null;
   discounted_price: number | null;
   buying_price: number | null;
-  photos: string[]; // Assuming photo URLs
-  attributes: Record<string, any>; // Adjust based on attribute structure
+  photos: string[];
+  attributes: Record<string, any>;
 };
 
 interface ProductsResponse {

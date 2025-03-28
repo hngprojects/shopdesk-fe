@@ -27,6 +27,7 @@ import {
 
 import Sidebar from "@/components/functional/sidebar";
 import AddStockModal from "@/components/modal/add-item";
+import { X } from "lucide-react";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import EmptyStock from "./empty-stock-state";
@@ -86,7 +87,7 @@ export function DataTable<TData, TValue>({
     <div className="flex space-x-4 w-full h-full">
       {/* Main table container */}
       <div className="flex-1 flex flex-col min-w-[900px] border-l-0 border border-gray-200 rounded-br-lg rounded-bl-lg rounded-tr-lg overflow-x-auto">
-        <div className="p-4 border-b">
+        <div className="absolute top-40 right-14">
           <DataTableToolbar table={table} />
         </div>
 
@@ -127,9 +128,9 @@ export function DataTable<TData, TValue>({
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
-                    className="h-24 text-center text-red-500 oveflow-x-auto"
+                    className="h-24 text-center text-red-500 oveflow-x-auto flex gap-4"
                   >
-                    {error}
+                    <X /> <span>Error Fetching Stocks</span>
                   </TableCell>
                 </TableRow>
               ) : table.getRowModel().rows?.length ? (

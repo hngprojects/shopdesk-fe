@@ -154,9 +154,6 @@ export default function SalesPage() {
               </TableHeader>
             </Table>
           </div>
-          <div>
-            <button onClick={toggleSalesModal}>Show Modal</button>
-          </div>
           {/* Tables for each time group */}
           <div className="px-5 pt-5 space-y-6">
             {groupedData.map((group) => (
