@@ -150,7 +150,7 @@ export default function SalesPage() {
     const products_sold = [
       {
         product_id: firstSelectedItemId,
-        amount: 100,
+        amount: 1,
         quantity: 1,
         currency_code: "NGN",
       },
@@ -160,7 +160,7 @@ export default function SalesPage() {
       const saleResponse = await createSale({
         organization_id: organizationId,
         customer_id: customer.id,
-        currency_code: customer.default_currency_code || "USD",
+        currency_code: customer.default_currency_code || "NGN",
         products_sold,
       }).unwrap();
 
