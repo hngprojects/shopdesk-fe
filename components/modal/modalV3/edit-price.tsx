@@ -54,11 +54,11 @@ export default function EditPriceModal({
     if (isFormValid()) {
       try {
         await editPrice(item.id, {
-          buying_price: Number.parseFloat(price),
+          buying_price: Number.parseFloat(`${price}`),
           currency_code: selectedSellingCurrency.code,
         });
 
-        onSave(Number.parseFloat(price));
+        onSave(Number.parseFloat(`${price}`));
         openSuccessModal();
         onClose();
       } catch (error) {
