@@ -14,7 +14,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 
         {/* Main Section */}
         <div className="space-y-0 w-full lg:border lg:border-solid lg:border-white lg:relative">
-          <div className="w-full flex justify-between max-[800px]:flex-col-reverse mt-14">
+          <div className="w-full flex justify-between max-[800px]:flex-col-reverse">
             {/* Tabs List/Component (Stock, Sales, Report) */}
             <TabNavigation />
 

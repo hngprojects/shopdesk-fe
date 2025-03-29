@@ -43,7 +43,7 @@ const BestSellingProducts = () => {
 
   return (
     <div className="mt-6">
-      <div className="bg-white p-4 rounded shadow">
+      <div className="bg-white p-4 lg:rounded-xl shadow">
         <div className="flex justify-between items-center">
         <div className="flex items-center gap-3 mb-6">
             <div className="flex border size-[32px] items-center justify-center rounded-[8px]">
@@ -74,7 +74,7 @@ const BestSellingProducts = () => {
                 width={18}
                 height={12}
               />
-              Filter
+              More filters
             </button>
             {showCategoryOptions && (
               <div className="absolute z-10 mt-1 w-40 bg-white border rounded shadow text-sm">
@@ -108,14 +108,14 @@ const BestSellingProducts = () => {
               </div>
             )}
           </div>
-          <div className="flex h-[48px] items-center justify-start gap-2 rounded-md border border-neutral-75 bg-white px-2 py-[0.875rem]">
+          <div className="flex h-[48px] items-center justify-start gap-2 rounded-xl border border-neutral-75 bg-white px-2 py-[0.875rem]">
             <Search className="size-4 flex-shrink-0 text-neutral-400" />
             <input
               type="text"
               placeholder="Search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-[calc(100%-1rem)] flex-1 text-sm focus:border-none focus:outline-none"
+              className="w-[320px] flex-1 text-sm focus:border-none focus:outline-none"
             />
           </div>
         </div>
