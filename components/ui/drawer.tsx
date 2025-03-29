@@ -23,15 +23,21 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, children }) => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 bg-black/50 flex justify-center items-end ${isOpen ? 'block' : 'hidden'}`}
+      className={`fixed inset-0 z-50 bg-transparent flex flex-col justify-end items-end ${isOpen ? 'block' : 'hidden'}`}
     >
       <div
         className={`w-full max-w-md bg-white p-6 rounded-t-2xl transition-all transform ${drawerState} relative`}
         onClick={(e) => e.stopPropagation()}
       >
         {children}
+      <div className='flex flex-col mt-10'>
+        <p className='text-center'>
+          &copy; {new Date().getFullYear()}, Powered by Timbu Business
+        </p>
+      </div>
       </div>
     </div>
+    
   );
 };
 
