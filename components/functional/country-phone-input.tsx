@@ -1,5 +1,5 @@
-import { useState } from "react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FiChevronDown } from "react-icons/fi";
 
@@ -77,6 +77,7 @@ const CountryPhoneInput: React.FC<CountryPhoneInputProps> = ({
   const [isCountryModalOpen, setIsCountryModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<Country>(countries[0]);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const toggleCountryModal = () => {
     setIsCountryModalOpen(!isCountryModalOpen);
@@ -91,10 +92,29 @@ const CountryPhoneInput: React.FC<CountryPhoneInputProps> = ({
     country.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setIsCountryModalOpen(false);
+      }
+    };
+
+    if (isCountryModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isCountryModalOpen]);
+
   return (
     <div className="flex-1">
       <div
-        className={`flex p-4 text-[#B8B8B8] border border-[#DEDEDE] rounded-[9px] relative text-base md:text-lg focus-within:border-green-500 focus-within:bg-white transition-colors ${className}`}
+        className={`flex p-4 text-[#B8B8B8] relative border border-[#DEDEDE] rounded-[9px] text-base md:text-lg focus-within:border-green-500 focus-within:bg-white transition-colors ${className}`}
       >
         <div
           className="flex gap-[8px] items-center cursor-pointer"
@@ -126,7 +146,10 @@ const CountryPhoneInput: React.FC<CountryPhoneInputProps> = ({
         </div>
 
         {isCountryModalOpen && (
-          <div className="absolute top-full left-0 mt-2 w-[300px] bg-white rounded-lg backdrop-blur-sm border z-50">
+          <div
+            ref={modalRef}
+            className="z-[9999] absolute  top-full left-0 mt-2 w-[300px] bg-white backdrop-blur-sm border rounded-[9px]"
+          >
             <div className="relative w-full p-4">
               <input
                 type="text"
@@ -140,7 +163,7 @@ const CountryPhoneInput: React.FC<CountryPhoneInputProps> = ({
               <FaSearch className="absolute left-[32px] top-1/2 transform -translate-y-1/2 text-[#B8B8B8] w-[20px] h-[20px]" />
             </div>
 
-            <div className="h-[200px] overflow-y-auto px-4 bg-[#FFFFFF]">
+            <div className="h-[200px] overflow-y-auto px-4 bg-[#FFFFFF] rounded-[9px]">
               {filteredCountries.map((country) => (
                 <div
                   key={country.code}

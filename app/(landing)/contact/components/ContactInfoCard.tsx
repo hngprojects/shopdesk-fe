@@ -1,8 +1,6 @@
 "use client";
-import { ReactNode } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { MapPin } from "lucide-react";
+import { ReactNode } from "react";
 
 interface ContactInfoCardProps {
   title: string;
@@ -13,15 +11,19 @@ interface ContactInfoCardProps {
   delay: number;
 }
 
-export const ContactInfoCard = ({ 
-  title, 
-  description, 
-  icon, 
-  linkText, 
-  href, 
-  delay 
+export const ContactInfoCard = ({
+  title,
+  description,
+  icon,
+  linkText,
+  href,
+  delay,
 }: ContactInfoCardProps) => (
-  <div className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-5 bg-gray-50 rounded-lg" data-aos="fade-up" data-aos-delay={delay}>
+  <div
+    className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-5 bg-gray-50 rounded-lg"
+    data-aos="fade-up"
+    data-aos-delay={delay}
+  >
     <h3 className="text-lg sm:text-2xl font-bold">{title}</h3>
     <div className="flex flex-col gap-1">
       <p className="text-[#717171] text-base md:text-lg">{description}</p>
@@ -34,13 +36,17 @@ export const ContactInfoCard = ({
 );
 
 export const BillingSupportCard = ({ delay }: { delay: number }) => (
-  <div className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-5 bg-gray-50 rounded-lg" data-aos="fade-up" data-aos-delay={delay}>
+  <div
+    className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-5 bg-gray-50 rounded-lg"
+    data-aos="fade-up"
+    data-aos-delay={delay}
+  >
     <h3 className="text-lg sm:text-2xl font-bold">For billing support</h3>
     <div className="flex flex-col gap-1">
       <p className="text-[#717171] text-base md:text-lg">
         You can visit our{" "}
         <Link
-          href=""
+          href="/faq"
           className="underline hover:text-black transition duration-200"
         >
           Help Centre

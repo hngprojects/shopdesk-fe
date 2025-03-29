@@ -1,24 +1,47 @@
 "use client";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import appStore from "../../public/icons/App Store.png";
+import facebook from "../../public/icons/facebook.svg";
+import github from "../../public/icons/github.svg";
+import instagram from "../../public/icons/instagram.svg";
 import playStore from "../../public/icons/Play Store.png";
 import twitter from "../../public/icons/twitter.svg";
-import facebook from "../../public/icons/facebook.svg";
-import instagram from "../../public/icons/instagram.svg";
-import github from "../../public/icons/github.svg";
 import Logo from "./logo";
-import { link } from "fs";
+
+type FooterLinks = {
+  href: string;
+  label: string;
+}[];
+
+const footerLinks: FooterLinks = [
+  {
+    href: "/cookie",
+    label: "Cookies",
+  },
+  // {
+  //   href: "/terms-of-service",
+  //   label: "Terms of Service"
+  // },
+  {
+    href: "/policy",
+    label: "Privacy Policy",
+  },
+  // {
+  //   href: "/manage-policy",
+  //   label: "Manage Policy"
+  // }
+];
 
 const Footer = () => {
   const footer = [
     {
       title: "Product",
       links: [
-        {
-          name: "Overview",
-          route: "/overview",
-        },
+        // {
+        //   name: "Overview",
+        //   route: "/overview",
+        // },
 
         {
           name: "Features",
@@ -28,19 +51,19 @@ const Footer = () => {
           name: "Pricing",
           route: "/pricing",
         },
-        {
-          name: "Tutorials",
-          route: "/tutorials",
-        },
+        // {
+        //   name: "Tutorials",
+        //   route: "/tutorials",
+        // },
       ],
     },
     {
       title: "Company",
       links: [
-        {
-          name: "About us",
-          route: "/about-us",
-        },
+        // {
+        //   name: "About us",
+        //   route: "/about-us",
+        // },
 
         {
           name: "Careers",
@@ -54,32 +77,32 @@ const Footer = () => {
           name: "Contact",
           route: "/contact",
         },
-        {
-          name: "Newsletter",
-          route: "/newsletter",
-        },
+        // {
+        //   name: "Newsletter",
+        //   route: "/newsletter",
+        // },
       ],
     },
     {
       title: "Help",
       links: [
-        {
-          name: "Customer Support",
-          route: "/customer-support",
-        },
+        // {
+        //   name: "Customer Support",
+        //   route: "/customer-support",
+        // },
 
         {
           name: "FAQ",
           route: "/faq",
         },
-        {
-          name: "Help Center",
-          route: "/help-center",
-        },
-        {
-          name: "Youtube Playist",
-          route: "/youtube-playist",
-        },
+        // {
+        //   name: "Help Center",
+        //   route: "/help-center",
+        // },
+        // {
+        //   name: "Youtube Playist",
+        //   route: "/youtube-playist",
+        // },
       ],
     },
   ];
@@ -238,16 +261,9 @@ const Footer = () => {
           <p>© Copyright 2024, Powered by Timbu Business</p>
 
           <ul className="flex flex-wrap justify-center gap-4">
-            {[
-              "Cookies",
-              "Terms of service",
-              "Privacy Policy",
-              "Manage Policy",
-            ].map((item, index) => (
+            {footerLinks.map((item, index) => (
               <li key={index}>
-                <Link href={`/${item.toLowerCase().replace(" ", "-")}`}>
-                  {item}
-                </Link>
+                <Link href={item.href}>{item.label}</Link>
               </li>
             ))}
           </ul>
