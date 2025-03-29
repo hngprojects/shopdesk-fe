@@ -57,6 +57,13 @@ export const accessControlApi = api.injectEndpoints({
       }),
       providesTags: ["Stock"],
       keepUnusedDataFor: 3600,
+      transformResponse: (response: StockResponse[]) => {
+        return response.sort(
+          (a, b) =>
+            new Date(b.date_created).getTime() -
+            new Date(a.date_created).getTime()
+        );
+      },
     }),
     // editStock: builder.mutation<StockResponse, EditStockRequest>({
     //   query: (data) => ({
@@ -85,11 +92,8 @@ export const accessControlApi = api.injectEndpoints({
       }),
       providesTags: (result) =>
         result
-          ? result.map(({ product_id }) => ({
-              type: "Stock" as const,
-              id: product_id,
-            }))
-          : [{ type: "Stock" as const, id: "LIST" }],
+          ? result.map(({ product_id }) => ({ type: "Stock", product_id }))
+          : [{ type: "Stock", id: "LIST" }],
     }),
 
     addStock: builder.mutation<StockResponse, StockRequest>({
@@ -98,7 +102,28 @@ export const accessControlApi = api.injectEndpoints({
         method: "POST",
         body: stockData,
       }),
-      invalidatesTags: ["Stock"],
+      async onQueryStarted(stockData, { dispatch, queryFulfilled }) {
+        try {
+          const { data: newStock } = await queryFulfilled;
+          dispatch(
+            accessControlApi.util.updateQueryData(
+              "getStocks",
+              stockData.organization_id,
+              (draft) => {
+                const updatedStocks = [newStock, ...draft];
+                updatedStocks.sort(
+                  (a, b) =>
+                    new Date(b.date_created).getTime() -
+                    new Date(a.date_created).getTime()
+                );
+                return updatedStocks;
+              }
+            )
+          );
+        } catch (error) {
+          console.error("Failed to update cache:", error);
+        }
+      },
     }),
 
     editStock: builder.mutation<StockResponse, EditStockRequest>({
@@ -114,7 +139,7 @@ export const accessControlApi = api.injectEndpoints({
           organization_id: data.organization_id,
         },
       }),
-      invalidatesTags: (result) => [{ type: "Stock", id: result?.id }],
+      invalidatesTags: (result, error, { id }) => [{ type: "Stock", id }],
     }),
 
     // createStock: builder.mutation<

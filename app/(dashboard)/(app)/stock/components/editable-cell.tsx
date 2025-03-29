@@ -6,6 +6,7 @@ import { useEditStockMutation } from "@/redux/features/stock/stock.api";
 import { useStore } from "@/store/useStore";
 // import { useEditStockMutation } from "@/redux/features/stock/stock.api";
 import { useEffect, useRef, useState, useTransition } from "react";
+import { toast } from "sonner";
 
 type EditableCellProps = {
   value: string;
@@ -56,11 +57,14 @@ export function EditableCell({
                 ? parseFloat(internalValue)
                 : rowData.buying_price,
             currency_code: currency || rowData.currency_code,
-          }).unwrap();
+          })
+            .unwrap()
+            .then(() => toast.success("Stock updated successfully"));
 
           console.log("Stock updated successfully");
         } catch (err) {
           console.error("Error updating stock:", err);
+          toast.error("Stock not updated! Please try again.");
           setInternalValue(value); // Revert on failure
         }
       });
