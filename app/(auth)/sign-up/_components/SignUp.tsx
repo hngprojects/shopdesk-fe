@@ -167,7 +167,6 @@ export default function SignUp() {
     }
 
     setLoading(true);
-
     try {
       const formattedData = {
         email: formData.email,
@@ -179,16 +178,47 @@ export default function SignUp() {
       };
       //await signUpUser(formattedData);
 
-      const result = await signup(formattedData).unwrap();
-      if (result) {
-        setIsModalOpen(true);
+      // const result = await signup(formattedData).unwrap();
+      // console.log(result);
+      // if ("data" in result) {
+      //   setIsModalOpen(true);
+      //   // router.push("/create-organization");
+      // } else {
+      //   if (result.error && "data" in result.error) {
+      //     console.log(result);
+      //     // setError(
+      //     //   (result.error.data as { message: string }).message ||
+      //     //     "An unknown error occurred."
+      //     // );
+      //   } else {
+      //     // setError("An unknown error occurred.");
+      //   }
+      // }
+      const result = await signup(formattedData);
+      if (result.data.message) {
+        if (
+          result.data?.message?.split(" ").some((x: string) => x === "email")
+        ) {
+          setErrors({
+            email: result.data?.message,
+            password: "",
+            phoneNumber: "",
+          });
+        } else {
+          setErrors({
+            email: "",
+            password: "",
+            phoneNumber: result.data?.message,
+          });
+        }
+        return;
+      } else {
         router.push("/create-organization");
+        setIsModalOpen(true);
       }
 
-      console.log(result);
-
-      setIsModalOpen(true);
       router.push("/create-organization");
+      setIsModalOpen(false);
     } catch (err: any) {
       //   setError(err.message || "Something went wrong. Please try again.");
     } finally {

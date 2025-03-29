@@ -6,6 +6,7 @@ import ExportModal from "@/components/modal/export-data";
 import { Search, Upload } from 'lucide-react';
 import React, { useState } from "react";
 
+
 const TabNavigation = () => {
   const pathname = usePathname();
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -16,32 +17,32 @@ const TabNavigation = () => {
 
   const tabs = [
     {
-      name: "Stock",
-      path: "/stock",
+      name: 'Stock',
+      path: '/stock',
       icon: (
         <Icons.Stock
-          className="w-5 h-5"
-          strokeColor={pathname === "/stock" ? "#009A49" : "#83838B"}
+          className='w-5 h-5'
+          strokeColor={pathname === '/stock' ? '#009A49' : '#83838B'}
         />
       ),
     },
     {
-      name: "Sales",
-      path: "/sales",
+      name: 'Sales',
+      path: '/sales',
       icon: (
         <Icons.Sales
-          className="w-5 h-5"
-          strokeColor={pathname === "/sales" ? "#009A49" : "#83838B"}
+          className='w-5 h-5'
+          strokeColor={pathname === '/sales' ? '#009A49' : '#83838B'}
         />
       ),
     },
     {
-      name: "Reports",
-      path: "/reports",
+      name: 'Reports',
+      path: '/reports',
       icon: (
         <Icons.Reports
-          className="w-5 h-5"
-          strokeColor={pathname === "/reports" ? "#009A49" : "#83838B"}
+          className='w-5 h-5'
+          strokeColor={pathname === '/reports' ? '#009A49' : '#83838B'}
         />
       ),
     },
@@ -65,7 +66,7 @@ const TabNavigation = () => {
                   : ''
               }`}
             >
-              <span className={isActive ? "text-[#2A2A2A]" : "text-[#83838b]"}>
+              <span className={isActive ? 'text-[#2A2A2A]' : 'text-[#83838b]'}>
                 {tab.name}
               </span>
               {tab.icon}

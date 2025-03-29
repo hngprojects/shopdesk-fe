@@ -107,14 +107,12 @@ function ReportDashboard() {
               ))}
             </div>
 
-<div>
-
+            <div>
             <Revenue/>
             <div>
-
             <BestSelling/>
             </div>
-</div>
+            </div>
           </div>
         </div>
       </div>

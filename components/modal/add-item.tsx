@@ -1,7 +1,7 @@
 'use client';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { currencies } from '@/app/(auth)/create-organization/_components/CreateOrganization';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import {
   Form,
   FormControl,
@@ -10,9 +10,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useAddStockMutation } from '@/redux/features/stock/stock.api';
-import { useAppSelector } from '@/redux/hooks';
 import {
   Select,
   SelectContent,
@@ -20,15 +17,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FaMinus, FaPlus } from 'react-icons/fa';
-import { useStorage } from '@/lib/helpers/manage-store';
-import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
-import { toast } from 'sonner';
+import { useCreatePriceMutation } from '@/redux/features/price/price.api';
+import { useCreateProductMutation } from '@/redux/features/product/product.api';
+import { useAddStockMutation } from '@/redux/features/stock/stock.api';
+import { useStore } from '@/store/useStore';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
-import Image from 'next/image';
-import { currencies } from '@/app/(auth)/create-organization/_components/CreateOrganization';
 import { Search } from 'lucide-react';
+import Image from 'next/image';
+import { SetStateAction, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { FaMinus, FaPlus } from 'react-icons/fa';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
 interface StockResponse {
   id: string;
@@ -66,10 +67,11 @@ interface AddStockModalProps {
 
 function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
   const [addStock, { isLoading }] = useAddStockMutation();
-  const { orgId } = useAppSelector((state) => state.auth);
+  const { organizationId } = useStore();
+  const [createProduct] = useCreateProductMutation();
+  const [createPrice] = useCreatePriceMutation();
 
   const [searchCurrency, setSearchCurrency] = useState('');
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -81,27 +83,49 @@ function AddStockModal({ isOpen, onOpenChange }: AddStockModalProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-
-    const request = {
-      name: values.name,
-      buying_price: Number(values.buying_price),
-      selling_price: Number(values.selling_price),
-      quantity: Number(values.quantity),
-      product_id: 'default-product-id',
-      organization_id: orgId,
-    };
-
-    addStock(request)
+    const createProductData = new FormData();
+    createProductData.append('organization_id', organizationId);
+    createProductData.append('name', values.name);
+    createProduct(createProductData)
       .unwrap()
-      .then(() => {
-        console.log(response);
-        toast.success('Stock added successfully');
+      .then((response) => {
+        console.log(response.id);
+        const request = {
+          name: values.name,
+          buying_price: Number(values.buying_price),
+          selling_price: Number(values.selling_price),
+          quantity: Number(values.quantity),
+          product_id: response.id,
+          organization_id: organizationId,
+          currency_code: values.currency_code,
+        };
+        const priceRequest = {
+          name: values.name,
+          price: +values.selling_price,
+          product_id: response.id,
+          organization_id: organizationId,
+          currency_code: values.currency_code,
+          discounted_price: +values.selling_price,
+        };
+        createPrice(priceRequest)
+          .unwrap()
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => console.error(error));
+        addStock(request)
+          .unwrap()
+          .then((response) => {
+            console.log(response);
+            toast.success('Stock added successfully');
+            onOpenChange(false);
+          })
+          .catch((error) => {
+            console.error(error);
+            toast.error('An error occurred');
+          });
       })
-      .catch((error) => {
-        console.error(error);
-        toast.error('An error occurred');
-      });
+      .catch((error) => console.error(error));
   }
 
   const filteredCurrencies = currencies.filter(

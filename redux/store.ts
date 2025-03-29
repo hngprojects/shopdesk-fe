@@ -43,6 +43,7 @@ const rootReducer = (
   if (action.type === "auth/refreshToken") {
     const { setAccessToken } = useStorage();
     const token = action.payload.data.access;
+    console.log(token, "dsfsf");
     setAccessToken(token, { expires: 24 / 6 });
   }
   if (action.type === "user/signout") {

@@ -1,3 +1,4 @@
+import type { StockItem } from "@/types/stocks";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -23,15 +24,21 @@ type State = {
   organizationName: string;
   organizationInitial: string;
   products: Product[];
+  stockItems: StockItem[];
+  isPremium: boolean;
   isProductLoading: boolean;
   revenueData: number[];
   isRevenueLoading: boolean;
   isRevenueError: boolean;
   metrics: Metric[];
   isMetricsLoading: boolean;
+  isSearching: boolean;
+  searchText: string;
   setOrganizationId: (organizationId: string) => void;
   setOrganizationName: (organizationName: string) => void;
   setOrganizationInitial: (organizationName: string) => void;
+  setIsSearching: (isSearching: boolean) => void;
+  setSearchText: (searchText: string) => void;
   fetchProducts: () => Promise<void>;
   fetchRevenue: () => Promise<void>;
   fetchMetrics: () => Promise<void>;
@@ -55,11 +62,18 @@ export const useStore = create<State>()(
       revenueData: [],
       isRevenueLoading: false,
       isRevenueError: false,
+      stockItems: [],
+      searchText: "",
+      isSearching: false,
+      isPremium: false,
+      setIsSearching: (isSearching) => set({ isSearching }),
+      setSearchText: (searchText) => set({ searchText }),
       metrics: [],
       isMetricsLoading: false,
       setOrganizationId: (organizationId) => set({ organizationId }),
       setOrganizationName: (organizationName) => set({ organizationName }),
-      setOrganizationInitial: (organizationName) => set({ organizationInitial: getInitials(organizationName) }),
+      setOrganizationInitial: (organizationName) =>
+        set({ organizationInitial: getInitials(organizationName) }),
       fetchProducts: async () => {
         set({ isProductLoading: true });
         try {
@@ -133,7 +147,6 @@ export const useStore = create<State>()(
     }
   )
 );
-
 
 /*
 Usage for Stephen

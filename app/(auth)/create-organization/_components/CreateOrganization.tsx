@@ -260,11 +260,17 @@ const CreateOrganization = () => {
       // setErrorMessages(result.error.flatten().fieldErrors);
       return;
     }
-
-    const response = await createOrg({
-      ...formData,
+    const dataForm = {
+      address: formData.address,
+      businessType: formData.businessType,
+      country: formData.country,
+      currency_code: formData.currency,
       accessToken,
-    });
+      name: formData.orgName,
+      state: formData.state,
+    };
+
+    const response = await createOrg(dataForm);
     if ("data" in response) {
       router.push("/stock");
     } else {

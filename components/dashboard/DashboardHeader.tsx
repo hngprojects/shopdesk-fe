@@ -1,30 +1,37 @@
 "use client";
+import LoadingAnimation from "@/components/functional/loading";
 import Logo from "@/components/functional/logo";
-import { useState, useEffect } from "react";
-import { useStore } from "@/store/useStore";
+import LogoutConfirmModal from "@/components/modal/logoutConfirmationModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
-import { ArrowLeftRight, ChevronDown, Plus } from "lucide-react";
-import LogoutConfirmModal from "@/components/modal/logoutConfirmationModal";
-import { useRouter } from "next/navigation";
-import { getOrganization } from "@/services/getOrganization";
 import logout from "@/public/icons/_ui-log-out-02.svg";
 import settings from "@/public/icons/_ui-settings-01.svg";
-import LoadingAnimation from "@/components/functional/loading";
+import { getOrganization } from "@/services/getOrganization";
+import { useStore } from "@/store/useStore";
+import { ArrowLeftRight, ChevronDown, Plus } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
   const router = useRouter();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-  const [organizations, setOrganizations] = useState<{ id: string, name: string }[]>([]);
+  const [organizations, setOrganizations] = useState<
+    { id: string; name: string }[]
+  >([]);
   const [showOrgList, setShowOrgList] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { organizationName, organizationInitial, setOrganizationId, setOrganizationName } = useStore();
+  const {
+    organizationName,
+    organizationInitial,
+    setOrganizationId,
+    setOrganizationName,
+  } = useStore();
 
   useEffect(() => {
     const fetchOrganizations = async () => {
@@ -39,15 +46,14 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
   }, []);
   console.log(organizationInitial);
 
-
   const handleSelection = async (org: { id: string; name: string }) => {
     setIsLoading(true);
-    await setOrganizationId(org.id);
-    await setOrganizationName(org.name);
+    setOrganizationId(org.id);
+    setOrganizationName(org.name);
     setShowOrgList(false);
     setTimeout(() => {
       window.location.reload();
-    })
+    });
   };
 
   const handleAddNewOrganization = () => {
@@ -64,7 +70,7 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
     if (onSettingsClick) {
       onSettingsClick();
     }
-    router.push('/settings'); 
+    router.push("/settings");
   };
 
   return (
@@ -103,22 +109,32 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
             <ChevronDown strokeWidth={1.5} color="white" />
           </DropdownMenuTrigger>
 
-          <DropdownMenuContent className="w-64" onInteractOutside={() => setShowOrgList(false)}>
+          <DropdownMenuContent
+            className="w-64"
+            onInteractOutside={() => setShowOrgList(false)}
+          >
             <DropdownMenuItem
               className="flex items-center gap-2 p-3 hover:bg-gray-100 cursor-pointer transition-colors duration-200"
               onSelect={toggleOrgList}
             >
               <ArrowLeftRight className="h-4 w-4" />
               <span>Switch Organization</span>
-              <ChevronDown className={`ml-auto h-4 w-4 transition-transform duration-200 ${showOrgList ? 'rotate-180' : ''}`} />
+              <ChevronDown
+                className={`ml-auto h-4 w-4 transition-transform duration-200 ${
+                  showOrgList ? "rotate-180" : ""
+                }`}
+              />
             </DropdownMenuItem>
 
             {showOrgList && (
               <>
                 <DropdownMenuSeparator />
                 <div className="max-h-60 overflow-y-auto custom-scrollbar">
-
-                  {isLoading ? <div><LoadingAnimation /></div> :
+                  {isLoading ? (
+                    <div>
+                      <LoadingAnimation />
+                    </div>
+                  ) : (
                     <>
                       {organizations.map((org) => (
                         <DropdownMenuItem
@@ -139,10 +155,9 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
                             )}
                           </div>
                         </DropdownMenuItem>
-
                       ))}
                     </>
-                  }
+                  )}
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -159,18 +174,18 @@ function Header({ onSettingsClick }: { onSettingsClick?: () => void }) {
               </>
             )}
 
-<DropdownMenuItem
-            className="p-3 hover:bg-gray-100 cursor-pointer transition-colors duration-200"
-            onSelect={(e) => {
-              e.preventDefault();
-              handleSettingsClick();
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <Image src={settings} alt="" width={20} height={20} />
-              Settings
-            </div>
-          </DropdownMenuItem>
+            <DropdownMenuItem
+              className="p-3 hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+              onSelect={(e) => {
+                e.preventDefault();
+                handleSettingsClick();
+              }}
+            >
+              <div className="flex items-center gap-2">
+                <Image src={settings} alt="" width={20} height={20} />
+                Settings
+              </div>
+            </DropdownMenuItem>
 
             <DropdownMenuItem
               className="p-3 text-[#ff1925] hover:bg-red-50 cursor-pointer transition-colors duration-200"
