@@ -11,6 +11,7 @@ import { sidebarReducer } from "./features/sidebar";
 import stocksSliceReducer from "./features/stock/stock.slice";
 import toggleTableReducer from "./features/table/toggle.slice";
 import notificationsReducer from "./notificationlslice";
+import preferencesReducer from "./preferencesSlice";
 
 const persistConfig = {
   key: "root",
@@ -31,6 +32,7 @@ const appReducer = combineReducers({
   toggleTableState: toggleTableReducer,
   weeklySales: weeklySalesDataReducer,
   notification: notificationsReducer,
+  preferences: preferencesReducer,
   [api.reducerPath]: api.reducer,
 });
 

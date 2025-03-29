@@ -24,7 +24,7 @@ export default function layout({ children }: { children: React.ReactNode }) {
       link: "/settings/business",
     },
     {
-      name: "Stock Preference",
+      name: "Store Preference",
       value: "stockPreference",
       link: "/settings/stockPreference",
     },
